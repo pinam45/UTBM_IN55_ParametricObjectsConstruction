@@ -24,7 +24,7 @@ get_filename_component(include_dir   ${root_dir}/include   REALPATH)
 
 # ParametricObjectsConstruction
 get_files(
-  files "${src_dir}"
+  files "${src_dir}" "${include_dir}"
   OPTIONS recurse
 )
 make_target(
