@@ -1,0 +1,14 @@
+#ifndef PARAMETRICOBJECTSCONSTRUCTION_GLFWINITIALIZER_HPP
+#define PARAMETRICOBJECTSCONSTRUCTION_GLFWINITIALIZER_HPP
+
+namespace poc {
+	class GlfwInitializer {
+	public:
+		GlfwInitializer();
+
+		~GlfwInitializer();
+	};
+}
+
+
+#endif //PARAMETRICOBJECTSCONSTRUCTION_GLFWINITIALIZER_HPP
