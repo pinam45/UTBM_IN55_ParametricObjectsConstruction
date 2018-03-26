@@ -6,9 +6,10 @@
 
 #include <VideoMode.hpp>
 #include <GlfwInitializer.hpp>
-#include <callbacks.hpp>
 #include <Window.hpp>
 #include <Event.hpp>
+
+#include <imgui.h>
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
@@ -16,25 +17,20 @@ constexpr int DEFAULT_HEIGHT = 600;
 int main()
 {
 	poc::GlfwInitializer initializer;
+
 	poc::VideoMode test = poc::VideoMode::getPrimaryMonitorVideoMode();
 	poc::Window w(test, "Test", poc::FullscreenMode::NoFullScreen);
 
-	GLenum err = glewInit();
-	if(err != GLEW_OK)
-	{
-		std::cerr << "GLEW error: " << glewGetErrorString(err) << std::endl;
-		glfwTerminate();
-		return EXIT_FAILURE;
-	}
-
 	glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+
+	ImGui::StyleColorsDark();
 
 	while(w.isOpen())
 	{
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(.05f, .05f, .05f, .05f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		poc::Event event;
+		/*poc::Event event;
 
 		while (w.pollEvent(event)) {
 
@@ -65,8 +61,14 @@ int main()
 				}
 
 			}, event.content);
-		}
+		}*/
+
 		// nothing
+		ImGui::Text("Hello, world %d", 123);
+		if (ImGui::Button("Save"))
+		{
+			std::cout << "Button pressed" << '\n';
+		}
 
 		w.display();
 	}

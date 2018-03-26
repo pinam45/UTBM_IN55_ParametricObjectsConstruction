@@ -3,6 +3,10 @@
 #include <Window.hpp>
 #include <Event.hpp>
 
+#include <imgui.h>
+#include <sstream>
+#include "implementation/ImguiImpl.hpp"
+
 poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, FullscreenMode fullscreenMode,
                     const poc::ContextSettings& contextSettings)
 	: m_window{nullptr}
@@ -36,10 +40,12 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowUserPointer(m_window, this);
 
 	auto keyCallback = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
+		poc::ImguiImpl::onKey(key, scancode, action, mods);
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
 	};
 
 	auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
+		poc::ImguiImpl::onMouseButton(button, action, mods);
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
 	};
 
@@ -48,6 +54,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	};
 
 	auto mouseScrollCallback = [](GLFWwindow* w, double xPos, double yPos) {
+		poc::ImguiImpl::onScroll(xPos, yPos);
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
 	};
 
@@ -70,6 +77,20 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowCloseCallback(m_window, windowCloseCallback);
 	glfwSetFramebufferSizeCallback(m_window, windowResizeCallback);
 	glfwSetWindowFocusCallback(m_window, windowFocusCallback);
+
+	GLenum err = glewInit();
+	if(err != GLEW_OK)
+	{
+		glfwTerminate();
+		std::stringstream sstream;
+		sstream << "GLEW Error: " << glewGetErrorString(err) << '\n';
+
+		throw std::runtime_error(sstream.str());
+	}
+
+	ImGui::CreateContext();
+	ImguiImpl::init(m_window);
+	ImguiImpl::newFrame();
 }
 
 poc::Window::~Window() {
@@ -105,10 +126,16 @@ bool poc::Window::pollEvent(poc::Event& event) {
 }
 
 void poc::Window::display() {
-	glfwSwapBuffers(m_window);
+	ImguiImpl::render();
 
 	glfwPollEvents();
 	m_isOpen = !static_cast<bool>(glfwWindowShouldClose(m_window));
+
+	glfwSwapBuffers(m_window);
+
+	if (m_isOpen) {
+		ImguiImpl::newFrame();
+	}
 }
 
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {
