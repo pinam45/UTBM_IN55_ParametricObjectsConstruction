@@ -25,12 +25,13 @@ int main()
 
 	ImGui::StyleColorsDark();
 
+	bool open = true;
 	while(w.isOpen())
 	{
 		glClearColor(.05f, .05f, .05f, .05f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/*poc::Event event;
+		poc::Event event;
 
 		while (w.pollEvent(event)) {
 
@@ -61,15 +62,9 @@ int main()
 				}
 
 			}, event.content);
-		}*/
-
-		// nothing
-		ImGui::Text("Hello, world %d", 123);
-		if (ImGui::Button("Save"))
-		{
-			std::cout << "Button pressed" << '\n';
 		}
 
+		ImGui::ShowDemoWindow(&open);
 		w.display();
 	}
 

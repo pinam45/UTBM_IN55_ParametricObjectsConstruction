@@ -44,6 +44,11 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
 	};
 
+	auto textCallback = [](GLFWwindow* w, unsigned int character) {
+		poc::ImguiImpl::onChar(character);
+		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createCharEvent(character);
+	};
+
 	auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
 		poc::ImguiImpl::onMouseButton(button, action, mods);
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
@@ -71,6 +76,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	};
 
 	glfwSetKeyCallback(m_window, keyCallback);
+	glfwSetCharCallback(m_window, textCallback);
 	glfwSetMouseButtonCallback(m_window, mouseCallback);
 	glfwSetCursorPosCallback(m_window, cursorPosCallback);
 	glfwSetScrollCallback(m_window, mouseScrollCallback);
@@ -119,7 +125,7 @@ bool poc::Window::pollEvent(poc::Event& event) {
 		return false;
 	}
 
-	event = m_events.front();
+	event = std::move(m_events.front());
 	m_events.pop_front();
 
 	return true;
@@ -139,112 +145,71 @@ void poc::Window::display() {
 }
 
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {
-	Event event;
+	const EventType type = [&action] {
+		switch (action) {
+			case GLFW_PRESS:
+				return EventType::KeyPressed;
+			case GLFW_RELEASE:
+				return EventType::KeyReleased;
+			case GLFW_REPEAT:
+				return EventType::KeyRepeat;
+			default:
+				return EventType::Unknown;
+		}
+	}();
 
-	switch (action) {
-		case GLFW_PRESS:
-			event.type = EventType::KeyPressed;
-			break;
-		case GLFW_RELEASE:
-			event.type = EventType::KeyReleased;
-			break;
-		case GLFW_REPEAT:
-			event.type = EventType::KeyRepeat;
-			break;
-		default:
-			break;
-	}
+	m_events.emplace_back(type, std::in_place_type_t<Event::KeyEvent>{}, static_cast<Keyboard::Key>(key),
+		static_cast<bool>(mods & GLFW_MOD_SHIFT),
+		static_cast<bool>(mods & GLFW_MOD_CONTROL),
+		static_cast<bool>(mods & GLFW_MOD_ALT),
+		static_cast<bool>(mods & GLFW_MOD_SUPER));
+}
 
-	Event::KeyEvent keyEvent;
-	keyEvent.code = static_cast<Keyboard::Key>(key);
-	keyEvent.shift = static_cast<bool>(mods & GLFW_MOD_SHIFT);
-	keyEvent.control = static_cast<bool>(mods & GLFW_MOD_CONTROL);
-	keyEvent.alt = static_cast<bool>(mods & GLFW_MOD_ALT);
-	keyEvent.system = static_cast<bool>(mods & GLFW_MOD_SUPER);
-
-	event.content = keyEvent;
-
-	m_events.push_back(std::move(event));
+void poc::Window::createCharEvent(unsigned int character) {
+	m_events.emplace_back(EventType::TextEntered, std::in_place_type_t<Event::TextEvent>{}, character);
 }
 
 void poc::Window::createMouseEvent(int button, int action, int) {
-	Event event;
+	const EventType type = [&action] {
+		switch (action) {
+			case GLFW_PRESS:
+				return EventType::MouseButtonPressed;
+			case GLFW_RELEASE:
+				return EventType::MouseButtonReleased;
+			default:
+				return EventType::Unknown;
+		}
+	}();
 
-	switch (action) {
-		case GLFW_PRESS:
-			event.type = EventType::MouseButtonPressed;
-			break;
-		case GLFW_RELEASE:
-			event.type = EventType::MouseButtonReleased;
-			break;
-		default:
-			break;
-	}
+	double xPos = -1.;
+	double yPos = -1.;
+	glfwGetCursorPos(m_window, &xPos, &yPos);
 
-	Event::MouseButtonEvent mouseEvent;
-	mouseEvent.button = static_cast<Mouse::Button>(button);
-
-	double xpos = -1.;
-	double ypos = -1.;
-	glfwGetCursorPos(m_window, &xpos, &ypos);
-
-	mouseEvent.x = static_cast<int>(xpos);
-	mouseEvent.y = static_cast<int>(ypos);
-
-	event.content = mouseEvent;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(type, std::in_place_type_t<Event::MouseButtonEvent>{}, static_cast<Mouse::Button>(button),
+	                      static_cast<int>(xPos),
+	                      static_cast<int>(yPos));
 }
 
 void poc::Window::createCloseEvent() {
-	Event event;
-	event.type = EventType::Closed;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(EventType::Closed);
 }
 
 void poc::Window::createMouseEvent(double xPos, double yPos) {
-	Event event;
-	event.type = EventType::MouseMoved;
-
-	Event::MouseMoveEvent mouseEvent;
-	mouseEvent.x = static_cast<int>(xPos);
-	mouseEvent.y = static_cast<int>(yPos);
-
-	event.content = mouseEvent;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(EventType::MouseMoved, std::in_place_type_t<Event::MouseMoveEvent>{},
+	                      static_cast<int>(xPos),
+	                      static_cast<int>(yPos));
 }
 
 void poc::Window::createMouseScrollEvent(double xOffset, double yOffset) {
-	Event event;
-	event.type = EventType::MouseScrollEvent;
-
-	Event::MouseScrollEvent scrollEvent;
-	scrollEvent.xDelta = xOffset;
-	scrollEvent.yDelta = yOffset;
-
-	event.content = scrollEvent;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(EventType::MouseScrollEvent, std::in_place_type_t<Event::MouseScrollEvent>{},
+	                      xOffset,
+	                      yOffset);
 }
 
 void poc::Window::createResizeEvent(int width, int height) {
-	Event event;
-	event.type = EventType::Resized;
-
-	Event::ResizeEvent resizeEvent;
-	resizeEvent.width = width;
-	resizeEvent.height = height;
-
-	event.content = resizeEvent;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(EventType::Resized, std::in_place_type_t<Event::ResizeEvent>{}, width, height);
 }
 
 void poc::Window::createFocusEvent(int focused) {
-	Event event;
-	event.type = static_cast<bool>(focused) ? EventType::FocusGain : EventType::FocusLost;
-
-	m_events.push_back(std::move(event));
+	m_events.emplace_back(focused ? EventType::FocusGain : EventType::FocusLost);
 }

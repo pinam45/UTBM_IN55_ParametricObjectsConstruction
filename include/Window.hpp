@@ -48,6 +48,8 @@ namespace poc {
 	private:
 		void createKeyEvent(int key, int scancode, int action, int mods);
 
+		void createCharEvent(unsigned int character);
+
 		void createMouseEvent(int button, int action, int mods);
 
 		void createMouseEvent(double xPos, double yPos);
