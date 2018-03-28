@@ -699,6 +699,18 @@ function(make_target target group)
 	set_target_properties(${target} PROPERTIES FOLDER ${group})
 endfunction()
 
+## configure_folder(input_folder output_folder)
+# Recursively copie all files from an input folder to an output folder
+#   {value} [in] input_folder:    Input folder
+#   {value} [in] output_folder:   Output folder
+function(configure_folder input_folder output_folder)
+	file(GLOB_RECURSE files "${input_folder}" "${input_folder}/*")
+	foreach(file ${files})
+		file(RELATIVE_PATH relative_file ${input_folder} ${file})
+		configure_file(${file} "${output_folder}/${relative_file}" COPYONLY)
+	endforeach()
+endfunction()
+
 
 # disable compiler specific extensions
 set(CMAKE_C_EXTENSIONS OFF)

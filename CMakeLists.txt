@@ -24,6 +24,8 @@ project(ParametricObjectsConstruction)
 get_filename_component(root_dir      ${CMAKE_SOURCE_DIR}   REALPATH)
 get_filename_component(src_dir       ${root_dir}/src       REALPATH)
 get_filename_component(include_dir   ${root_dir}/include   REALPATH)
+get_filename_component(shaders_dir   ${root_dir}/shaders   REALPATH)
+
 
 # ParametricObjectsConstruction
 get_files(
@@ -39,6 +41,8 @@ make_target(
 )
 set_property(TARGET ParametricObjectsConstruction PROPERTY CXX_STANDARD 17)
 target_link_libraries(ParametricObjectsConstruction ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${GLFW_LIBRARY} ${IMGUI_LIBRARY}) # GLEW before OpenGL
+
+configure_folder(${shaders_dir}   "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders")
 
 # Debug
 #set(CMAKE_VERBOSE_MAKEFILE 1)
