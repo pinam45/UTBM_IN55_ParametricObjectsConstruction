@@ -12,6 +12,7 @@ include(cmake/config.cmake)
 include(cmake/opengl.cmake)
 include(cmake/glew.cmake)
 include(cmake/glfw.cmake)
+include(cmake/glm.cmake)
 include(cmake/imgui.cmake)
 
 # By default build in Release mode
@@ -36,7 +37,7 @@ get_files(
 make_target(
   ParametricObjectsConstruction "ParametricObjectsConstruction" ${files}
   INCLUDES "${include_dir}"
-  EXT_INCLUDES "${OPENGL_INCLUDE_DIR}" "${GLEW_INCLUDE_DIR}" "${GLFW_INCLUDE_DIR}" "${IMGUI_INCLUDE_DIR}"
+  EXT_INCLUDES "${OPENGL_INCLUDE_DIR}" "${GLEW_INCLUDE_DIR}" "${GLFW_INCLUDE_DIR}" "${IMGUI_INCLUDE_DIR}" "${GLM_INCLUDE_DIR}"
   OPTIONS cxx executable
 )
 set_property(TARGET ParametricObjectsConstruction PROPERTY CXX_STANDARD 17)
