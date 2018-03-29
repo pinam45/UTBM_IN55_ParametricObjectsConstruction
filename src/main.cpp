@@ -8,6 +8,8 @@
 #include <GlfwInitializer.hpp>
 #include <Window.hpp>
 #include <Event.hpp>
+#include <Shader.hpp>
+#include <ShaderProgram.hpp>
 
 #include <imgui.h>
 
@@ -25,11 +27,60 @@ int main()
 
 	ImGui::StyleColorsDark();
 
+	constexpr float vertices[] = {
+	  0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+	  -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+	  0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+	};
+
+	unsigned int VAO = 0; // Vertex Array Object
+	unsigned int VBO = 0; // Vertex Buffer Object
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	Shader vshader = Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
+	if(!vshader.isValid()){
+		std::cout << "Vertex shader error:\n" << vshader.getError() << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	Shader fshader = Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
+	if(!fshader.isValid()){
+		std::cout << "Fragment shader error:\n" << fshader.getError() << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	ShaderProgram program(vshader, fshader);
+	if(!program.isValid()){
+		std::cout << "Shader program error:\n" << program.getError() << std::endl;
+		return EXIT_FAILURE;
+	}
+	program.use();
+
 	bool open = true;
 	while(w.isOpen())
 	{
 		glClearColor(.05f, .05f, .05f, .05f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		program.use();
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 
 		poc::Event event;
 
