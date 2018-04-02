@@ -31,7 +31,7 @@ namespace poc {
 		template <typename ContentType, typename... Args>
 		Event(EventType type, std::in_place_type_t<ContentType>, Args&&... contentArgs) noexcept(noexcept(ContentType{std::forward<Args>(contentArgs)...}));
 
-		constexpr Event(EventType type) noexcept;
+		explicit constexpr Event(EventType type) noexcept;
 
 		EventType type = EventType::Unknown;
 
@@ -48,14 +48,14 @@ namespace poc {
 
 		struct TextEvent {
 			TextEvent() noexcept = default;
-			TextEvent(unsigned int character_) noexcept;
+			explicit TextEvent(unsigned int character) noexcept;
 
 			unsigned int character;
 		};
 
 		struct MouseButtonEvent {
 			MouseButtonEvent() noexcept = default;
-			MouseButtonEvent(Mouse::Button button_, int x_, int y_) noexcept;
+			MouseButtonEvent(Mouse::Button button, int x, int y) noexcept;
 
 			Mouse::Button button;
 			int x;
@@ -64,7 +64,7 @@ namespace poc {
 
 		struct MouseMoveEvent {
 			MouseMoveEvent() noexcept = default;
-			MouseMoveEvent(int x_, int y_) noexcept;
+			MouseMoveEvent(int x, int y) noexcept;
 
 			int x;
 			int y;
@@ -98,8 +98,8 @@ namespace poc {
 
 	}
 
-	constexpr poc::Event::Event(EventType type) noexcept
-			: type(type) {}
+	constexpr poc::Event::Event(EventType type_) noexcept
+			: type(type_) {}
 }
 
 
