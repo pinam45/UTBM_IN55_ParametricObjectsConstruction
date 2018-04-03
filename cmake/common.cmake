@@ -646,7 +646,7 @@ endfunction()
 #   {value}  [in] group:            Group of the target (can contain '/'' for subgroups)
 #   {value}  [in] files:            Source files
 #   {value}  [in] includes:         Include files
-#   {value}  [in] includes:         External include files (no warnings)
+#   {value}  [in] ext_includes:     External include files (no warnings)
 #   {option} [in] executable:       If present, build an executable
 #   {option} [in] test:             If present, build a test executable
 #   {option} [in] shared:           If present, build a shared library
