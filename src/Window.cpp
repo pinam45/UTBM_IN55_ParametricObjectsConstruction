@@ -7,10 +7,14 @@
 #include <sstream>
 #include "implementation/ImguiImpl.hpp"
 
+namespace {
+	ImGuiContext* s_imguiContext;
+}
+
 poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, FullscreenMode fullscreenMode,
                     const poc::ContextSettings& contextSettings)
 	: m_window{nullptr}
-	, m_events{} {
+	, m_events{32} {
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, contextSettings.major);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, contextSettings.minor);
@@ -69,6 +73,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 
 	auto windowResizeCallback = [](GLFWwindow* w, int width, int height) {
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createResizeEvent(width, height);
+		glViewport(0, 0, width, height);
 	};
 
 	auto windowFocusCallback = [](GLFWwindow* w, int focused) {
@@ -95,6 +100,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	}
 
 	ImGui::CreateContext();
+	s_imguiContext = ImGui::GetCurrentContext();
 	ImguiImpl::init(m_window);
 	ImguiImpl::newFrame();
 }
@@ -102,6 +108,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 poc::Window::~Window() {
 	if (m_window) {
 		glfwDestroyWindow(m_window);
+		ImguiImpl::shutdown();
 	}
 }
 
@@ -110,7 +117,7 @@ bool poc::Window::isOpen() const {
 }
 
 void poc::Window::close() {
-	if (m_isOpen) {
+	if (isOpen()) {
 		m_isOpen = false;
 		glfwSetWindowShouldClose(m_window, GLFW_TRUE);
 		glfwDestroyWindow(m_window);
@@ -132,6 +139,10 @@ bool poc::Window::pollEvent(poc::Event& event) {
 }
 
 void poc::Window::display() {
+	if (!isOpen()) {
+		return;
+	}
+
 	ImguiImpl::render();
 
 	glfwPollEvents();
