@@ -18,16 +18,28 @@ public:
 
 	// Program need to be in use to set uniforms
 	template<typename T>
-	void setUniform1(const char* name, T v0) const;
+	bool setUniform1(const char* name, T v0) const;
 
 	template<typename T>
-	void setUniform2(const char* name, T v0, T v1) const;
+	bool setUniform2(const char* name, T v0, T v1) const;
 
 	template<typename T>
-	void setUniform3(const char* name, T v0, T v1, T v2) const;
+	bool setUniform3(const char* name, T v0, T v1, T v2) const;
 
 	template<typename T>
-	void setUniform4(const char* name, T v0, T v1, T v2, T v3) const;
+	bool setUniform4(const char* name, T v0, T v1, T v2, T v3) const;
+
+	template<typename T>
+	bool setUniform1v(const char* name, int count, const T* value) const;
+
+	template<typename T>
+	bool setUniform2v(const char* name, int count, const T* value) const;
+
+	template<typename T>
+	bool setUniform3v(const char* name, int count, const T* value) const;
+
+	template<typename T>
+	bool setUniform4v(const char* name, int count, const T* value) const;
 
 	void use() const;
 
@@ -70,10 +82,10 @@ ShaderProgram::ShaderProgram(const T&... shaders)
 }
 
 template<typename T>
-void ShaderProgram::setUniform1(const char* name, T v0) const {
+bool ShaderProgram::setUniform1(const char* name, T v0) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
-		return;
+		return false;
 
 	if constexpr(std::is_same<T, float>::value){
 		glUniform1f(uniformLocation, v0);
@@ -87,13 +99,14 @@ void ShaderProgram::setUniform1(const char* name, T v0) const {
 	else{
 		static_assert(dependent_false<T>::value, "Unsupported type");
 	}
+	return true;
 }
 
 template<typename T>
-void ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
+bool ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
-		return;
+		return false;
 
 	if constexpr(std::is_same<T, float>::value){
 		glUniform2f(uniformLocation, v0, v1);
@@ -107,13 +120,14 @@ void ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
 	else{
 		static_assert(dependent_false<T>::value, "Unsupported type");
 	}
+	return true;
 }
 
 template<typename T>
-void ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
+bool ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
-		return;
+		return false;
 
 	if constexpr(std::is_same<T, float>::value){
 		glUniform3f(uniformLocation, v0, v1, v2);
@@ -127,13 +141,14 @@ void ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
 	else{
 		static_assert(dependent_false<T>::value, "Unsupported type");
 	}
+	return true;
 }
 
 template<typename T>
-void ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const {
+bool ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
-		return;
+		return false;
 
 	if constexpr(std::is_same<T, float>::value){
 		glUniform4f(uniformLocation, v0, v1, v2, v3);
@@ -147,6 +162,91 @@ void ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const 
 	else{
 		static_assert(dependent_false<T>::value, "Unsupported type");
 	}
+	return true;
+}
+
+template<typename T>
+bool ShaderProgram::setUniform1v(const char* name, int count, const T* value) const {
+	int uniformLocation = glGetUniformLocation(m_program, name);
+	if(uniformLocation == -1)
+		return false;
+
+	if constexpr(std::is_same<T, float>::value){
+		glUniform1fv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, int>::value){
+		glUniform1iv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, unsigned int>::value){
+		glUniform1uiv(uniformLocation, count, value);
+	}
+	else{
+		static_assert(dependent_false<T>::value, "Unsupported type");
+	}
+	return true;
+}
+
+template<typename T>
+bool ShaderProgram::setUniform2v(const char* name, int count, const T* value) const {
+	int uniformLocation = glGetUniformLocation(m_program, name);
+	if(uniformLocation == -1)
+		return false;
+
+	if constexpr(std::is_same<T, float>::value){
+		glUniform2fv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, int>::value){
+		glUniform2iv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, unsigned int>::value){
+		glUniform2uiv(uniformLocation, count, value);
+	}
+	else{
+		static_assert(dependent_false<T>::value, "Unsupported type");
+	}
+	return true;
+}
+
+template<typename T>
+bool ShaderProgram::setUniform3v(const char* name, int count, const T* value) const {
+	int uniformLocation = glGetUniformLocation(m_program, name);
+	if(uniformLocation == -1)
+		return false;
+
+	if constexpr(std::is_same<T, float>::value){
+		glUniform3fv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, int>::value){
+		glUniform3iv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, unsigned int>::value){
+		glUniform3uiv(uniformLocation, count, value);
+	}
+	else{
+		static_assert(dependent_false<T>::value, "Unsupported type");
+	}
+	return true;
+}
+
+template<typename T>
+bool ShaderProgram::setUniform4v(const char* name, int count, const T* value) const {
+	int uniformLocation = glGetUniformLocation(m_program, name);
+	if(uniformLocation == -1)
+		return false;
+
+	if constexpr(std::is_same<T, float>::value){
+		glUniform4fv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, int>::value){
+		glUniform4iv(uniformLocation, count, value);
+	}
+	else if constexpr(std::is_same<T, unsigned int>::value){
+		glUniform4uiv(uniformLocation, count, value);
+	}
+	else{
+		static_assert(dependent_false<T>::value, "Unsupported type");
+	}
+	return true;
 }
 
 
