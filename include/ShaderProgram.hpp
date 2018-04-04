@@ -41,6 +41,24 @@ public:
 	template<typename T>
 	bool setUniform4v(const char* name, int count, const T* value) const;
 
+	bool setUniformMatrix2v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix3v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix4v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix2x3v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix3x2v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix2x4v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix4x2v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix3x4v(const char* name, int count, bool transpose, const float* value) const;
+
+	bool setUniformMatrix4x3v(const char* name, int count, bool transpose, const float* value) const;
+
 	void use() const;
 
 	bool isValid() const;
