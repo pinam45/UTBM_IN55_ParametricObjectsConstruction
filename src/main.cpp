@@ -1,8 +1,7 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <iostream>
 #include <variant>
+#include <codecvt>
+#include <locale>
 
 #include <VideoMode.hpp>
 #include <GlfwInitializer.hpp>
@@ -16,6 +15,9 @@
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 
+//#pragma clang diagnostic push
+//#pragma ide diagnostic ignored "OCSimplifyInspection"
+//#pragma ide diagnostic ignored "OCDFAInspection"
 int main()
 {
 	poc::GlfwInitializer initializer;
@@ -106,10 +108,16 @@ int main()
 					}
 				} else if constexpr (std::is_same_v<T, poc::Event::ResizeEvent>) {
 					std::cout << "Resize Event, x=" << content.width << " , y=" << content.height << '\n';
+				} else if constexpr (std::is_same_v<T, poc::Event::TextEvent>) {
+					std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+					std::string u8str = converter.to_bytes(content.character);
+					std::cout << "Text Event, char='" << u8str << "'\n";
 				} else if (event.type == poc::EventType::FocusGain) {
 					std::cout << "Focus Gain\n";
 				} else if (event.type == poc::EventType::FocusLost) {
 					std:: cout << "Focus Lost\n";
+				} else if (event.type == poc::EventType::Closed) {
+					std::cout << "Closed\n";
 				}
 
 			}, event.content);
@@ -121,3 +129,4 @@ int main()
 
 	return EXIT_SUCCESS;
 }
+//#pragma clang diagnostic pop
