@@ -7,12 +7,11 @@
 #include <deque>
 #include <string_view>
 
+#include <Event.hpp>
 #include <VideoMode.hpp>
 #include <ContextSettings.hpp>
 
 namespace poc {
-	class Event;
-
 	enum class FullscreenMode : int {
 		NoFullScreen,
 		WindowedFullScreen
