@@ -109,9 +109,11 @@ int main()
 				} else if constexpr (std::is_same_v<T, poc::Event::ResizeEvent>) {
 					std::cout << "Resize Event, x=" << content.width << " , y=" << content.height << '\n';
 				} else if constexpr (std::is_same_v<T, poc::Event::TextEvent>) {
+#ifndef _MSC_VER 
 					std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
 					std::string u8str = converter.to_bytes(content.character);
 					std::cout << "Text Event, char='" << u8str << "'\n";
+#endif
 				} else if (event.type == poc::EventType::FocusGain) {
 					std::cout << "Focus Gain\n";
 				} else if (event.type == poc::EventType::FocusLost) {
