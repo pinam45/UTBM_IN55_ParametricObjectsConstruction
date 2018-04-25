@@ -24,12 +24,12 @@ poc::Event::MouseMoveEvent::MouseMoveEvent(int x_, int y_) noexcept
 		, y(y_) {
 }
 
-poc::Event::MouseScrollEvent::MouseScrollEvent(double xDelta, double yDelta) noexcept
-		: xDelta(xDelta),
-		  yDelta(yDelta) {
+poc::Event::MouseScrollEvent::MouseScrollEvent(double xDelta_, double yDelta_) noexcept
+		: xDelta(xDelta_),
+		  yDelta(yDelta_) {
 }
 
-poc::Event::ResizeEvent::ResizeEvent(int width, int height)
-		: width(width)
-		, height(height) {
+poc::Event::ResizeEvent::ResizeEvent(int width_, int height_)
+		: width(width_)
+		, height(height_) {
 }

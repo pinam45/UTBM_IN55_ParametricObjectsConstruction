@@ -155,6 +155,22 @@ void poc::Window::display() {
 	}
 }
 
+int poc::Window::getWidth() {
+	int width, height;
+	glfwGetWindowSize(m_window, &width, &height);
+	return width;
+}
+
+int poc::Window::getHeigth() {
+	int width, height;
+	glfwGetWindowSize(m_window, &width, &height);
+	return height;
+}
+
+void poc::Window::setInputMode(int mode, int value){
+	glfwSetInputMode(m_window, mode, value);
+}
+
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {
 	const EventType type = [&action] {
 		switch (action) {

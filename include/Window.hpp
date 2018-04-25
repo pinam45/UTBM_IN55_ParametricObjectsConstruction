@@ -39,6 +39,12 @@ namespace poc {
 
 		void display();
 
+		int getWidth();
+
+		int getHeigth();
+
+		void setInputMode(int mode, int value);
+
 	private:
 		GLFWwindow* m_window;
 		bool m_isOpen = false;

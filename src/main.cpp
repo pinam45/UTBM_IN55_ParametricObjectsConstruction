@@ -9,8 +9,11 @@
 #include <Event.hpp>
 #include <Shader.hpp>
 #include <ShaderProgram.hpp>
+#include <Camera.hpp>
 
 #include <imgui.h>
+#include <glm/trigonometric.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
@@ -22,17 +25,58 @@ int main()
 {
 	poc::GlfwInitializer initializer;
 
-	poc::VideoMode test = poc::VideoMode::getPrimaryMonitorVideoMode();
+	poc::VideoMode test(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	poc::Window w(test, "Test", poc::FullscreenMode::NoFullScreen);
 
-	glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	//glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsDark();
 
-	constexpr float vertices[] = {
-	  0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-	  -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-	  0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+	glEnable(GL_DEPTH_TEST);
+	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	float vertices[] = {
+	  -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	  0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	  -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+	  -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+
+	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+	  -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+
+	  -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+	  -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+	  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+	  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
+	  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+	  -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+
+	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+	  0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+
+	  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+	  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+
+	  -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
+	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+	  -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
+	  -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
 	};
 
 	unsigned int VAO = 0; // Vertex Array Object
@@ -73,60 +117,87 @@ int main()
 	}
 	program.use();
 
-	bool open = true;
+	Camera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f);
+	camera.setPosition({0,0,-3});
+	camera.lookAt({0,0,0});
+
+	float delta_time = 0.0f;
+	float last_frame = 0.0f;
+	bool first_mouse_move = true;
+	float mouse_last_x;
+	float mouse_last_y;
+	//bool open = true;
+	bool esc_pressed = false;
 	while(w.isOpen())
 	{
-		glClearColor(.05f, .05f, .05f, .05f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		program.use();
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
+		float currentFrame = static_cast<float>(glfwGetTime());
+		delta_time = currentFrame - last_frame;
+		last_frame = currentFrame;
 
 		poc::Event event;
-
 		while (w.pollEvent(event)) {
 
-			std::visit([&event, &w](auto&& content) noexcept {
+			std::visit([&](auto&& content) noexcept {
 				using T = std::decay_t<decltype(content)>;
 
 				if constexpr (std::is_same_v<T, poc::Event::KeyEvent>) {
-					if (event.type == poc::EventType::KeyReleased) {
-						std::cout << "Key Released" << static_cast<int>(content.code) << '\n';
-						if (content.code == poc::Keyboard::Key::Escape) {
-							w.close();
-						}
-					} else if (event.type == poc::EventType::KeyPressed) {
-						std::cout << "Key Pressed" << static_cast<int>(content.code) << '\n';
-					} else if (event.type == poc::EventType::KeyRepeat) {
-						std::cout << "Key Repeat" << static_cast<int>(content.code) << '\n';
+					if (event.type == poc::EventType::KeyPressed || event.type == poc::EventType::KeyRepeat) {
+						float cameraSpeed = 3.0f * delta_time;
+						if (content.code == poc::Keyboard::Key::W)
+							camera.moveForward(cameraSpeed);
+						if (content.code == poc::Keyboard::Key::S)
+							camera.moveForward(-cameraSpeed);
+						if (content.code == poc::Keyboard::Key::A)
+							camera.moveRight(cameraSpeed);
+						if (content.code == poc::Keyboard::Key::D)
+							camera.moveRight(-cameraSpeed);
+
+						if (content.code == poc::Keyboard::Key::Escape)
+							esc_pressed = true;
 					}
-				} else if constexpr (std::is_same_v<T, poc::Event::MouseButtonEvent>) {
-					if (event.type == poc::EventType::MouseButtonPressed) {
-						std::cout << "Mouse Pressed, x=" << content.x << " , y=" << content.y << " , button=" << static_cast<int>(content.button) << '\n';
-					}
-				} else if constexpr (std::is_same_v<T, poc::Event::ResizeEvent>) {
-					std::cout << "Resize Event, x=" << content.width << " , y=" << content.height << '\n';
-				} else if constexpr (std::is_same_v<T, poc::Event::TextEvent>) {
-#ifndef _MSC_VER 
-					std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
-					std::string u8str = converter.to_bytes(content.character);
-					std::cout << "Text Event, char='" << u8str << "'\n";
-#endif
-				} else if (event.type == poc::EventType::FocusGain) {
-					std::cout << "Focus Gain\n";
-				} else if (event.type == poc::EventType::FocusLost) {
-					std:: cout << "Focus Lost\n";
-				} else if (event.type == poc::EventType::Closed) {
-					std::cout << "Closed\n";
 				}
 
+				if constexpr (std::is_same_v<T, poc::Event::MouseMoveEvent>) {
+					if(first_mouse_move)
+					{
+						mouse_last_x = static_cast<float>(content.x);
+						mouse_last_y = static_cast<float>(content.y);
+						first_mouse_move = false;
+						return;
+					}
+
+					float xoffset = static_cast<float>(content.x) - mouse_last_x;
+					float yoffset = mouse_last_y - static_cast<float>(content.y); // reversed since y-coordinates range from bottom to top
+					mouse_last_x = static_cast<float>(content.x);
+					mouse_last_y = static_cast<float>(content.y);
+
+					float sensitivity = 0.005f;
+					camera.rotateHorizontally(sensitivity * xoffset);
+					camera.rotateVertically(-sensitivity * yoffset);
+				}
 			}, event.content);
 		}
 
-		ImGui::ShowDemoWindow(&open);
+		camera.setWidth(static_cast<float>(w.getWidth()));
+		camera.setHeight(static_cast<float>(w.getHeigth()));
+		camera.update();
+
+		program.setUniformMatrix4v("view", 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+		program.setUniformMatrix4v("projection", 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		program.use();
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+
+		//ImGui::ShowDemoWindow(&open);
 		w.display();
+
+		if(esc_pressed)
+			w.close();
 	}
 
 	return EXIT_SUCCESS;
