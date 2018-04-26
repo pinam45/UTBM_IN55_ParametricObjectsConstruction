@@ -140,6 +140,10 @@ void Camera::update() {
 	}
 }
 
+glm::vec3 Camera::getPosition() const {
+	return m_position;
+}
+
 glm::mat4 Camera::getViewMatrix() const {
 	return m_view_matrix;
 }

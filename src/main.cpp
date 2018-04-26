@@ -3,6 +3,9 @@
 #include <codecvt>
 #include <locale>
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <VideoMode.hpp>
 #include <GlfwInitializer.hpp>
 #include <Window.hpp>
@@ -17,6 +20,9 @@
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
+
+constexpr float MOUSE_MOVE_SENSITIVITY = 0.001f;
+constexpr float MOUSE_SCROLL_SENSITIVITY = 0.5f;
 
 void check_error();
 
@@ -130,26 +136,19 @@ int main()
 
 	Camera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f);
 	camera.setPosition({0,0,-3});
-	camera.lookAt({0,0,0});
+	const glm::vec3 camera_focus(0, 0, 0);
+	camera.lookAt(camera_focus);
+	camera.update();
 
-	float delta_time = 0.0f;
-	float last_frame = 0.0f;
 	bool first_mouse_move = true;
 	float mouse_last_x;
 	float mouse_last_y;
-
-	bool move_directions[4] = {false, false, false, false};
-	const poc::Keyboard::Key move_keys[4] = {poc::Keyboard::Key::W, poc::Keyboard::Key::S, poc::Keyboard::Key::A, poc::Keyboard::Key::D};
 	bool mouse_drag =false;
 
 	//bool open = true;
 	bool esc_pressed = false;
 	while(w.isOpen())
 	{
-		float currentFrame = static_cast<float>(glfwGetTime());
-		delta_time = currentFrame - last_frame;
-		last_frame = currentFrame;
-
 		poc::Event event;
 		while (w.pollEvent(event)) {
 
@@ -158,19 +157,8 @@ int main()
 
 				if constexpr (std::is_same_v<T, poc::Event::KeyEvent>) {
 					if (event.type == poc::EventType::KeyPressed) {
-						for(unsigned int i = 0; i < 4; ++i){
-							if (content.code == move_keys[i])
-								move_directions[i] = true;
-						}
-
-						if (content.code == poc::Keyboard::Key::Escape)
+						if (content.code == poc::Keyboard::Key::Escape){
 							esc_pressed = true;
-					}
-
-					if(event.type == poc::EventType::KeyReleased) {
-						for(unsigned int i = 0; i < 4; ++i){
-							if (content.code == move_keys[i])
-								move_directions[i] = false;
 						}
 					}
 				}
@@ -197,28 +185,23 @@ int main()
 							return;
 						}
 
-						float xoffset = static_cast<float>(content.x) - mouse_last_x;
-						float yoffset = mouse_last_y - static_cast<float>(content.y); // reversed since y-coordinates range from bottom to top
+						const float xoffset = static_cast<float>(content.x) - mouse_last_x;
+						const float yoffset = static_cast<float>(content.y) - mouse_last_y;
 						mouse_last_x = static_cast<float>(content.x);
 						mouse_last_y = static_cast<float>(content.y);
 
-						float sensitivity = 0.005f;
-						camera.rotateHorizontally(sensitivity * (-xoffset));
-						camera.rotateVertically(-sensitivity * (-yoffset));
+						const float modifier = MOUSE_MOVE_SENSITIVITY * 2.0f * static_cast<float>(M_PI) * glm::length(camera_focus - camera.getPosition());
+						camera.moveRight(modifier * xoffset);
+						camera.moveUp(-modifier * yoffset);
+						camera.lookAt(camera_focus);
 					}
+				}
+
+				if constexpr (std::is_same_v<T, poc::Event::MouseScrollEvent>){
+					camera.moveForward(static_cast<float>(content.yDelta) * MOUSE_SCROLL_SENSITIVITY);
 				}
 			}, event.content);
 		}
-
-		float cameraSpeed = 3.0f * delta_time;
-		if (move_directions[0])
-			camera.moveForward(cameraSpeed);
-		if (move_directions[1])
-			camera.moveForward(-cameraSpeed);
-		if (move_directions[2])
-			camera.moveRight(cameraSpeed);
-		if (move_directions[3])
-			camera.moveRight(-cameraSpeed);
 
 		camera.setWidth(static_cast<float>(w.getWidth()));
 		camera.setHeight(static_cast<float>(w.getHeigth()));
