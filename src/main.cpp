@@ -135,6 +135,11 @@ int main()
 	bool first_mouse_move = true;
 	float mouse_last_x;
 	float mouse_last_y;
+
+	bool move_directions[4] = {false, false, false, false};
+	const poc::Keyboard::Key move_keys[4] = {poc::Keyboard::Key::W, poc::Keyboard::Key::S, poc::Keyboard::Key::A, poc::Keyboard::Key::D};
+	bool mouse_drag =false;
+
 	//bool open = true;
 	bool esc_pressed = false;
 	while(w.isOpen())
@@ -150,42 +155,68 @@ int main()
 				using T = std::decay_t<decltype(content)>;
 
 				if constexpr (std::is_same_v<T, poc::Event::KeyEvent>) {
-					if (event.type == poc::EventType::KeyPressed || event.type == poc::EventType::KeyRepeat) {
-						float cameraSpeed = 3.0f * delta_time;
-						if (content.code == poc::Keyboard::Key::W)
-							camera.moveForward(cameraSpeed);
-						if (content.code == poc::Keyboard::Key::S)
-							camera.moveForward(-cameraSpeed);
-						if (content.code == poc::Keyboard::Key::A)
-							camera.moveRight(cameraSpeed);
-						if (content.code == poc::Keyboard::Key::D)
-							camera.moveRight(-cameraSpeed);
+					if (event.type == poc::EventType::KeyPressed) {
+						for(unsigned int i = 0; i < 4; ++i){
+							if (content.code == move_keys[i])
+								move_directions[i] = true;
+						}
 
 						if (content.code == poc::Keyboard::Key::Escape)
 							esc_pressed = true;
 					}
+
+					if(event.type == poc::EventType::KeyReleased) {
+						for(unsigned int i = 0; i < 4; ++i){
+							if (content.code == move_keys[i])
+								move_directions[i] = false;
+						}
+					}
+				}
+
+				if constexpr (std::is_same_v<T, poc::Event::MouseButtonEvent>) {
+					if(content.button == poc::Mouse::Button::Button1){
+						if(event.type == poc::EventType::MouseButtonPressed){
+							mouse_drag = true;
+						}
+						if(event.type == poc::EventType::MouseButtonReleased){
+							mouse_drag = false;
+							first_mouse_move = true;
+						}
+					}
 				}
 
 				if constexpr (std::is_same_v<T, poc::Event::MouseMoveEvent>) {
-					if(first_mouse_move)
-					{
+					if(mouse_drag){
+						if(first_mouse_move)
+						{
+							mouse_last_x = static_cast<float>(content.x);
+							mouse_last_y = static_cast<float>(content.y);
+							first_mouse_move = false;
+							return;
+						}
+
+						float xoffset = static_cast<float>(content.x) - mouse_last_x;
+						float yoffset = mouse_last_y - static_cast<float>(content.y); // reversed since y-coordinates range from bottom to top
 						mouse_last_x = static_cast<float>(content.x);
 						mouse_last_y = static_cast<float>(content.y);
-						first_mouse_move = false;
-						return;
+
+						float sensitivity = 0.005f;
+						camera.rotateHorizontally(sensitivity * (-xoffset));
+						camera.rotateVertically(-sensitivity * (-yoffset));
 					}
-
-					float xoffset = static_cast<float>(content.x) - mouse_last_x;
-					float yoffset = mouse_last_y - static_cast<float>(content.y); // reversed since y-coordinates range from bottom to top
-					mouse_last_x = static_cast<float>(content.x);
-					mouse_last_y = static_cast<float>(content.y);
-
-					float sensitivity = 0.005f;
-					camera.rotateHorizontally(sensitivity * xoffset);
-					camera.rotateVertically(-sensitivity * yoffset);
 				}
 			}, event.content);
 		}
+
+		float cameraSpeed = 3.0f * delta_time;
+		if (move_directions[0])
+			camera.moveForward(cameraSpeed);
+		if (move_directions[1])
+			camera.moveForward(-cameraSpeed);
+		if (move_directions[2])
+			camera.moveRight(cameraSpeed);
+		if (move_directions[3])
+			camera.moveRight(-cameraSpeed);
 
 		camera.setWidth(static_cast<float>(w.getWidth()));
 		camera.setHeight(static_cast<float>(w.getHeigth()));
