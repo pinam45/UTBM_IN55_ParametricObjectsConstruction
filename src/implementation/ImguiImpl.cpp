@@ -10,8 +10,12 @@
 #include "ImguiImpl.hpp"
 
 // GL3W/GLFW
-#include <GL/glew.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+// GLM
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #ifdef _WIN32
 #undef APIENTRY
@@ -23,20 +27,15 @@
 #include <cstddef>
 #include <bitset>
 
+#include <ShaderProgram.hpp>
+
 namespace {
 	GLFWwindow* s_window             = nullptr;
 	double s_time                    = 0.f;
 	std::bitset<3> s_mousePressed    = {0};
 	float s_mouseWheel               = 0.f;
 	GLuint s_fontTexture             = 0;
-	int s_shaderHandle               = 0;
-	int s_vertHandle                 = 0;
-	int s_fragHandle                 = 0;
-	int s_attribLocationTex          = 0;
-	int s_attribLocationProjMtx      = 0;
-	int s_attribLocationPosition     = 0;
-	int s_attribLocationUV           = 0;
-	int s_attribLocationColor        = 0;
+	poc::ShaderProgram s_shaderProgram;
 	unsigned int s_vboHandle         = 0;
 	unsigned int s_vaoHandle         = 0;
 	unsigned int s_elementsHandle    = 0;
@@ -135,19 +134,13 @@ void poc::ImguiImpl::render() {
 	// Setup viewport from imgui information.
 	glViewport(0, 0, framebufferWidth, framebufferHeight);
 
-	// Using orthogonal projection
-	const float ortho_projection[4][4] =
-			{
-					{2.0f / io.DisplaySize.x, 0.0f,                     0.0f,  0.0f},
-					{0.0f,                    2.0f / -io.DisplaySize.y, 0.0f,  0.0f},
-					{0.0f,                    0.0f,                     -1.0f, 0.0f},
-					{-1.0f,                   1.0f,                     0.0f,  1.0f},
-			};
+	glm::mat4x4 mat4x4 = glm::ortho(0.f, io.DisplaySize.x, io.DisplaySize.y, 0.f);
 
-	// Load imgui shader
-	glUseProgram(static_cast<GLuint>(s_shaderHandle));
-	glUniform1i(s_attribLocationTex, 0);
-	glUniformMatrix4fv(s_attribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+	// Load imgui program
+	s_shaderProgram.use();
+	s_shaderProgram.setUniform1("Texture", 0);
+	s_shaderProgram.setUniformMatrix4v("ProjMtx", 1, false, &mat4x4[0][0]);
+
 	glBindVertexArray(s_vaoHandle);
 
 	for (int n = 0; n < drawData->CmdListsCount; n++) {
@@ -268,51 +261,14 @@ bool poc::ImguiImpl::createDeviceObjects() {
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &lastArrayBuffer);
 	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &lastVertexArray);
 
-	// FIXME : Externalize
-	constexpr const GLchar* vertexShader =
-			"#version 330\n"
-			"uniform mat4 ProjMtx;\n"
-			"in vec2 Position;\n"
-			"in vec2 UV;\n"
-			"in vec4 Color;\n"
-			"out vec2 Frag_UV;\n"
-			"out vec4 Frag_Color;\n"
-			"void main()\n"
-			"{\n"
-			"	Frag_UV = UV;\n"
-			"	Frag_Color = Color;\n"
-			"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			"}\n";
+	Shader vertexShader = Shader::fromFile(GL_VERTEX_SHADER, "shaders/imgui/vertex.glsl");
+	Shader fragmentShader = Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/imgui/fragment.glsl");
 
-	// FIXME : Externalize
-	constexpr const GLchar* fragmentShader =
-			"#version 330\n"
-			"uniform sampler2D Texture;\n"
-			"in vec2 Frag_UV;\n"
-			"in vec4 Frag_Color;\n"
-			"out vec4 Out_Color;\n"
-			"void main()\n"
-			"{\n"
-			"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
-			"}\n";
+	s_shaderProgram.setShaders(vertexShader, fragmentShader);
 
-
-	s_shaderHandle = static_cast<GLint>(glCreateProgram());
-	s_vertHandle = static_cast<GLint>(glCreateShader(GL_VERTEX_SHADER));
-	s_fragHandle = static_cast<GLint>(glCreateShader(GL_FRAGMENT_SHADER));
-	glShaderSource(static_cast<GLuint>(s_vertHandle), 1, &vertexShader, nullptr);
-	glShaderSource(static_cast<GLuint>(s_fragHandle), 1, &fragmentShader, nullptr);
-	glCompileShader(static_cast<GLuint>(s_vertHandle));
-	glCompileShader(static_cast<GLuint>(s_fragHandle));
-	glAttachShader(static_cast<GLuint>(s_shaderHandle), static_cast<GLuint>(s_vertHandle));
-	glAttachShader(static_cast<GLuint>(s_shaderHandle), static_cast<GLuint>(s_fragHandle));
-	glLinkProgram(static_cast<GLuint>(s_shaderHandle));
-
-	s_attribLocationTex = glGetUniformLocation(static_cast<GLuint>(s_shaderHandle), "Texture");
-	s_attribLocationProjMtx = glGetUniformLocation(static_cast<GLuint>(s_shaderHandle), "ProjMtx");
-	s_attribLocationPosition = glGetAttribLocation(static_cast<GLuint>(s_shaderHandle), "Position");
-	s_attribLocationUV = glGetAttribLocation(static_cast<GLuint>(s_shaderHandle), "UV");
-	s_attribLocationColor = glGetAttribLocation(static_cast<GLuint>(s_shaderHandle), "Color");
+	int positionAttributeLocation = s_shaderProgram.getAttributeLocation("Position");
+	int uvAttributeLocation = s_shaderProgram.getAttributeLocation("UV");
+	int colorAttribute = s_shaderProgram.getAttributeLocation("Color");
 
 	glGenBuffers(1, &s_vboHandle);
 	glGenBuffers(1, &s_elementsHandle);
@@ -320,15 +276,15 @@ bool poc::ImguiImpl::createDeviceObjects() {
 	glGenVertexArrays(1, &s_vaoHandle);
 	glBindVertexArray(s_vaoHandle);
 	glBindBuffer(GL_ARRAY_BUFFER, s_vboHandle);
-	glEnableVertexAttribArray(static_cast<GLuint>(s_attribLocationPosition));
-	glEnableVertexAttribArray(static_cast<GLuint>(s_attribLocationUV));
-	glEnableVertexAttribArray(static_cast<GLuint>(s_attribLocationColor));
+	glEnableVertexAttribArray(static_cast<GLuint>(positionAttributeLocation));
+	glEnableVertexAttribArray(static_cast<GLuint>(uvAttributeLocation));
+	glEnableVertexAttribArray(static_cast<GLuint>(colorAttribute));
 
-	glVertexAttribPointer(static_cast<GLuint>(s_attribLocationPosition), 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+	glVertexAttribPointer(static_cast<GLuint>(positionAttributeLocation), 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
 	                      reinterpret_cast<void*>(offsetof(ImDrawVert, pos)));
-	glVertexAttribPointer(static_cast<GLuint>(s_attribLocationUV), 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+	glVertexAttribPointer(static_cast<GLuint>(uvAttributeLocation), 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
 	                      reinterpret_cast<void*>(offsetof(ImDrawVert, uv)));
-	glVertexAttribPointer(static_cast<GLuint>(s_attribLocationColor), 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
+	glVertexAttribPointer(static_cast<GLuint>(colorAttribute), 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
 	                      reinterpret_cast<void*>(offsetof(ImDrawVert, col)));
 
 	createFontsTexture();
@@ -342,12 +298,21 @@ bool poc::ImguiImpl::createDeviceObjects() {
 }
 
 void poc::ImguiImpl::invalidateDeviceObjects() {
-	if (s_vaoHandle) glDeleteVertexArrays(1, &s_vaoHandle);
-	if (s_vboHandle) glDeleteBuffers(1, &s_vboHandle);
-	if (s_elementsHandle) glDeleteBuffers(1, &s_elementsHandle);
+	if (s_vaoHandle) {
+		glDeleteVertexArrays(1, &s_vaoHandle);
+	}
+
+	if (s_vboHandle) {
+		glDeleteBuffers(1, &s_vboHandle);
+	}
+
+	if (s_elementsHandle) {
+		glDeleteBuffers(1, &s_elementsHandle);
+	}
+
 	s_vaoHandle = s_vboHandle = s_elementsHandle = 0;
 
-	if (s_shaderHandle && s_vertHandle) {
+	/*if (s_shaderHandle && s_vertHandle) {
 		glDetachShader(static_cast<GLuint>(s_shaderHandle), static_cast<GLuint>(s_vertHandle));
 	}
 
@@ -368,7 +333,7 @@ void poc::ImguiImpl::invalidateDeviceObjects() {
 	if (s_shaderHandle) {
 		glDeleteProgram(static_cast<GLuint>(s_shaderHandle));
 		s_shaderHandle = 0;
-	}
+	}*/
 
 	if (s_fontTexture) {
 		glDeleteTextures(1, &s_fontTexture);
