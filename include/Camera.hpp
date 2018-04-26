@@ -11,17 +11,19 @@ public:
 
 	Camera(float FOV, float width, float height, float near, float far);
 
+	virtual ~Camera() = default;
+
 	void setFOV(float FOV);
 	void setWidth(float width);
 	void setHeight(float height);
 	void setNear(float near);
 	void setFar(float far);
 
-	void setPosition(glm::vec3 position);
-	void move(glm::vec3 offset);
-	void moveForward(float offset);
-	void moveUp(float offset);
-	void moveRight(float offset);
+	virtual void setPosition(glm::vec3 position);
+	virtual void move(glm::vec3 offset);
+	virtual void moveForward(float offset);
+	virtual void moveUp(float offset);
+	virtual void moveRight(float offset);
 
 	void setDirection(glm::quat direction);
 	void rotate(glm::quat rotation);
@@ -43,7 +45,7 @@ public:
 
 	glm::vec3 getUpVector() const;
 
-private:
+protected:
 
 	void updateDirectionsVectors();
 
