@@ -18,6 +18,15 @@
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 
+void check_error() {
+    GLenum  err;
+    err =  glGetError();
+    if (err != GL_NO_ERROR) {
+        std::cout << err << std::endl;
+        std::abort();
+    }
+}
+
 //#pragma clang diagnostic push
 //#pragma ide diagnostic ignored "OCSimplifyInspection"
 //#pragma ide diagnostic ignored "OCDFAInspection"
