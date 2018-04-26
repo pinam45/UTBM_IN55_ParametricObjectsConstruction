@@ -155,13 +155,13 @@ void poc::Window::display() {
 	}
 }
 
-int poc::Window::getWidth() {
+int poc::Window::getWidth() const {
 	int width, height;
 	glfwGetWindowSize(m_window, &width, &height);
 	return width;
 }
 
-int poc::Window::getHeigth() {
+int poc::Window::getHeigth() const {
 	int width, height;
 	glfwGetWindowSize(m_window, &width, &height);
 	return height;
@@ -169,6 +169,14 @@ int poc::Window::getHeigth() {
 
 void poc::Window::setInputMode(int mode, int value){
 	glfwSetInputMode(m_window, mode, value);
+}
+
+bool poc::Window::isPressed(Keyboard::Key key) const {
+    glfwGetKey(m_window, static_cast<int>(key));
+}
+
+bool poc::Window::isPressed(Mouse::Button button) const {
+    glfwGetMouseButton(m_window, static_cast<int>(button));
 }
 
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {

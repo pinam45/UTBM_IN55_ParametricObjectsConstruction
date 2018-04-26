@@ -39,11 +39,15 @@ namespace poc {
 
 		void display();
 
-		int getWidth();
+		int getWidth() const;
 
-		int getHeigth();
+		int getHeigth() const;
 
 		void setInputMode(int mode, int value);
+
+		bool isPressed(Keyboard::Key key) const;
+
+		bool isPressed(Mouse::Button button) const;
 
 	private:
 		GLFWwindow* m_window;
