@@ -7,6 +7,6 @@ poc::ContextSettings::ContextSettings(int depthBits_, int stencilBits_, int anti
 	, antialiasingLevel{antialiasingLevel_}
 	, major{major_}
 	, minor{minor_}
-	, mode{mode_}
+	, mode(mode_)
 {
 }

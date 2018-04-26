@@ -18,6 +18,8 @@
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 
+void check_error();
+
 void check_error() {
     GLenum  err;
     err =  glGetError();

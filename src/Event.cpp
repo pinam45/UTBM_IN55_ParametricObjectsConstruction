@@ -5,7 +5,7 @@ poc::Event::KeyEvent::KeyEvent(Keyboard::Key code_, bool alt_, bool control_, bo
 		, alt{alt_}
 		, control{control_}
 		, shift{shift_}
-		, system{system_} {
+		, system(system_) {
 
 }
 
