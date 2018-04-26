@@ -5,92 +5,124 @@
 #include <GL/glew.h>
 #include <Shader.hpp>
 
-template<typename>
-struct dependent_false: public std::false_type{ };
+namespace poc {
+	template <typename>
+	struct dependent_false : public std::false_type {
+	};
 
-class ShaderProgram {
+	class ShaderProgram {
+	public:
+		ShaderProgram() noexcept;
 
-public:
-	template<typename... T>
-	explicit ShaderProgram(const T&... shaders);
+		template <typename... Shaders>
+		explicit ShaderProgram(Shaders&& ... shaders);
 
-	virtual ~ShaderProgram();
+		ShaderProgram(const ShaderProgram&) = delete;
 
-	// Program need to be in use to set uniforms
-	template<typename T>
-	bool setUniform1(const char* name, T v0) const;
+		ShaderProgram(ShaderProgram&&) noexcept;
 
-	template<typename T>
-	bool setUniform2(const char* name, T v0, T v1) const;
+		virtual ~ShaderProgram();
 
-	template<typename T>
-	bool setUniform3(const char* name, T v0, T v1, T v2) const;
+		template <typename... Shaders>
+		void setShaders(Shaders&& ... shaders);
 
-	template<typename T>
-	bool setUniform4(const char* name, T v0, T v1, T v2, T v3) const;
+		// Program need to be in use to set uniforms
+		template <typename T>
+		bool setUniform1(const char* name, T v0) const;
 
-	template<typename T>
-	bool setUniform1v(const char* name, int count, const T* value) const;
+		template <typename T>
+		bool setUniform2(const char* name, T v0, T v1) const;
 
-	template<typename T>
-	bool setUniform2v(const char* name, int count, const T* value) const;
+		template <typename T>
+		bool setUniform3(const char* name, T v0, T v1, T v2) const;
 
-	template<typename T>
-	bool setUniform3v(const char* name, int count, const T* value) const;
+		template <typename T>
+		bool setUniform4(const char* name, T v0, T v1, T v2, T v3) const;
 
-	template<typename T>
-	bool setUniform4v(const char* name, int count, const T* value) const;
+		template <typename T>
+		bool setUniform1v(const char* name, int count, const T* value) const;
 
-	bool setUniformMatrix2v(const char* name, int count, bool transpose, const float* value) const;
+		template <typename T>
+		bool setUniform2v(const char* name, int count, const T* value) const;
 
-	bool setUniformMatrix3v(const char* name, int count, bool transpose, const float* value) const;
+		template <typename T>
+		bool setUniform3v(const char* name, int count, const T* value) const;
 
-	bool setUniformMatrix4v(const char* name, int count, bool transpose, const float* value) const;
+		template <typename T>
+		bool setUniform4v(const char* name, int count, const T* value) const;
 
-	bool setUniformMatrix2x3v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix2v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool setUniformMatrix3x2v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix3v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool setUniformMatrix2x4v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix4v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool setUniformMatrix4x2v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix2x3v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool setUniformMatrix3x4v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix3x2v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool setUniformMatrix4x3v(const char* name, int count, bool transpose, const float* value) const;
+		bool setUniformMatrix2x4v(const char* name, int count, bool transpose, const float* value) const;
 
-	void use() const;
+		bool setUniformMatrix4x2v(const char* name, int count, bool transpose, const float* value) const;
 
-	bool isValid() const;
+		bool setUniformMatrix3x4v(const char* name, int count, bool transpose, const float* value) const;
 
-	unsigned int getProgram() const;
+		bool setUniformMatrix4x3v(const char* name, int count, bool transpose, const float* value) const;
 
-	const std::string& getError() const;
+		int getAttributeLocation(const char* name) const;
 
-private:
+		void use() const;
 
-	bool m_valid;
-	unsigned int m_program;
+		bool isValid() const;
 
-	std::string m_error;
-};
+		unsigned int getProgram() const;
 
-template<typename... T>
-ShaderProgram::ShaderProgram(const T&... shaders)
-  : m_valid(true)
-    , m_program()
-    , m_error(){
+		const std::string& getError() const;
 
-	static_assert((std::is_same<T, Shader>::value && ...));
+	private:
+
+		bool m_valid;
+		unsigned int m_program;
+
+		std::string m_error;
+	};
+}
+
+template<typename... Shaders>
+poc::ShaderProgram::ShaderProgram(Shaders&&... shaders)
+        : m_valid(true)
+        , m_program()
+        , m_error() {
+
+	setShaders(std::forward<Shaders>(shaders)...);
+}
+
+
+template <typename... Shaders>
+void poc::ShaderProgram::setShaders(Shaders&& ... shaders) {
+	static_assert((std::is_same_v<std::decay_t<Shaders>, Shader> && ...));
+
+	if (m_program != 0) {
+		glDeleteProgram(m_program);
+	}
 
 	m_program = glCreateProgram();
+	if (m_program == 0) {
+		m_valid = false;
+		m_error = "Shader program creation failed:\n";
+
+		char infoLog[512];
+		glGetShaderInfoLog(m_program, 512, nullptr, infoLog);
+		m_error += infoLog;
+	}
 
 	(glAttachShader(m_program, shaders.getShader()), ...);
 	glLinkProgram(m_program);
 
 	int success;
 	glGetProgramiv(m_program, GL_LINK_STATUS, &success);
-	if(!success) {
+
+	if (!success) {
 		char infoLog[512];
 		glGetShaderInfoLog(m_program, 512, nullptr, infoLog);
 		m_valid = false;
@@ -100,7 +132,7 @@ ShaderProgram::ShaderProgram(const T&... shaders)
 }
 
 template<typename T>
-bool ShaderProgram::setUniform1(const char* name, T v0) const {
+bool poc::ShaderProgram::setUniform1(const char* name, T v0) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -121,7 +153,7 @@ bool ShaderProgram::setUniform1(const char* name, T v0) const {
 }
 
 template<typename T>
-bool ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
+bool poc::ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -142,7 +174,7 @@ bool ShaderProgram::setUniform2(const char* name, T v0, T v1) const {
 }
 
 template<typename T>
-bool ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
+bool poc::ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -163,7 +195,7 @@ bool ShaderProgram::setUniform3(const char* name, T v0, T v1, T v2) const {
 }
 
 template<typename T>
-bool ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const {
+bool poc::ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -184,7 +216,7 @@ bool ShaderProgram::setUniform4(const char* name, T v0, T v1, T v2, T v3) const 
 }
 
 template<typename T>
-bool ShaderProgram::setUniform1v(const char* name, int count, const T* value) const {
+bool poc::ShaderProgram::setUniform1v(const char* name, int count, const T* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -205,7 +237,7 @@ bool ShaderProgram::setUniform1v(const char* name, int count, const T* value) co
 }
 
 template<typename T>
-bool ShaderProgram::setUniform2v(const char* name, int count, const T* value) const {
+bool poc::ShaderProgram::setUniform2v(const char* name, int count, const T* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -226,7 +258,7 @@ bool ShaderProgram::setUniform2v(const char* name, int count, const T* value) co
 }
 
 template<typename T>
-bool ShaderProgram::setUniform3v(const char* name, int count, const T* value) const {
+bool poc::ShaderProgram::setUniform3v(const char* name, int count, const T* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -247,7 +279,7 @@ bool ShaderProgram::setUniform3v(const char* name, int count, const T* value) co
 }
 
 template<typename T>
-bool ShaderProgram::setUniform4v(const char* name, int count, const T* value) const {
+bool poc::ShaderProgram::setUniform4v(const char* name, int count, const T* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;

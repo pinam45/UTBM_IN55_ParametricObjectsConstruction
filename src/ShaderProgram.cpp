@@ -1,28 +1,29 @@
 #include <ShaderProgram.hpp>
 
 #include <GL/glew.h>
+#include <utility>
 
-ShaderProgram::~ShaderProgram() {
-	glDeleteProgram(m_program);
+poc::ShaderProgram::ShaderProgram() noexcept
+		: m_valid{false}
+		, m_program{}
+		, m_error("Shader program unitialized") {
+
 }
 
-void ShaderProgram::use() const {
-	glUseProgram(m_program);
+poc::ShaderProgram::~ShaderProgram() {
+	if (isValid()) {
+		glDeleteProgram(m_program);
+	}
 }
 
-bool ShaderProgram::isValid() const {
-	return m_valid;
+poc::ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+		: m_valid(std::exchange(other.m_valid, false))
+		, m_program(std::exchange(other.m_program, 0))
+		, m_error(std::exchange(other.m_error, "Shader program moved")) {
+
 }
 
-unsigned int ShaderProgram::getProgram() const {
-	return m_program;
-}
-
-const std::string& ShaderProgram::getError() const {
-	return m_error;
-}
-
-bool ShaderProgram::setUniformMatrix2v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix2v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -31,7 +32,7 @@ bool ShaderProgram::setUniformMatrix2v(const char* name, int count, bool transpo
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix3v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix3v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -40,7 +41,7 @@ bool ShaderProgram::setUniformMatrix3v(const char* name, int count, bool transpo
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix4v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix4v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -49,7 +50,7 @@ bool ShaderProgram::setUniformMatrix4v(const char* name, int count, bool transpo
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix2x3v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix2x3v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -58,7 +59,7 @@ bool ShaderProgram::setUniformMatrix2x3v(const char* name, int count, bool trans
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix3x2v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix3x2v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -67,7 +68,7 @@ bool ShaderProgram::setUniformMatrix3x2v(const char* name, int count, bool trans
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix2x4v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix2x4v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -76,7 +77,7 @@ bool ShaderProgram::setUniformMatrix2x4v(const char* name, int count, bool trans
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix4x2v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix4x2v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -85,7 +86,7 @@ bool ShaderProgram::setUniformMatrix4x2v(const char* name, int count, bool trans
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix3x4v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix3x4v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
@@ -94,11 +95,31 @@ bool ShaderProgram::setUniformMatrix3x4v(const char* name, int count, bool trans
 	return true;
 }
 
-bool ShaderProgram::setUniformMatrix4x3v(const char* name, int count, bool transpose, const float* value) const {
+bool poc::ShaderProgram::setUniformMatrix4x3v(const char* name, int count, bool transpose, const float* value) const {
 	int uniformLocation = glGetUniformLocation(m_program, name);
 	if(uniformLocation == -1)
 		return false;
 
 	glUniformMatrix4x3fv(uniformLocation, count, static_cast<GLboolean>(transpose), value);
 	return true;
+}
+
+void poc::ShaderProgram::use() const {
+	glUseProgram(m_program);
+}
+
+bool poc::ShaderProgram::isValid() const {
+	return m_valid;
+}
+
+unsigned int poc::ShaderProgram::getProgram() const {
+	return m_program;
+}
+
+const std::string& poc::ShaderProgram::getError() const {
+	return m_error;
+}
+
+int poc::ShaderProgram::getAttributeLocation(const char* name) const {
+	return glGetAttribLocation(m_program, name);
 }

@@ -98,19 +98,19 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	Shader vshader = Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
+	poc::Shader vshader = poc::Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
 	if(!vshader.isValid()){
 		std::cout << "Vertex shader error:\n" << vshader.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	Shader fshader = Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
+	poc::Shader fshader = poc::Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
 	if(!fshader.isValid()){
 		std::cout << "Fragment shader error:\n" << fshader.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	ShaderProgram program(vshader, fshader);
+	poc::ShaderProgram program(vshader, fshader);
 	if(!program.isValid()){
 		std::cout << "Shader program error:\n" << program.getError() << std::endl;
 		return EXIT_FAILURE;

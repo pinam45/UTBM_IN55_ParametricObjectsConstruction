@@ -4,38 +4,42 @@
 
 #include <string>
 
-class Shader {
+namespace poc {
+	class Shader {
+	public:
+		static Shader fromString(unsigned int type, const std::string& text);
 
-public:
-	static Shader fromString(unsigned int type, const std::string& text);
+		static Shader fromString(unsigned int type, const char* text);
 
-	static Shader fromString(unsigned int type, const char* text);
+		static Shader fromFile(unsigned int type, const std::string& path);
 
-	static Shader fromFile(unsigned int type, const std::string& path);
+		static Shader fromFile(unsigned int type, const char* path);
 
-	static Shader fromFile(unsigned int type, const char* path);
+		Shader(const Shader&) = delete;
 
-	virtual ~Shader();
+		Shader(Shader&& other) noexcept;
 
-	bool isValid() const;
+		virtual ~Shader();
 
-	unsigned int getType() const;
+		bool isValid() const;
 
-	unsigned int getShader() const;
+		unsigned int getType() const;
 
-	const std::string& getError() const;
+		unsigned int getShader() const;
 
-private:
-	explicit Shader(unsigned int type);
+		const std::string& getError() const;
 
-	void loadShader(const char* text);
+	private:
+		explicit Shader(unsigned int type);
 
-	bool m_valid;
-	unsigned int m_type;
-	unsigned int m_shader;
+		void loadShader(const char* text);
 
-	std::string m_error;
-};
+		bool m_valid;
+		unsigned int m_type;
+		unsigned int m_shader;
 
+		std::string m_error;
+	};
+}
 
 #endif //PARAMETRICOBJECTSCONSTRUCTION_SHADER_HPP
