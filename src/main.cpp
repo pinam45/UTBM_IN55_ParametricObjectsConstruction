@@ -17,11 +17,12 @@
 #include <imgui.h>
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <SphericalCamera.hpp>
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 
-constexpr float MOUSE_MOVE_SENSITIVITY = 0.001f;
+constexpr float MOUSE_MOVE_SENSITIVITY = 0.007f;
 constexpr float MOUSE_SCROLL_SENSITIVITY = 0.5f;
 
 void check_error();
@@ -134,10 +135,8 @@ int main()
 	}
 	program.use();
 
-	Camera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f);
-	camera.setPosition({0,0,-3});
 	const glm::vec3 camera_focus(0, 0, 0);
-	camera.lookAt(camera_focus);
+	SphericalCamera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f, camera_focus, {0,0,-3});
 	camera.update();
 
 	bool first_mouse_move = true;
@@ -190,10 +189,8 @@ int main()
 						mouse_last_x = static_cast<float>(content.x);
 						mouse_last_y = static_cast<float>(content.y);
 
-						const float modifier = MOUSE_MOVE_SENSITIVITY * 2.0f * static_cast<float>(M_PI) * glm::length(camera_focus - camera.getPosition());
-						camera.moveRight(modifier * xoffset);
-						camera.moveUp(-modifier * yoffset);
-						camera.lookAt(camera_focus);
+						camera.moveRight(-MOUSE_MOVE_SENSITIVITY * xoffset);
+						camera.moveUp(-MOUSE_MOVE_SENSITIVITY * yoffset);
 					}
 				}
 
