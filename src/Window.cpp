@@ -172,11 +172,11 @@ void poc::Window::setInputMode(int mode, int value){
 }
 
 bool poc::Window::isPressed(Keyboard::Key key) const {
-    glfwGetKey(m_window, static_cast<int>(key));
+    return glfwGetKey(m_window, static_cast<int>(key)) == GLFW_PRESS;
 }
 
 bool poc::Window::isPressed(Mouse::Button button) const {
-    glfwGetMouseButton(m_window, static_cast<int>(button));
+    return glfwGetMouseButton(m_window, static_cast<int>(button)) == GLFW_PRESS;
 }
 
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {
