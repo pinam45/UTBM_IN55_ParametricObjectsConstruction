@@ -5,6 +5,15 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <VideoMode.hpp>
+#include <GlfwInitializer.hpp>
+#include <Window.hpp>
+#include <Event.hpp>
+#include <Shader.hpp>
+#include <ShaderProgram.hpp>
+#include <Camera.hpp>
+#include <ParametricObject.hpp>
+
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -54,7 +63,20 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	float vertices[] = {
+	std::vector<float> radiusBetweenCenter = {0.5f, 1.5f, 0.0f};
+	std::vector<unsigned int> nb_point_layout = {5,5,1};
+	std::vector<float> distances_between_layout = {0.5f, 2};
+	std::vector<float> rotation = {0.0f, 0.0f, 0.0f};
+    /*std::vector<float> radiusBetweenCenter = {1.0f,1.0f};
+    std::vector<unsigned int> nb_point_layout = {4,4};
+    std::vector<float> distances_between_layout = {1.0f};
+    std::vector<float> rotation = {0.0f, 0.0f};*/
+	ParametricObject parametricObject = ParametricObject(radiusBetweenCenter, nb_point_layout, distances_between_layout, rotation);
+
+    float* vertices = parametricObject.computeVertices();
+    unsigned int* indices = parametricObject.computeIndexes();
+
+	/*float vertices[] = {
 	  -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
 	  0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
 	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
@@ -96,17 +118,23 @@ int main()
 	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
 	  -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
 	  -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-	};
+	};*/
 
 	unsigned int VAO = 0; // Vertex Array Object
 	unsigned int VBO = 0; // Vertex Buffer Object
+    unsigned int EBO;
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, parametricObject.getNbPoint()*6*sizeof(float), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, parametricObject.getNbIndexes() * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
 	glEnableVertexAttribArray(0);
@@ -114,7 +142,7 @@ int main()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	poc::Shader vshader = poc::Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
@@ -214,7 +242,12 @@ int main()
 
 		program.use();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		glEnable(GL_PROGRAM_POINT_SIZE);
+        //glDisable(GL_CULL_FACE);
+
+		glDrawElements(GL_TRIANGLES, parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		//ImGui::ShowDemoWindow(&open);
