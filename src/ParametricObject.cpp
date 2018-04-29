@@ -52,14 +52,15 @@ ParametricObject::ParametricObject(const ParametricObject &parametricObject):
         , m_heigth_progressiv(parametricObject.m_heigth_progressiv)
         , m_cumulativ_nb_point(parametricObject.m_cumulativ_nb_point){}
 
+//Compute vertices
 float* ParametricObject::computeVertices() {
     if(m_is_changed){
         for(unsigned int i = 0; i < m_nb_point_layout.size(); ++i){
             computeVerticesForOneLayout(i);
         }
     }
-    std::copy(m_vertices_object.begin(), m_vertices_object.end(), std::ostream_iterator<float>(std::cout, "\n"));
-    std::cout << std::endl;
+    //std::copy(m_vertices_object.begin(), m_vertices_object.end(), std::ostream_iterator<float>(std::cout, "\n"));
+    //std::cout << std::endl;
     return m_vertices_object.data();
 }
 
@@ -96,6 +97,7 @@ void ParametricObject::computeVerticesForOneLayout(const unsigned int index) {
     }
 }
 
+//Compute indices
 unsigned int* ParametricObject::computeIndexes(){
     for(unsigned int i = 0; i < m_nb_layout; ++i){
         bool is_computed = computeIndexesForLayer(i);
@@ -117,15 +119,13 @@ unsigned int* ParametricObject::computeIndexes(){
                 m_index_object.push_back(index_before_layer);
                 m_index_object.push_back(m_cumulativ_nb_point[i]);
             }
+        } else {
+            linksLayer(i);
         }
     }
-    std::copy(m_index_object.begin(), m_index_object.end(), std::ostream_iterator<float>(std::cout, "\n"));
-    std::cout << std::endl;
+    //std::copy(m_index_object.begin(), m_index_object.end(), std::ostream_iterator<unsigned int>(std::cout, "\n"));
+    //std::cout << std::endl;
     return m_index_object.data();
-}
-
-unsigned int ParametricObject::getNbPoint() {
-    return static_cast<unsigned int>(m_vertices_object.size()/m_float_vertex);
 }
 
 bool ParametricObject::computeIndexesForLayer(unsigned int index) {
@@ -151,11 +151,51 @@ bool ParametricObject::computeIndexesForLayer(unsigned int index) {
                 m_index_object.push_back(i+2);
                 m_index_object.push_back(j);
             }
+        } else {
+            for(int i = end - 4; i > j; i -= 2){
+                m_index_object.push_back(i);
+                m_index_object.push_back(i+2);
+                m_index_object.push_back(j);
+            }
         }
         return true;
     }
 }
 
+void ParametricObject::linksLayer(unsigned int index){
+    if(index == 0)
+        return;
+
+    unsigned int nb_point_layer_actual = m_nb_point_layout[index];
+    unsigned int nb_point_layer_before = m_nb_point_layout[index-1];
+
+    unsigned int index_first_layer = m_cumulativ_nb_point[index-1];
+    unsigned int index_layer = m_cumulativ_nb_point[index];
+
+    if(nb_point_layer_actual == nb_point_layer_before){
+        for (unsigned int i = index_first_layer; i < index_first_layer + nb_point_layer_before; ++i){
+            m_index_object.push_back(i);
+            m_index_object.push_back(i+nb_point_layer_before);
+            m_index_object.push_back((i+nb_point_layer_before+1)%nb_point_layer_before + index_layer);
+        }
+        for (unsigned int i = index_layer; i < index_layer + nb_point_layer_actual; ++i){
+            m_index_object.push_back(i - nb_point_layer_actual);
+            m_index_object.push_back(i);
+            //m_index_object.push_back(index_layer - 1);
+            if(static_cast<int>(i - nb_point_layer_actual - 1) < static_cast<int>(index_first_layer)){
+                m_index_object.push_back(index_layer - 1);
+            } else {
+                m_index_object.push_back(i - nb_point_layer_actual - 1);
+            }
+        }
+    }
+}
+
+//Getter
 unsigned long long int ParametricObject::getNbIndexes() {
     return m_index_object.size();
+}
+
+unsigned int ParametricObject::getNbPoint() {
+    return static_cast<unsigned int>(m_vertices_object.size()/m_float_vertex);
 }

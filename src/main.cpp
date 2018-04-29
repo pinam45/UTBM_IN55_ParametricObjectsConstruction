@@ -63,10 +63,10 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	std::vector<float> radiusBetweenCenter = {0.5f, 1.5f, 0.0f};
-	std::vector<unsigned int> nb_point_layout = {5,5,1};
-	std::vector<float> distances_between_layout = {0.5f, 2};
-	std::vector<float> rotation = {0.0f, 0.0f, 0.0f};
+	std::vector<float> radiusBetweenCenter = {1.5f, 1.5f, 0.3f, 2.0f};
+	std::vector<unsigned int> nb_point_layout = {8,8,8,8};
+	std::vector<float> distances_between_layout = {2.5f, 2, 1};
+	std::vector<float> rotation = {0.0f, 0.0f, 0.0f, 0.0f};
     /*std::vector<float> radiusBetweenCenter = {1.0f,1.0f};
     std::vector<unsigned int> nb_point_layout = {4,4};
     std::vector<float> distances_between_layout = {1.0f};
@@ -245,7 +245,7 @@ int main()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 		glEnable(GL_PROGRAM_POINT_SIZE);
-        //glDisable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
 
 		glDrawElements(GL_TRIANGLES, parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
