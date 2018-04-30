@@ -8,18 +8,34 @@
 
 #include <vector>
 
+struct LayerConfig{
+    unsigned int nbPoint;
+    float radiusFromCenter;
+    float distances_with_layer;
+    float rotation;
+
+    LayerConfig(unsigned int nbPoint, float radiusFromCenter, float distances_with_layer, float rotation) noexcept;
+};
+
 class ParametricObject {
 public:
 
     ParametricObject() = delete;
-    ParametricObject(std::vector<float> radius_from_center
-            , std::vector<unsigned int> nb_point_layout, std::vector<float> distances_between_layout, std::vector<float> rotation_layout);
-    ParametricObject(const ParametricObject& parametricObject);
+    ParametricObject(const ParametricObject& parametricObject) = default;
+
+    explicit ParametricObject(const std::vector<LayerConfig>& layerConfigs);
+    ParametricObject(ParametricObject&&) noexcept = default;
+
+    void configure(const std::vector<LayerConfig>& layerConfigs);
+
+    const std::vector<float>& get_vertices() const;
+
+    const std::vector<unsigned int>& get_indexes() const;
 
     float* computeVertices();
     unsigned int* computeIndexes();
-    unsigned int getNbPoint();
-    unsigned long long int getNbIndexes();
+    unsigned int getNbPoint() const noexcept;
+    unsigned long long int getNbIndexes() const noexcept;
 
 private:
 
@@ -27,10 +43,7 @@ private:
     bool m_is_changed;
 
     //attributes for the creation of the parametric object
-    std::vector<float> m_radius_from_center;
-    std::vector<unsigned int> m_nb_point_layout;
-    std::vector<float> m_distances_between_layout;
-    std::vector<float> m_rotation_layout;
+    std::vector<LayerConfig> m_configs;
 
     //attributes compute by the object
     unsigned long long int m_nb_layout;
