@@ -2,9 +2,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-constexpr glm::vec3 DEFAULT_FORWARD(0, 0, 1);
-constexpr glm::vec3 DEFAULT_RIGHT(1, 0, 0);
-constexpr glm::vec3 DEFAULT_UP(0, 1, 0);
+constexpr glm::quat DEFAULT_DIRECTION(1.0f, 0.0f, 0.0f, 0.0f);
+constexpr glm::vec3 DEFAULT_FORWARD(0.0f, 0.0f, 1.0f);
+constexpr glm::vec3 DEFAULT_RIGHT(1.0f, 0.0f, 0.0f);
+constexpr glm::vec3 DEFAULT_UP(0.0f, 1.0f, 0.0f);
 
 Camera::Camera(float FOV, float width, float height, float near, float far)
   : m_FOV(FOV)
@@ -13,10 +14,10 @@ Camera::Camera(float FOV, float width, float height, float near, float far)
     , m_near(near)
     , m_far(far)
     , m_position()
-    , m_direction(1.0f, 0.0f, 0.0f, 0.0f)
-    , m_forward(0, 0, 1)
-    , m_right(1, 0, 0)
-    , m_up(0, 1, 0)
+    , m_direction(DEFAULT_DIRECTION)
+    , m_forward(DEFAULT_FORWARD)
+    , m_right(DEFAULT_RIGHT)
+    , m_up(DEFAULT_UP)
     , m_update_view(true)
     , m_update_projection(true)
     , m_view_matrix()
@@ -95,7 +96,7 @@ void Camera::lookAt(glm::vec3 position) {
 
 	// Same direction
 	if(std::abs(dot - 1.0f) < 0.000001f) {
-		setDirection({1.0f, 0.0f, 0.0f, 0.0f});
+		setDirection(DEFAULT_DIRECTION);
 		return;
 	}
 
