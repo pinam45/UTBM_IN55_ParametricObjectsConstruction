@@ -1,19 +1,9 @@
-// ImGui GLFW binding with OpenGL3 + shaders
-// In this binding, ImTextureID is used to store an OpenGL 'GLuint' texture identifier. Read the FAQ about ImTextureID in imgui.cpp.
-
-// You can copy and use unmodified imgui_impl_* files in your project. See main.cpp for an example of using this.
-// If you use this binding you'll need to call 4 functions: ImGui_ImplXXXX_Init(), ImGui_ImplXXXX_NewFrame(), ImGui::Render() and ImGui_ImplXXXX_Shutdown().
-// If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
-// https://github.com/ocornut/imgui
-
 #include <imgui.h>
 #include "ImguiImpl.hpp"
 
-// GL3W/GLFW
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-// GLM
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -199,6 +189,14 @@ void poc::ImguiImpl::setClipboardText(void* window, const char* str) {
 	glfwSetClipboardString(static_cast<GLFWwindow*>(window), str);
 }
 
+bool poc::ImguiImpl::isWindowHovered() {
+    return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+}
+
+bool poc::ImguiImpl::isWindowFocused() {
+    return ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow);
+}
+
 void poc::ImguiImpl::onMouseButton(int button, int action, int /*mods*/) {
 	if (action == GLFW_PRESS && button >= 0 && button < 3)
 		s_mousePressed[static_cast<std::size_t>(button)] = true;
@@ -311,29 +309,6 @@ void poc::ImguiImpl::invalidateDeviceObjects() {
 	}
 
 	s_vaoHandle = s_vboHandle = s_elementsHandle = 0;
-
-	/*if (s_shaderHandle && s_vertHandle) {
-		glDetachShader(static_cast<GLuint>(s_shaderHandle), static_cast<GLuint>(s_vertHandle));
-	}
-
-	if (s_vertHandle) {
-		glDeleteShader(static_cast<GLuint>(s_vertHandle));
-		s_vertHandle = 0;
-	}
-
-	if (s_shaderHandle && s_fragHandle) {
-		glDetachShader(static_cast<GLuint>(s_shaderHandle), static_cast<GLuint>(s_fragHandle));
-	}
-
-	if (s_fragHandle) {
-		glDeleteShader(static_cast<GLuint>(s_fragHandle));
-		s_fragHandle = 0;
-	}
-
-	if (s_shaderHandle) {
-		glDeleteProgram(static_cast<GLuint>(s_shaderHandle));
-		s_shaderHandle = 0;
-	}*/
 
 	if (s_fontTexture) {
 		glDeleteTextures(1, &s_fontTexture);

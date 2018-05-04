@@ -8,6 +8,9 @@ namespace poc {
 		static void newFrame();
 		static void render();
 
+		static bool isWindowHovered();
+		static bool isWindowFocused();
+
 		static void onMouseButton(int button, int action, int mods);
 		static void onScroll(double xoffset, double yoffset);
 		static void onKey(int key, int scancode, int action, int mods);

@@ -44,28 +44,42 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowUserPointer(m_window, this);
 
 	auto keyCallback = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-		poc::ImguiImpl::onKey(key, scancode, action, mods);
-		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
+        if (!poc::ImguiImpl::isWindowFocused()) {
+            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
+        } else {
+            poc::ImguiImpl::onKey(key, scancode, action, mods);
+        }
 	};
 
 	auto textCallback = [](GLFWwindow* w, unsigned int character) {
-		poc::ImguiImpl::onChar(character);
-		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createCharEvent(character);
+		if (!poc::ImguiImpl::isWindowFocused()) {
+            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createCharEvent(character);
+        } else {
+            poc::ImguiImpl::onChar(character);
+		}
 	};
 
 	auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
-		poc::ImguiImpl::onMouseButton(button, action, mods);
-		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
+		if (!poc::ImguiImpl::isWindowHovered()) {
+			static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
+		} else {
+		    poc::ImguiImpl::onMouseButton(button, action, mods);
+		}
 	};
 
 	auto cursorPosCallback = [](GLFWwindow* w, double xPos, double yPos) {
-		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(xPos, yPos);
+        if (!poc::ImguiImpl::isWindowHovered()) {
+            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(xPos, yPos);
+        }
 	};
 
 	auto mouseScrollCallback = [](GLFWwindow* w, double xPos, double yPos) {
-		poc::ImguiImpl::onScroll(xPos, yPos);
-		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
-	};
+        if (!poc::ImguiImpl::isWindowHovered()) {
+            static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
+        } else {
+            poc::ImguiImpl::onScroll(xPos, yPos);
+        }
+    };
 
 	auto windowCloseCallback = [](GLFWwindow* w) {
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createCloseEvent();
