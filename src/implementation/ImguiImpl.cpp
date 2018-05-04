@@ -6,6 +6,7 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef _WIN32
 #undef APIENTRY
@@ -129,7 +130,7 @@ void poc::ImguiImpl::render() {
 	// Load imgui program
 	s_shaderProgram.use();
 	s_shaderProgram.setUniform1("Texture", 0);
-	s_shaderProgram.setUniformMatrix4v("ProjMtx", 1, false, &mat4x4[0][0]);
+	s_shaderProgram.setUniformMatrix4v("ProjMtx", 1, false, glm::value_ptr(mat4x4));
 
 	glBindVertexArray(s_vaoHandle);
 
