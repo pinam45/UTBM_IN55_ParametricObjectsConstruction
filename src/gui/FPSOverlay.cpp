@@ -14,7 +14,7 @@ void poc::FPSOverlay::draw() {
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
     ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
 
-    if (ImGui::Begin("Example: Fixed Overlay", &m_open,
+    if (isOpen() && ImGui::Begin("FPS Overlay", &m_open,
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize |
                      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
                      ImGuiWindowFlags_NoNav)) {
@@ -38,7 +38,7 @@ void poc::FPSOverlay::draw() {
                 m_corner = 3;
             }
             if (ImGui::MenuItem("Close")) {
-                m_open = false;
+                close();
             }
 
             ImGui::EndPopup();
@@ -46,4 +46,20 @@ void poc::FPSOverlay::draw() {
 
         ImGui::End();
     }
+}
+
+bool poc::FPSOverlay::isOpen() const {
+    return m_open;
+}
+
+void poc::FPSOverlay::open() {
+    m_open = true;
+}
+
+void poc::FPSOverlay::close() {
+	m_open = false;
+}
+
+void poc::FPSOverlay::setOpen(bool open) {
+	m_open = open;
 }

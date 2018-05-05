@@ -12,6 +12,13 @@ namespace poc {
 
         void draw() override;
 
+        bool isOpen() const;
+
+        void open();
+
+        void close();
+
+        void setOpen(bool open);
     private:
         bool m_open = true;
         unsigned int m_corner = 0;

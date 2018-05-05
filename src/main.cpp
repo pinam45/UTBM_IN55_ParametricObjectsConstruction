@@ -2,6 +2,7 @@
 #include <variant>
 #include <codecvt>
 #include <locale>
+#include <vector>
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -26,8 +27,9 @@
 #include "Shader.hpp"
 #include "ShaderProgram.hpp"
 #include "Camera.hpp"
-
 #include "SphericalCamera.hpp"
+#include "gui/Drawable.hpp"
+#include "gui/FPSOverlay.hpp"
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
@@ -57,9 +59,9 @@ int main()
 	poc::VideoMode test(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	poc::Window w(test, "Test", poc::FullscreenMode::NoFullScreen);
 
-	//glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	poc::FPSOverlay fpsOverlay;
 
-	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsDark();
 
 	glEnable(GL_DEPTH_TEST);
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -191,7 +193,7 @@ int main()
 	float mouse_last_y;
 	bool mouse_drag =false;
 
-	//bool open = true;
+	bool open = true;
 	bool esc_pressed = false;
     while(w.isOpen())
 	{
@@ -267,7 +269,10 @@ int main()
 		glDrawElements(GL_TRIANGLES , parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
-		//ImGui::ShowDemoWindow(&open);
+		fpsOverlay.draw();
+
+		ImGui::ShowDemoWindow(&open);
+
 		w.display();
 
 		if(esc_pressed)
