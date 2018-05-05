@@ -1,7 +1,6 @@
 #ifndef PARAMETRICOBJECTSCONSTRUCTION_CAMERA_HPP
 #define PARAMETRICOBJECTSCONSTRUCTION_CAMERA_HPP
 
-
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 

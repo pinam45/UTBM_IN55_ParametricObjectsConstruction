@@ -1,6 +1,6 @@
-#include <callbacks.hpp>
-
 #include <iostream>
+
+#include "callbacks.hpp"
 
 void framebuffer_size_callback(GLFWwindow*, int width, int height)
 {

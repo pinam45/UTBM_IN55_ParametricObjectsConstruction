@@ -1,7 +1,7 @@
-#include "VideoMode.hpp"
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "VideoMode.hpp"
 
 poc::VideoMode::VideoMode(int width_, int height_,
                           int redBits_, int greenBits_,

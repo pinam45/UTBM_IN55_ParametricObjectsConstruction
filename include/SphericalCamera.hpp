@@ -1,9 +1,9 @@
 #ifndef PARAMETRICOBJECTSCONSTRUCTION_SPHERICALCAMERA_HPP
 #define PARAMETRICOBJECTSCONSTRUCTION_SPHERICALCAMERA_HPP
 
-
 #include <glm/vec3.hpp>
-#include <Camera.hpp>
+
+#include "Camera.hpp"
 
 namespace poc {
 	class SphericalCamera : private Camera {

@@ -1,7 +1,8 @@
-#include <ShaderProgram.hpp>
+#include <utility>
 
 #include <GL/glew.h>
-#include <utility>
+
+#include "ShaderProgram.hpp"
 
 poc::ShaderProgram::ShaderProgram() noexcept
 		: m_valid{false}

@@ -7,9 +7,9 @@
 #include <deque>
 #include <string_view>
 
-#include <Event.hpp>
-#include <VideoMode.hpp>
-#include <ContextSettings.hpp>
+#include "Event.hpp"
+#include "VideoMode.hpp"
+#include "ContextSettings.hpp"
 
 namespace poc {
 	enum class FullscreenMode : int {

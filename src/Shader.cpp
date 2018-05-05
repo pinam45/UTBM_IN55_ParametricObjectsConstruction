@@ -1,9 +1,9 @@
-#include <Shader.hpp>
+#include <fstream>
+#include <utility>
 
 #include <GL/glew.h>
 
-#include <fstream>
-#include <utility>
+#include "Shader.hpp"
 
 static constexpr unsigned int POSSIBLE_SHADER_TYPES[] = {
   GL_COMPUTE_SHADER,

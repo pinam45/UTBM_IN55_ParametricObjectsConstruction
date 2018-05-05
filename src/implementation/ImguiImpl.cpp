@@ -1,5 +1,5 @@
-#include <imgui.h>
-#include "ImguiImpl.hpp"
+#include <cstddef>
+#include <bitset>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -15,10 +15,10 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include <cstddef>
-#include <bitset>
+#include <imgui.h>
 
-#include <ShaderProgram.hpp>
+#include "ImguiImpl.hpp"
+#include "ShaderProgram.hpp"
 
 namespace {
 	GLFWwindow* s_window             = nullptr;

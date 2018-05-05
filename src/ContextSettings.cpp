@@ -1,4 +1,4 @@
-#include <ContextSettings.hpp>
+#include "ContextSettings.hpp"
 
 poc::ContextSettings::ContextSettings(int depthBits_, int stencilBits_, int antialiasingLevel_,
                                       int major_, int minor_, poc::Mode mode_) noexcept

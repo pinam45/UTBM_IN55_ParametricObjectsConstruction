@@ -1,4 +1,4 @@
-#include <Event.hpp>
+#include "Event.hpp"
 
 poc::Event::KeyEvent::KeyEvent(Keyboard::Key code_, bool alt_, bool control_, bool shift_, bool system_) noexcept
 		: code{code_}

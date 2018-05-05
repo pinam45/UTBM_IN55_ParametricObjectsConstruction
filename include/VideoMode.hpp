@@ -19,5 +19,4 @@ namespace poc {
 	};
 }
 
-
 #endif //PARAMETRICOBJECTSCONSTRUCTION_VIDEOMODE_HPP

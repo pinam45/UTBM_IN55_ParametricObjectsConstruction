@@ -1,7 +1,6 @@
 #ifndef PARAMETRICOBJECTSCONSTRUCTION_MOUSE_HPP
 #define PARAMETRICOBJECTSCONSTRUCTION_MOUSE_HPP
 
-
 namespace poc {
 	class Mouse {
 	public:
@@ -20,6 +19,5 @@ namespace poc {
 		};
 	};
 }
-
 
 #endif //PARAMETRICOBJECTSCONSTRUCTION_MOUSE_HPP

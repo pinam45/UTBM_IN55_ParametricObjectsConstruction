@@ -2,22 +2,23 @@
 #include <variant>
 #include <codecvt>
 #include <locale>
-
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <VideoMode.hpp>
-#include <GlfwInitializer.hpp>
-#include <Window.hpp>
-#include <Event.hpp>
-#include <Shader.hpp>
-#include <ShaderProgram.hpp>
-#include <Camera.hpp>
-
-#include <imgui.h>
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <SphericalCamera.hpp>
+
+#include <imgui.h>
+
+#include "VideoMode.hpp"
+#include "GlfwInitializer.hpp"
+#include "Window.hpp"
+#include "Event.hpp"
+#include "Shader.hpp"
+#include "ShaderProgram.hpp"
+#include "Camera.hpp"
+
+#include "SphericalCamera.hpp"
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;

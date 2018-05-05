@@ -1,7 +1,7 @@
-#include <GlfwInitializer.hpp>
-
-#include <callbacks.hpp>
 #include <stdexcept>
+
+#include "GlfwInitializer.hpp"
+#include "callbacks.hpp"
 
 poc::GlfwInitializer::GlfwInitializer() {
 	if (!glfwInit()) {

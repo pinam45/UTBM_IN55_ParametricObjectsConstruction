@@ -3,8 +3,8 @@
 
 #include <variant>
 
-#include <Keyboard.hpp>
-#include <Mouse.hpp>
+#include "Keyboard.hpp"
+#include "Mouse.hpp"
 
 namespace poc {
 	enum class EventType : int {

@@ -1,9 +1,9 @@
 #ifndef PARAMETRICOBJECTSCONSTRUCTION_SHADERPROGRAM_HPP
 #define PARAMETRICOBJECTSCONSTRUCTION_SHADERPROGRAM_HPP
 
-
 #include <GL/glew.h>
-#include <Shader.hpp>
+
+#include "Shader.hpp"
 
 namespace poc {
 	template <typename>
@@ -298,6 +298,5 @@ bool poc::ShaderProgram::setUniform4v(const char* name, int count, const T* valu
 	}
 	return true;
 }
-
 
 #endif //PARAMETRICOBJECTSCONSTRUCTION_SHADERPROGRAM_HPP

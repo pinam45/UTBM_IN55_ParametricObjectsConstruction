@@ -1,6 +1,6 @@
-#include <Camera.hpp>
-
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "Camera.hpp"
 
 namespace {
 	constexpr glm::quat DEFAULT_DIRECTION(1.0f, 0.0f, 0.0f, 0.0f);
