@@ -1,7 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "SphericalCamera.hpp"
 
-SphericalCamera::SphericalCamera(
+poc::SphericalCamera::SphericalCamera(
   float FOV,
   float width,
   float height,
@@ -16,26 +16,26 @@ SphericalCamera::SphericalCamera(
 	update();
 }
 
-void SphericalCamera::setPosition(glm::vec3 position) {
+void poc::SphericalCamera::setPosition(glm::vec3 position) {
 	Camera::setPosition(position);
 	lookAt(m_center);
 }
 
-void SphericalCamera::moveForward(float offset) {
+void poc::SphericalCamera::moveForward(float offset) {
 	if(glm::dot(m_center - (m_position + offset * m_forward), m_center - m_position) > 0){
 		Camera::moveForward(offset);
 	}
 }
 
-void SphericalCamera::moveRight(float angle) {
+void poc::SphericalCamera::moveRight(float angle) {
 	move(angle, m_up);
 }
 
-void SphericalCamera::moveUp(float angle) {
+void poc::SphericalCamera::moveUp(float angle) {
 	move(angle, m_right);
 }
 
-void SphericalCamera::move(float angle, const glm::vec3& axis) {
+void poc::SphericalCamera::move(float angle, const glm::vec3& axis) {
 	glm::quat rot = glm::angleAxis(angle, axis);
 	m_position -= m_center;
 	m_position = rot * m_position;

@@ -2,12 +2,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-constexpr glm::quat DEFAULT_DIRECTION(1.0f, 0.0f, 0.0f, 0.0f);
-constexpr glm::vec3 DEFAULT_FORWARD(0.0f, 0.0f, 1.0f);
-constexpr glm::vec3 DEFAULT_RIGHT(1.0f, 0.0f, 0.0f);
-constexpr glm::vec3 DEFAULT_UP(0.0f, 1.0f, 0.0f);
+namespace {
+	constexpr glm::quat DEFAULT_DIRECTION(1.0f, 0.0f, 0.0f, 0.0f);
+	constexpr glm::vec3 DEFAULT_FORWARD(0.0f, 0.0f, 1.0f);
+	constexpr glm::vec3 DEFAULT_RIGHT(1.0f, 0.0f, 0.0f);
+	constexpr glm::vec3 DEFAULT_UP(0.0f, 1.0f, 0.0f);
+}
 
-Camera::Camera(float FOV, float width, float height, float near, float far)
+poc::Camera::Camera(float FOV, float width, float height, float near, float far)
   : m_FOV(FOV)
     , m_width(width)
     , m_height(height)
@@ -26,70 +28,70 @@ Camera::Camera(float FOV, float width, float height, float near, float far)
 	update();
 }
 
-void Camera::setFOV(float FOV) {
+void poc::Camera::setFOV(float FOV) {
 	m_FOV = FOV;
 	m_update_projection = true;
 }
 
-void Camera::setWidth(float width) {
+void poc::Camera::setWidth(float width) {
 	m_width = width;
 	m_update_projection = true;
 }
 
-void Camera::setHeight(float height) {
+void poc::Camera::setHeight(float height) {
 	m_height = height;
 	m_update_projection = true;
 }
 
-void Camera::setNear(float near) {
+void poc::Camera::setNear(float near) {
 	m_near = near;
 	m_update_projection = true;
 }
 
-void Camera::setFar(float far) {
+void poc::Camera::setFar(float far) {
 	m_far = far;
 	m_update_projection = true;
 }
 
-void Camera::setPosition(glm::vec3 position) {
+void poc::Camera::setPosition(glm::vec3 position) {
 	m_position = position;
 	m_update_view = true;
 }
 
-void Camera::move(glm::vec3 offset) {
+void poc::Camera::move(glm::vec3 offset) {
 	m_position += offset;
 	m_update_view = true;
 }
 
-void Camera::moveForward(float offset) {
+void poc::Camera::moveForward(float offset) {
 	m_position += offset * m_forward;
 	m_update_view = true;
 }
 
-void Camera::moveUp(float offset) {
+void poc::Camera::moveUp(float offset) {
 	m_position += offset * m_up;
 	m_update_view = true;
 }
 
-void Camera::moveRight(float offset) {
+void poc::Camera::moveRight(float offset) {
 	m_position += offset * m_right;
 	m_update_view = true;
 }
 
-void Camera::setDirection(glm::quat direction) {
+void poc::Camera::setDirection(glm::quat direction) {
 	m_direction = direction;
 	updateDirectionsVectors();
 	m_update_view = true;
 }
 
 
-void Camera::rotate(glm::quat rotation) {
+void poc::Camera::rotate(glm::quat rotation) {
 	m_direction *= rotation;
 	updateDirectionsVectors();
 	m_update_view = true;
 }
 
-void Camera::lookAt(glm::vec3 position) {
+void poc::Camera::lookAt(glm::vec3 position) {
 	const glm::vec3 new_forward(glm::normalize(position - m_position));
 
 	const float dot = glm::dot(DEFAULT_FORWARD, new_forward);
@@ -112,15 +114,15 @@ void Camera::lookAt(glm::vec3 position) {
 	setDirection(glm::angleAxis(angle, axis));
 }
 
-void Camera::rotateHorizontally(float angle) {
+void poc::Camera::rotateHorizontally(float angle) {
 	rotate(glm::angleAxis(angle, m_up));
 }
 
-void Camera::rotateVertically(float angle) {
+void poc::Camera::rotateVertically(float angle) {
 	rotate(glm::angleAxis(angle, m_right));
 }
 
-void Camera::update() {
+void poc::Camera::update() {
 	if(m_update_view) {
 		const glm::mat4 translate = glm::translate(glm::mat4(1.0f), m_position);
 		const glm::mat4 rotate = glm::mat4_cast(m_direction);
@@ -141,35 +143,35 @@ void Camera::update() {
 	}
 }
 
-glm::vec3 Camera::getPosition() const {
+glm::vec3 poc::Camera::getPosition() const {
 	return m_position;
 }
 
-glm::mat4 Camera::getViewMatrix() const {
+glm::mat4 poc::Camera::getViewMatrix() const {
 	return m_view_matrix;
 }
 
-glm::mat4 Camera::getProjectionMatrix() const {
+glm::mat4 poc::Camera::getProjectionMatrix() const {
 	return m_projection_matrix;
 }
 
-glm::mat4 Camera::getMatrix() const {
+glm::mat4 poc::Camera::getMatrix() const {
 	return m_projection_matrix * m_view_matrix;
 }
 
-glm::vec3 Camera::getForwardVector() const {
+glm::vec3 poc::Camera::getForwardVector() const {
 	return m_forward;
 }
 
-glm::vec3 Camera::getRightVector() const {
+glm::vec3 poc::Camera::getRightVector() const {
 	return m_right;
 }
 
-glm::vec3 Camera::getUpVector() const {
+glm::vec3 poc::Camera::getUpVector() const {
 	return m_up;
 }
 
-void Camera::updateDirectionsVectors() {
+void poc::Camera::updateDirectionsVectors() {
 	m_forward = glm::normalize(DEFAULT_FORWARD * m_direction);
 	m_right = glm::normalize(DEFAULT_RIGHT * m_direction);
 	m_up = glm::normalize(DEFAULT_UP * m_direction);

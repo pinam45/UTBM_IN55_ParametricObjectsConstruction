@@ -135,8 +135,9 @@ int main()
 	}
 	program.use();
 
-	const glm::vec3 camera_focus(0, 0, 0);
-	SphericalCamera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f, camera_focus, {0,0,-3});
+	const glm::vec3 camera_focus(0.f, 0.f, 0.f);
+
+	poc::SphericalCamera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f, camera_focus, {0.f, 0.f, -3.f});
 	camera.update();
 
 	bool first_mouse_move = true;
