@@ -1,8 +1,8 @@
 project(imgui)
 
-get_filename_component(root_dir      ${CMAKE_CURRENT_SOURCE_DIR}    REALPATH)
-get_filename_component(src_dir       ${root_dir}/src                REALPATH)
-get_filename_component(include_dir   ${root_dir}/include            REALPATH)
+get_filename_component(root_dir      ${CMAKE_CURRENT_SOURCE_DIR}    ABSOLUTE)
+get_filename_component(src_dir       ${root_dir}/src                ABSOLUTE)
+get_filename_component(include_dir   ${root_dir}/include            ABSOLUTE)
 
 get_files(
 	files "${src_dir}" "${include_dir}"
