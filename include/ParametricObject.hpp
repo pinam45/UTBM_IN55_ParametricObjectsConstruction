@@ -56,6 +56,7 @@ private:
     void computeVerticesForOneLayout(unsigned int index);
     bool computeIndexesForLayer(unsigned int index);
     void linksLayer(unsigned int index);
+    void linkslayerDifferentNumber(unsigned int index);
 };
 
 

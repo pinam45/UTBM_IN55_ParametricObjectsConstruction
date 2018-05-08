@@ -67,12 +67,13 @@ void ParametricObject::computeVerticesForOneLayout(const unsigned int index) {
         m_vertices_object[index_tmp + 4] = static_cast<float>((index+1)%3);
         m_vertices_object[index_tmp + 5] = static_cast<float>((index+2)%3);
     } else {
-        angle = 2*M_PI/nb_point + static_cast<double >(m_configs[index].rotation);
+        angle = 2*M_PI/nb_point;
+        double rotation = m_configs[index].rotation;
 
         for (unsigned int i = 0; i < nb_point; ++i){
             unsigned int tmp = i * m_float_vertex;
-            m_vertices_object[index_tmp + tmp] = static_cast<float>(cos(i*angle) * r);
-            m_vertices_object[index_tmp + tmp+1] = static_cast<float>(sin(i*angle) * r);
+            m_vertices_object[index_tmp + tmp] = static_cast<float>(cos(i*angle + rotation) * r);
+            m_vertices_object[index_tmp + tmp+1] = static_cast<float>(sin(i*angle + rotation) * r);
             m_vertices_object[index_tmp + tmp +2] = z;
 
             m_vertices_object[index_tmp + tmp+3] = static_cast<float>(index%3);
@@ -108,24 +109,31 @@ bool ParametricObject::computeIndexesForLayer(unsigned int index){
             end = m_cumulativ_nb_point[index+1];
         }
 
-        for (unsigned int i = j; i + 2 <= end; i += 2){
-            m_index_object.push_back(i);
-            m_index_object.push_back(i+1);
+        for (unsigned int i = 0; i + 2 <= nb_point; i += 2){
+            m_index_object.push_back(i+j);
+            m_index_object.push_back(i+j+1);
             m_index_object.push_back((i+2)%nb_point+j);
+
+            //std::cout << i+j << " " <<i+j+1 << " " << (i+2)%nb_point+j << std::endl;
         }
         if(nb_point%2){
             for(unsigned int i = end - 3; i > j; i -= 2){
                 m_index_object.push_back(i);
                 m_index_object.push_back(i+2);
                 m_index_object.push_back(j);
+
+                //std::cout << i << " " <<i+2 << " " << j << std::endl;
             }
         } else {
             for(unsigned int i = end - 4; i > j; i -= 2){
                 m_index_object.push_back(i);
                 m_index_object.push_back(i+2);
                 m_index_object.push_back(j);
+
+                //std::cout << i << " " <<i+2 << " " << j << std::endl;
             }
         }
+        //std::cout << std::endl;
         return true;
     }
 }
@@ -192,8 +200,87 @@ void ParametricObject::linksLayer(unsigned int index){
                     }
                 }
             }
+            linkslayerDifferentNumber(index);
+        } else {
+            linkslayerDifferentNumber(index);
         }
     }
+}
+
+void ParametricObject::linkslayerDifferentNumber(unsigned int index) {
+    if(static_cast<int>(index-1) >= 0 && m_configs[index-1].nbPoint != 1) {
+        unsigned int nb_point_first = m_configs[index-1].nbPoint;
+        unsigned int nb_point_second = m_configs[index].nbPoint;
+        unsigned int index_first_layer = m_cumulativ_nb_point[index-1];
+        unsigned int index_second_layer = m_cumulativ_nb_point[index];
+
+        unsigned int nb_links_by_point = nb_point_second/nb_point_first;
+        int nb_point_with_one_more_links = 0;
+
+        bool is_More = false;
+
+        if(nb_point_first > nb_point_second){
+            nb_point_first = m_configs[index].nbPoint;
+            nb_point_second = m_configs[index-1].nbPoint;
+
+            index_first_layer = m_cumulativ_nb_point[index];
+            index_second_layer = m_cumulativ_nb_point[index-1];
+
+            nb_links_by_point = nb_point_second/nb_point_first;
+        }
+
+        if(nb_point_second%nb_point_first){
+            is_More = 1.0*nb_point_second/nb_point_first - nb_point_second/nb_point_first > 0.5;
+            while((nb_point_second - (nb_point_first-nb_point_with_one_more_links++)*nb_links_by_point) % (nb_links_by_point+1));
+            --nb_point_with_one_more_links;
+        }
+        int save_nb_point_with_one_more_link = nb_point_with_one_more_links;
+
+        unsigned int nb_links = 0;
+        for(unsigned int i = 0; i < nb_point_first; ++i){
+            unsigned int nb_links_for_point = is_More?nb_links_by_point+1:nb_links_by_point;
+            unsigned int t = is_More?i+1:i;
+            if(!(t%2) && nb_point_with_one_more_links){
+                is_More?--nb_links_for_point:++nb_links_for_point;
+                --nb_point_with_one_more_links;
+            }
+            for(unsigned int j = 0; j < nb_links_for_point-1; ++j){
+                m_index_object.push_back(i+index_first_layer);
+                m_index_object.push_back(j+index_second_layer+nb_links);
+                m_index_object.push_back(index_second_layer+(j+1+nb_links)%nb_point_second);
+
+                //std::cout << i + index_first_layer << " " <<j+index_second_layer+nb_links << " " << j+index_second_layer+1+nb_links << std::endl;
+            }
+            nb_links += nb_links_for_point;
+        }
+
+        nb_links = 0;
+        for(unsigned int i = 0; i < nb_point_first; ++i){
+            unsigned int tmp = is_More?nb_links_by_point+1:nb_links_by_point;
+            unsigned int t = is_More?i+1:i;
+            if(!(t%2) && save_nb_point_with_one_more_link){
+                is_More?--tmp:++tmp;
+                --save_nb_point_with_one_more_link;
+            }
+            nb_links += tmp;
+            m_index_object.push_back(i+index_first_layer);
+            m_index_object.push_back(index_second_layer + (nb_links)%nb_point_second);
+            m_index_object.push_back(index_second_layer + (nb_links-1)%nb_point_second);
+
+            m_index_object.push_back(i+index_first_layer);
+            m_index_object.push_back(index_first_layer+(i+1)%nb_point_first);
+            m_index_object.push_back(index_second_layer + (nb_links)%nb_point_second);
+
+            /*std::cout << i + index_first_layer
+                      << " " <<index_second_layer + (nb_links-1)%nb_point_second
+                      << " " << index_second_layer + (nb_links)%nb_point_second
+                      << " " << i+index_first_layer
+                      << " " << index_first_layer+(i+1)%nb_point_first
+                      << " " << index_second_layer + (nb_links)%nb_point_second
+                      << std::endl;*/
+        }
+    }
+    std::cout << std::endl;
 }
 
 //Getter

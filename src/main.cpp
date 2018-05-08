@@ -80,16 +80,13 @@ int main()
     std::vector<float> rotation = {0.0f, 0.0f};*/
 
 	std::vector<LayerConfig> layers;
-	layers.reserve(10);
-    layers.emplace_back(28, 1.3f, 1.0f, 0.0f);
-	layers.emplace_back(1, 1, 1.0f, 0.0f);
-	layers.emplace_back(28, 1.3f, 1.0f, 0.0f);
-	layers.emplace_back(1, 0.3f, 1.0f, 0.0f);
-	layers.emplace_back(28, 1, 1.0f, 0.0f);
-	layers.emplace_back(28, 1, 1.5f, 0.0f);
-    layers.emplace_back(1, 0.3f, 1.0f, 0.0f);
-    layers.emplace_back(28, 1, 1.0f, 0.0f);
-    layers.emplace_back(28, 1.3f, 1.0f, 0.0f);
+	layers.reserve(3);
+    layers.emplace_back(30, 1.4f, 1.0f, -M_PI_4/2);
+	layers.emplace_back(30, 1.5f, 4.0f, 0.0f);
+	layers.emplace_back(4, 0.5f, 1.0f, M_PI_2);
+	layers.emplace_back(5, 0.5f, 2.0f, 0);
+	layers.emplace_back(5, 1.5f, 1.0f, 0.0f);
+	layers.emplace_back(30, 1.5f, 0.5f, -M_PI_4);
 
 	ParametricObject parametricObject = ParametricObject(layers);
 
@@ -267,7 +264,7 @@ int main()
 		glEnable(GL_PROGRAM_POINT_SIZE);
         //glDisable(GL_CULL_FACE);
 
-		glDrawElements(GL_TRIANGLES, parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES , parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		//ImGui::ShowDemoWindow(&open);
