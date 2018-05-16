@@ -45,7 +45,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowUserPointer(m_window, this);
 
 	auto keyCallback = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-        if (!poc::ImguiImpl::isWindowFocused()) {
+		if (!ImGui::GetIO().WantCaptureKeyboard) {
             static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
         } else {
             poc::ImguiImpl::onKey(key, scancode, action, mods);
@@ -53,7 +53,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	};
 
 	auto textCallback = [](GLFWwindow* w, unsigned int character) {
-		if (!poc::ImguiImpl::isWindowFocused()) {
+		if (!ImGui::GetIO().WantTextInput) {
             static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createCharEvent(character);
         } else {
             poc::ImguiImpl::onChar(character);
@@ -61,7 +61,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	};
 
 	auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
-		if (!poc::ImguiImpl::isWindowHovered()) {
+		if (!ImGui::GetIO().WantCaptureMouse) {
 			static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
 		} else {
 		    poc::ImguiImpl::onMouseButton(button, action, mods);
@@ -69,13 +69,13 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	};
 
 	auto cursorPosCallback = [](GLFWwindow* w, double xPos, double yPos) {
-        if (!poc::ImguiImpl::isWindowHovered()) {
+        if (!ImGui::GetIO().WantCaptureMouse) {
             static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(xPos, yPos);
         }
 	};
 
 	auto mouseScrollCallback = [](GLFWwindow* w, double xPos, double yPos) {
-        if (!poc::ImguiImpl::isWindowHovered()) {
+		if (!ImGui::GetIO().WantCaptureMouse) {
             static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
         } else {
             poc::ImguiImpl::onScroll(xPos, yPos);
