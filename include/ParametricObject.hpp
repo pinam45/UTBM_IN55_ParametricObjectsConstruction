@@ -57,7 +57,7 @@ private:
     bool computeIndexesForLayer(unsigned int index);
     void linksLayer(unsigned int index);
     void linkslayerDifferentNumber(unsigned int index);
+    unsigned int findShortestPointFrom(unsigned int index, unsigned int index_layer_other);
 };
-
 
 #endif //PARAMETRICOBJECTSCONSTRUCTION_PARAMETRICOBJECT_HPP

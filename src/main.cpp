@@ -81,12 +81,12 @@ int main()
 
 	std::vector<LayerConfig> layers;
 	layers.reserve(3);
-    layers.emplace_back(30, 1.4f, 1.0f, -M_PI_4/2);
-	layers.emplace_back(30, 1.5f, 4.0f, 0.0f);
-	layers.emplace_back(4, 0.5f, 1.0f, M_PI_2);
-	layers.emplace_back(5, 0.5f, 2.0f, 0);
-	layers.emplace_back(5, 1.5f, 1.0f, 0.0f);
-	layers.emplace_back(30, 1.5f, 0.5f, -M_PI_4);
+    layers.emplace_back(29, 1.0f, 1.0f, 0);
+	layers.emplace_back(10, 1.5f, 0.4f, 0.0f);
+	layers.emplace_back(1, 0.5f, 1.0f, 0);
+	//layers.emplace_back(5, 0.5f, 2.0f, 0);
+	//layers.emplace_back(5, 1.5f, 1.0f, 0.0f);
+	//layers.emplace_back(30, 1.5f, 0.5f, -M_PI_4);
 
 	ParametricObject parametricObject = ParametricObject(layers);
 
