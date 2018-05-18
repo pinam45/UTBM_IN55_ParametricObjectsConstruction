@@ -150,10 +150,10 @@ int main()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, parametricObject.getNbPoint()*6*sizeof(float), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, parametricObject.getNbIndexes() * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbIndexes() * sizeof(unsigned int)), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
 	glEnableVertexAttribArray(0);
@@ -266,7 +266,7 @@ int main()
 		glEnable(GL_PROGRAM_POINT_SIZE);
         //glDisable(GL_CULL_FACE);
 
-		glDrawElements(GL_TRIANGLES , parametricObject.getNbIndexes(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES , static_cast<int>(parametricObject.getNbIndexes()), GL_UNSIGNED_INT, nullptr);
 		glBindVertexArray(0);
 
 		fpsOverlay.draw();
