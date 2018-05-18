@@ -12,7 +12,7 @@
 #include <algorithm>
 
 
-ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerConfigs)
+poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerConfigs)
         : m_is_changed(true)
         , m_configs(layerConfigs)
         , m_nb_layout(layerConfigs.size())
@@ -39,7 +39,7 @@ ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerConfigs)
 }
 
 //Compute vertices
-float* ParametricObject::computeVertices() {
+float* poc::ParametricObject::computeVertices() {
     if(m_is_changed){
         for(unsigned int i = 0; i < m_configs.size(); ++i){
             computeVerticesForOneLayout(i);
@@ -50,7 +50,7 @@ float* ParametricObject::computeVertices() {
     return m_vertices_object.data();
 }
 
-void ParametricObject::computeVerticesForOneLayout(const unsigned int index) {
+void poc::ParametricObject::computeVerticesForOneLayout(const unsigned int index) {
     double angle;
 
     float z = m_heigth/2 - m_heigth_progressiv[index];
@@ -85,7 +85,7 @@ void ParametricObject::computeVerticesForOneLayout(const unsigned int index) {
 }
 
 //Compute indices
-unsigned int* ParametricObject::computeIndexes(){
+unsigned int* poc::ParametricObject::computeIndexes(){
     for(unsigned int i = 0; i < m_nb_layout; ++i){
         computeIndexesForLayer(i);
         linksLayer(i);
@@ -97,7 +97,7 @@ unsigned int* ParametricObject::computeIndexes(){
     return m_index_object.data();
 }
 
-bool ParametricObject::computeIndexesForLayer(unsigned int index){
+bool poc::ParametricObject::computeIndexesForLayer(unsigned int index){
     unsigned int nb_point = m_configs[index].nbPoint;
     unsigned int j = m_cumulativ_nb_point[index];
     unsigned int end = 0;
@@ -139,7 +139,7 @@ bool ParametricObject::computeIndexesForLayer(unsigned int index){
     }
 }
 
-void ParametricObject::linksLayer(unsigned int index){
+void poc::ParametricObject::linksLayer(unsigned int index){
     unsigned int nb_point = m_configs[index].nbPoint;
     //Si on a 1 seul point
     if(nb_point == 1){
@@ -184,7 +184,7 @@ void ParametricObject::linksLayer(unsigned int index){
     }
 }
 
-void ParametricObject::linkslayerDifferentNumber(unsigned int index) {
+void poc::ParametricObject::linkslayerDifferentNumber(unsigned int index) {
     if(static_cast<int>(index-1) >= 0 && m_configs[index-1].nbPoint != 1) {
         unsigned int nb_point_first = m_configs[index-1].nbPoint;
         unsigned int nb_point_second = m_configs[index].nbPoint;
@@ -280,29 +280,29 @@ void ParametricObject::linkslayerDifferentNumber(unsigned int index) {
 }
 
 //Getter
-unsigned long long int ParametricObject::getNbIndexes() const noexcept {
+unsigned long long int poc::ParametricObject::getNbIndexes() const noexcept {
     return m_index_object.size();
 }
 
-unsigned int ParametricObject::getNbPoint() const noexcept {
+unsigned int poc::ParametricObject::getNbPoint() const noexcept {
     return static_cast<unsigned int>(m_vertices_object.size()/m_float_vertex);
 }
 
-void ParametricObject::configure(const std::vector<LayerConfig>& layerConfigs) {
+void poc::ParametricObject::configure(const std::vector<LayerConfig>& layerConfigs) {
     m_configs = layerConfigs;
     computeVertices();
     computeIndexes();
 }
 
-const std::vector<float>& ParametricObject::get_vertices() const {
+const std::vector<float>& poc::ParametricObject::get_vertices() const {
     return m_vertices_object;
 }
 
-const std::vector<unsigned int>& ParametricObject::get_indexes() const {
+const std::vector<unsigned int>& poc::ParametricObject::get_indexes() const {
     return m_index_object;
 }
 
-unsigned int ParametricObject::findShortestPointFrom(unsigned int index, unsigned int index_layer_other) {
+unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, unsigned int index_layer_other) {
     unsigned int nb_point = m_configs[index_layer_other].nbPoint;
     unsigned int index_begin_layer = m_cumulativ_nb_point[index_layer_other];
     unsigned int min_index = 0;
@@ -320,6 +320,6 @@ unsigned int ParametricObject::findShortestPointFrom(unsigned int index, unsigne
 }
 
 
-LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_) noexcept
+poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_) noexcept
         : nbPoint(nbPoint_), radiusFromCenter(radiusFromCenter_), distances_with_layer(distances_with_layer_),
           rotation(rotation_) {}

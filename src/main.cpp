@@ -79,7 +79,7 @@ int main()
     std::vector<float> distances_between_layout = {1.0f};
     std::vector<float> rotation = {0.0f, 0.0f};*/
 
-	std::vector<LayerConfig> layers;
+	std::vector<poc::LayerConfig> layers;
 	layers.reserve(3);
     layers.emplace_back(29, 1.0f, 1.0f, 0);
 	layers.emplace_back(10, 1.5f, 0.4f, 0.0f);
@@ -88,7 +88,7 @@ int main()
 	//layers.emplace_back(5, 1.5f, 1.0f, 0.0f);
 	//layers.emplace_back(30, 1.5f, 0.5f, -M_PI_4);
 
-	ParametricObject parametricObject = ParametricObject(layers);
+	poc::ParametricObject parametricObject = poc::ParametricObject(layers);
 
     float* vertices = parametricObject.computeVertices();
     unsigned int* indices = parametricObject.computeIndexes();
