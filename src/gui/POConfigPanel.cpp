@@ -2,6 +2,29 @@
 
 #include <string>
 
+namespace {
+	constexpr unsigned int DEFAULT_LAYER_NB_POINTS = 3;
+	constexpr float DEFAULT_LAYER_RADIUS = 1;
+	constexpr float DEFAULT_LAYER_DISTANCE = 1;
+	constexpr float DEFAULT_LAYER_ROTATION = 0;
+	constexpr std::array<float,3> DEFAULT_LAYER_COLOR = {0, 0, 0};
+	constexpr poc::LayerConfig DEFAULT_LAYER(
+	  DEFAULT_LAYER_NB_POINTS,
+	  DEFAULT_LAYER_RADIUS,
+	  DEFAULT_LAYER_DISTANCE,
+	  DEFAULT_LAYER_ROTATION,
+	  DEFAULT_LAYER_COLOR
+	);
+
+	constexpr float MINIMUM_LAYER_RADIUS = 0.0f;
+	constexpr float MAXIMUM_LAYER_RADIUS = 5.0f;
+
+	constexpr float MINIMUM_LAYER_DISTANCE = 0.0f;
+	constexpr float MAXIMUM_LAYER_DISTANCE = 5.0f;
+
+	constexpr size_t MAXIMUM_LAYERS_NUMBER = 2;
+}
+
 poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
   : themeHolders{
 	  POConfigPanel::ThemeHolder{"Arc Dark", ImGuiColorTheme::ArcDark, true},
@@ -80,7 +103,7 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 			}
 
 			float radius_from_center = layer.radiusFromCenter;
-			ImGui::SliderFloat("radius", &radius_from_center, 0.0f, 5.0f);
+			ImGui::SliderFloat("radius", &radius_from_center, MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_RADIUS);
 			if(std::abs(radius_from_center - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
 				layer.radiusFromCenter = radius_from_center;
 				modification = true;
@@ -95,7 +118,7 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 
 			if(layerNumber > 1) {
 				float distances_with_layer = layer.distances_with_layer;
-				ImGui::SliderFloat("distance", &distances_with_layer, 0.0f, 5.0f);
+				ImGui::SliderFloat("distance", &distances_with_layer, MINIMUM_LAYER_DISTANCE, MAXIMUM_LAYER_DISTANCE);
 				if(std::abs(distances_with_layer - layer.distances_with_layer) > std::numeric_limits<float>::epsilon() && distances_with_layer > 0) {
 					layer.distances_with_layer = distances_with_layer;
 					modification = true;
@@ -115,10 +138,10 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 
 	ImGui::Separator();
 	if(ImGui::Button("Add", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 20))) {
-		layers.emplace_back(3, 1, 1, 0, std::array<float,3>{{0,0,0}});
+		layers.push_back(DEFAULT_LAYER);
 		modification = true;
 	}
-	if(layers.size() > 2) {
+	if(layers.size() > MAXIMUM_LAYERS_NUMBER) {
 		ImGui::SameLine();
 		if(ImGui::Button("Remove", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 20))) {
 			if(!layers.empty()) {
