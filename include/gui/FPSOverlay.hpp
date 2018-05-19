@@ -21,7 +21,7 @@ namespace poc {
         void setOpen(bool open);
     private:
         bool m_open = true;
-        unsigned int m_corner = 0;
+        unsigned int m_corner = 1;
     };
 }
 

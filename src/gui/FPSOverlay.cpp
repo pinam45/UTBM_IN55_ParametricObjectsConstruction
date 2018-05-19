@@ -12,7 +12,7 @@ void poc::FPSOverlay::draw() {
     ImVec2 window_pos_pivot = ImVec2((m_corner & 1) ? 1.0f : 0.0f, (m_corner & 2) ? 1.0f : 0.0f);
 
     ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-    ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+    ImGui::SetNextWindowBgAlpha(0.7f); // Transparent background
 
     if (isOpen() && ImGui::Begin("FPS Overlay", &m_open,
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize |

@@ -6,18 +6,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <VideoMode.hpp>
-#include <GlfwInitializer.hpp>
-#include <Window.hpp>
-#include <Event.hpp>
-#include <Shader.hpp>
-#include <ShaderProgram.hpp>
-#include <Camera.hpp>
-#include <ParametricObject.hpp>
-
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <imgui.h>
 
 #include "VideoMode.hpp"
@@ -28,14 +18,19 @@
 #include "ShaderProgram.hpp"
 #include "Camera.hpp"
 #include "SphericalCamera.hpp"
+#include "ParametricObject.hpp"
+
 #include "gui/Drawable.hpp"
 #include "gui/FPSOverlay.hpp"
+#include "gui/POConfigPanel.hpp"
 
 constexpr int DEFAULT_WIDTH = 800;
 constexpr int DEFAULT_HEIGHT = 600;
 
 constexpr float MOUSE_MOVE_SENSITIVITY = 0.007f;
 constexpr float MOUSE_SCROLL_SENSITIVITY = 0.5f;
+
+constexpr int PANEL_WIDTH = 300;
 
 void check_error();
 
@@ -185,15 +180,20 @@ int main()
 
 	const glm::vec3 camera_focus(0.f, 0.f, 0.f);
 
-	poc::SphericalCamera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f, camera_focus, {0.f, 0.f, -3.f});
+	poc::SphericalCamera camera(glm::radians(45.0f), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.1f, 100.0f, camera_focus, {0.f, 0.f, -7.f});
 	camera.update();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowRounding = 0.0f;
+	style.ScrollbarRounding = 0.0f;
+
+	poc::POConfigPanel panel(0, 0, static_cast<float>(PANEL_WIDTH), static_cast<float>(w.getHeigth()));
 
 	bool first_mouse_move = true;
 	float mouse_last_x;
 	float mouse_last_y;
 	bool mouse_drag =false;
 
-	bool open = true;
 	bool esc_pressed = false;
     while(w.isOpen())
 	{
@@ -249,7 +249,9 @@ int main()
 			}, event.content);
 		}
 
-		camera.setWidth(static_cast<float>(w.getWidth()));
+		glViewport(PANEL_WIDTH, 0, w.getWidth() - PANEL_WIDTH, w.getHeigth());
+
+		camera.setWidth(static_cast<float>(w.getWidth() - PANEL_WIDTH));
 		camera.setHeight(static_cast<float>(w.getHeigth()));
 		camera.update();
 
@@ -269,9 +271,18 @@ int main()
 		glDrawElements(GL_TRIANGLES , static_cast<int>(parametricObject.getNbIndexes()), GL_UNSIGNED_INT, nullptr);
 		glBindVertexArray(0);
 
+		glViewport(0,0,w.getWidth(),w.getHeigth());
 		fpsOverlay.draw();
 
-		ImGui::ShowDemoWindow(&open);
+		panel.setHeight(static_cast<float>(w.getHeigth()));
+		if(panel.draw(layers)){
+			parametricObject.configure(layers);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbIndexes() * sizeof(unsigned int)), parametricObject.getIndexes().data(), GL_STATIC_DRAW);
+		}
 
 		w.display();
 
