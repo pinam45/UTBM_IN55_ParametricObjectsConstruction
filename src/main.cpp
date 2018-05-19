@@ -81,7 +81,7 @@ int main()
     std::array<float,3> green {{1,0,0}};
     std::array<float,3> blue {{1,0,0}};
 	layers.reserve(3);
-    layers.emplace_back(29, 1.0f, 1.0f, 0, red);
+    layers.emplace_back(4, 1.0f, 1.0f, 0, red);
 	layers.emplace_back(10, 1.5f, 0.4f, 0.0f, blue);
 	layers.emplace_back(1, 0.5f, 1.0f, 0, green);
 	//layers.emplace_back(5, 0.5f, 2.0f, 0);

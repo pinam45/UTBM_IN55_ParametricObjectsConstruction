@@ -90,11 +90,7 @@ unsigned int* poc::ParametricObject::computeIndexes() {
 	for(unsigned int i = 0; i < m_configs.size(); ++i) {
 		computeIndexesForLayer(i);
 		linksLayer(i);
-		//if(i !=0)
-		//   linksLayer(i);
 	}
-	//std::copy(m_index_object.begin(), m_index_object.end(), std::ostream_iterator<unsigned int>(std::cout, "\n"));
-	//std::cout << std::endl;
 	return m_index_object.data();
 }
 
@@ -215,27 +211,28 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 		if(nb_point_second % nb_point_first) {
 			is_More = 1.0 * nb_point_second / nb_point_first - nb_point_second / nb_point_first > 0.5;
 			if(!is_More) {
-				while((nb_point_second - (nb_point_first - nb_point_with_one_more_links++) * nb_links_by_point) % (nb_links_by_point + 1)) {
+				while(((nb_point_first-nb_point_with_one_more_links)*nb_links_by_point + nb_point_with_one_more_links*(nb_links_by_point+1)) != nb_point_second) {
+                    ++nb_point_with_one_more_links;
 				}
-				--nb_point_with_one_more_links;
-			}
+            }
 			else {
 				if(nb_links_by_point == 1) {
 					while(nb_point_second - ((nb_point_first - nb_point_with_one_more_links) * (nb_links_by_point + 1) + nb_point_with_one_more_links * nb_links_by_point)) {
 						++nb_point_with_one_more_links;
 					}
-				}
+                }
 				else {
-					while((nb_point_second - (nb_point_first - nb_point_with_one_more_links++) * (nb_links_by_point + 1)) % (nb_links_by_point)) {
+					while(((nb_point_first-nb_point_with_one_more_links)*(nb_links_by_point+1) + nb_point_with_one_more_links*(nb_links_by_point)) != nb_point_second) {
+                        ++nb_point_with_one_more_links;
 					}
-					--nb_point_with_one_more_links;
-				}
+                }
 			}
 		}
 		unsigned int save_nb_point_with_one_more_link = nb_point_with_one_more_links;
 
 		unsigned int nb_links = 0;
 		const unsigned int shortest_point_index = findShortestPointFrom(index_first_layer, index);
+        const unsigned int index_begin_point = (shortest_point_index - index_second_layer + nb_point_second - (nb_links_by_point) / 2) % nb_point_second;
 		for(unsigned int i = 0; i < nb_point_first; ++i) {
 			unsigned int nb_links_for_point = is_More ? nb_links_by_point + 1 : nb_links_by_point;
 			const unsigned int t = is_More ? i + 1 : i;
@@ -243,14 +240,12 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 				is_More ? --nb_links_for_point : ++nb_links_for_point;
 				--nb_point_with_one_more_links;
 			}
-			const unsigned int index_begin = (shortest_point_index - index_second_layer + nb_point_second - nb_links_for_point / 2) % nb_point_second + nb_links;
+			const unsigned int index_begin = index_begin_point + nb_links;
 			if(nb_links_for_point > 1) {
 				for(unsigned int j = 0; j < nb_links_for_point - 1; ++j) {
 					m_index_object.push_back(i + index_first_layer);
 					m_index_object.push_back(index_second_layer + (j + index_begin) % nb_point_second);
 					m_index_object.push_back(index_second_layer + (j + 1 + index_begin) % nb_point_second);
-
-					//std::cout << i + index_first_layer << " " <<j+index_second_layer+nb_links << " " << j+index_second_layer+1+nb_links << std::endl;
 				}
 			}
 			nb_links += nb_links_for_point;
@@ -265,8 +260,7 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 				--save_nb_point_with_one_more_link;
 			}
 			if(!i) {
-				nb_links = (shortest_point_index - index_second_layer
-				            - tmp / 2 + nb_point_second) % nb_point_second;
+				nb_links = index_begin_point;
 			}
 			nb_links += tmp;
 			m_index_object.push_back(i + index_first_layer);
@@ -276,17 +270,8 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 			m_index_object.push_back(i + index_first_layer);
 			m_index_object.push_back(index_first_layer + (i + 1) % nb_point_first);
 			m_index_object.push_back(index_second_layer + (nb_links) % nb_point_second);
-
-			/*std::cout << i + index_first_layer
-					  << " " <<index_second_layer + (nb_links-1)%nb_point_second
-					  << " " << index_second_layer + (nb_links)%nb_point_second
-					  << " " << i+index_first_layer
-					  << " " << index_first_layer+(i+1)%nb_point_first
-					  << " " << index_second_layer + (nb_links)%nb_point_second
-					  << std::endl;*/
 		}
 	}
-	//std::cout << std::endl;
 }
 
 //Getter
