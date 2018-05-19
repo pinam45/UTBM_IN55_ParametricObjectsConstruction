@@ -82,14 +82,14 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 
 		float radius_from_center = layer.radiusFromCenter;
 		ImGui::SliderFloat("radius", &radius_from_center, 0.0f, 5.0f);
-		if(radius_from_center - layer.radiusFromCenter > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
+		if(std::abs(radius_from_center - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
 			layer.radiusFromCenter = radius_from_center;
 			modification = true;
 		}
 
 		float rotation = layer.rotation;
 		ImGui::SliderAngle("rotation", &rotation);
-		if(rotation - layer.radiusFromCenter> std::numeric_limits<float>::epsilon() ) {
+		if(std::abs(rotation - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() ) {
 			layer.rotation = rotation;
 			modification = true;
 		}
@@ -97,7 +97,7 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 		if(layerNumber > 1) {
 			float distances_with_layer = layer.distances_with_layer;
 			ImGui::SliderFloat("distance", &distances_with_layer, 0.0f, 5.0f);
-			if(distances_with_layer - layer.distances_with_layer > std::numeric_limits<float>::epsilon() && distances_with_layer > 0) {
+			if(std::abs(distances_with_layer - layer.distances_with_layer) > std::numeric_limits<float>::epsilon() && distances_with_layer > 0) {
 				layer.distances_with_layer = distances_with_layer;
 				modification = true;
 			}
