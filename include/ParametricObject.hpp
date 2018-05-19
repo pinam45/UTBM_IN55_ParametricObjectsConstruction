@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <array>
 
 namespace poc {
     struct LayerConfig{
@@ -14,8 +15,9 @@ namespace poc {
         float radiusFromCenter;
         float distances_with_layer;
         float rotation;
+        std::array<float,3> color;
 
-        LayerConfig(unsigned int nbPoint, float radiusFromCenter, float distances_with_layer, float rotation) noexcept;
+        LayerConfig(unsigned int nbPoint, float radiusFromCenter, float distances_with_layer, float rotation, std::array<float,3> color) noexcept;
     };
 
     class ParametricObject {

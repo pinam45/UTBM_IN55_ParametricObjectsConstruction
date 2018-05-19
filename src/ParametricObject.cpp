@@ -64,9 +64,9 @@ void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 		m_vertices_object[index_tmp + 1] = 0.0f;
 		m_vertices_object[index_tmp + 2] = z;
 
-		m_vertices_object[index_tmp + 3] = static_cast<float>(index % 3);
-		m_vertices_object[index_tmp + 4] = static_cast<float>((index + 1) % 3);
-		m_vertices_object[index_tmp + 5] = static_cast<float>((index + 2) % 3);
+		m_vertices_object[index_tmp + 3] = m_configs[index].color[0];
+		m_vertices_object[index_tmp + 4] = m_configs[index].color[1];
+		m_vertices_object[index_tmp + 5] = m_configs[index].color[2];
 	}
 	else {
 		const double angle = 2 * M_PI / nb_point;
@@ -78,9 +78,9 @@ void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 			m_vertices_object[index_tmp + tmp + 1] = static_cast<float>(sin(i * angle + rotation) * r);
 			m_vertices_object[index_tmp + tmp + 2] = z;
 
-			m_vertices_object[index_tmp + tmp + 3] = static_cast<float>(index % 3);
-			m_vertices_object[index_tmp + tmp + 4] = static_cast<float>((index + 1) % 3);
-			m_vertices_object[index_tmp + tmp + 5] = static_cast<float>((index + 2) % 3);
+			m_vertices_object[index_tmp + tmp + 3] = m_configs[index].color[0];
+			m_vertices_object[index_tmp + tmp + 4] = m_configs[index].color[1];
+			m_vertices_object[index_tmp + tmp + 5] = m_configs[index].color[2];
 		}
 	}
 }
@@ -352,10 +352,10 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 }
 
 
-poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_) noexcept
+poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_, std::array<float,3> color_) noexcept
 		: nbPoint(nbPoint_)
 		, radiusFromCenter(radiusFromCenter_)
 		, distances_with_layer(distances_with_layer_)
-		, rotation(rotation_) {
-
+		, rotation(rotation_)
+        , color(color_) {
 }
