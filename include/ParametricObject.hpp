@@ -29,9 +29,9 @@ namespace poc {
 
         void configure(const std::vector<LayerConfig>& layerConfigs);
 
-        const std::vector<float>& get_vertices() const;
+        const std::vector<float>& getVertices() const;
 
-        const std::vector<unsigned int>& get_indexes() const;
+        const std::vector<unsigned int>& getIndexes() const;
 
         float* computeVertices();
         unsigned int* computeIndexes();
@@ -47,17 +47,16 @@ namespace poc {
         std::vector<LayerConfig> m_configs;
 
         //attributes compute by the object
-        unsigned long long int m_nb_layout;
-        float m_heigth;
+        float m_height;
         std::vector<float> m_vertices_object;
         std::vector<unsigned int> m_index_object;
-        std::vector<float> m_heigth_progressiv;
-        std::vector<unsigned int> m_cumulativ_nb_point;
+        std::vector<float> m_height_progressive;
+        std::vector<unsigned int> m_cumulative_nb_point;
 
-        void computeVerticesForOneLayout(unsigned int index);
+        void computeVerticesForOneLayer(unsigned int index);
         bool computeIndexesForLayer(unsigned int index);
         void linksLayer(unsigned int index);
-        void linkslayerDifferentNumber(unsigned int index);
+        void linksLayerDifferentNumber(unsigned int index);
         unsigned int findShortestPointFrom(unsigned int index, unsigned int index_layer_other);
     };
 }
