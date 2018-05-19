@@ -33,8 +33,6 @@ namespace poc {
 
         const std::vector<unsigned int>& getIndexes() const;
 
-        float* computeVertices();
-        unsigned int* computeIndexes();
         unsigned int getNbPoint() const noexcept;
         unsigned long long int getNbIndexes() const noexcept;
 
@@ -53,6 +51,8 @@ namespace poc {
         std::vector<float> m_height_progressive;
         std::vector<unsigned int> m_cumulative_nb_point;
 
+        float* computeVertices();
+        unsigned int* computeIndexes();
         void computeVerticesForOneLayer(unsigned int index);
         bool computeIndexesForLayer(unsigned int index);
         void linksLayer(unsigned int index);
