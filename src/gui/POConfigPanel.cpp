@@ -103,16 +103,19 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 			}
 		}
 
-		//FIXME: temporary, need to add color to LayerConfig
-		static float col[3] = {1.0f, 0.0f, 0.2f};
-		ImGui::ColorEdit3("color", col);
+		std::array<float,3> color = layer.color;
+		ImGui::ColorEdit3("color", color.data());
+		if(color != layer.color){
+			layer.color = color;
+			modification = true;
+		}
 
 		ImGui::PopID();
 	}
 
 	ImGui::Separator();
 	if(ImGui::Button("Add", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 20))) {
-		layers.emplace_back(3, 0, 1, 0, std::array<float,3>{{1,0,0}});
+		layers.emplace_back(3, 1, 1, 0, std::array<float,3>{{0,0,0}});
 		modification = true;
 	}
 	if(layers.size() > 2) {
