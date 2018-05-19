@@ -67,47 +67,47 @@ bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
 		ImGui::EndMenuBar();
 	}
 
-	unsigned int layerNumber = 0;
+	int layerNumber = 0;
 	for(LayerConfig& layer : layers) {
 		const std::string layer_name = std::string("Layer ") + std::to_string(++layerNumber);
-		ImGui::PushID(&layer);
-		ImGui::CollapsingHeader(layer_name.c_str(), ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Leaf);
-
-		int nb_points = static_cast<int>(layer.nbPoint);
-		ImGui::InputInt("points", &nb_points);
-		if(nb_points != static_cast<int>(layer.nbPoint) && nb_points > 0) {
-			layer.nbPoint = static_cast<unsigned int>(nb_points);
-			modification = true;
-		}
-
-		float radius_from_center = layer.radiusFromCenter;
-		ImGui::SliderFloat("radius", &radius_from_center, 0.0f, 5.0f);
-		if(std::abs(radius_from_center - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
-			layer.radiusFromCenter = radius_from_center;
-			modification = true;
-		}
-
-		float rotation = layer.rotation;
-		ImGui::SliderAngle("rotation", &rotation);
-		if(std::abs(rotation - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() ) {
-			layer.rotation = rotation;
-			modification = true;
-		}
-
-		if(layerNumber > 1) {
-			float distances_with_layer = layer.distances_with_layer;
-			ImGui::SliderFloat("distance", &distances_with_layer, 0.0f, 5.0f);
-			if(std::abs(distances_with_layer - layer.distances_with_layer) > std::numeric_limits<float>::epsilon() && distances_with_layer > 0) {
-				layer.distances_with_layer = distances_with_layer;
+		ImGui::PushID(layerNumber);
+		if(ImGui::CollapsingHeader(layer_name.c_str(), ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_DefaultOpen)){
+			int nb_points = static_cast<int>(layer.nbPoint);
+			ImGui::InputInt("points", &nb_points);
+			if(nb_points != static_cast<int>(layer.nbPoint) && nb_points > 0) {
+				layer.nbPoint = static_cast<unsigned int>(nb_points);
 				modification = true;
 			}
-		}
 
-		std::array<float,3> color = layer.color;
-		ImGui::ColorEdit3("color", color.data());
-		if(color != layer.color){
-			layer.color = color;
-			modification = true;
+			float radius_from_center = layer.radiusFromCenter;
+			ImGui::SliderFloat("radius", &radius_from_center, 0.0f, 5.0f);
+			if(std::abs(radius_from_center - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
+				layer.radiusFromCenter = radius_from_center;
+				modification = true;
+			}
+
+			float rotation = layer.rotation;
+			ImGui::SliderAngle("rotation", &rotation);
+			if(std::abs(rotation - layer.rotation) > std::numeric_limits<float>::epsilon()) {
+				layer.rotation = rotation;
+				modification = true;
+			}
+
+			if(layerNumber > 1) {
+				float distances_with_layer = layer.distances_with_layer;
+				ImGui::SliderFloat("distance", &distances_with_layer, 0.0f, 5.0f);
+				if(std::abs(distances_with_layer - layer.distances_with_layer) > std::numeric_limits<float>::epsilon() && distances_with_layer > 0) {
+					layer.distances_with_layer = distances_with_layer;
+					modification = true;
+				}
+			}
+
+			std::array<float,3> color = layer.color;
+			ImGui::ColorEdit3("color", color.data());
+			if(color != layer.color){
+				layer.color = color;
+				modification = true;
+			}
 		}
 
 		ImGui::PopID();
