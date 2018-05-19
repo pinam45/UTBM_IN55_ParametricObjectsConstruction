@@ -36,6 +36,8 @@ poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerCon
 		}
 	}
 	m_vertices_object.resize(nb_point * m_float_vertex);
+    computeVertices();
+    computeIndexes();
 }
 
 //Compute vertices
@@ -297,7 +299,29 @@ unsigned int poc::ParametricObject::getNbPoint() const noexcept {
 }
 
 void poc::ParametricObject::configure(const std::vector<LayerConfig>& layerConfigs) {
+	unsigned int nb_point = 0;
+
+	if(!layerConfigs.size()){
+		assert(false);
+	}
+
 	m_configs = layerConfigs;
+	m_cumulative_nb_point.resize(m_configs.size());
+	m_height_progressive.resize(m_configs.size());
+
+	m_height = 0;
+	nb_point = m_configs[0].nbPoint;
+	m_cumulative_nb_point[0] = 0;
+	m_height_progressive[0] = 0;
+
+	for(unsigned int i = 1; i < m_configs.size(); ++i){
+		nb_point += m_configs[i].nbPoint;
+		m_height_progressive[i] = m_height_progressive[i-1] + m_configs[i].distances_with_layer;
+		m_cumulative_nb_point[i] = m_cumulative_nb_point[i-1] + m_configs[i-1].nbPoint;
+		m_height += m_configs[i].distances_with_layer;
+	}
+    m_vertices_object.resize(nb_point*m_float_vertex);
+	m_index_object.clear();
 	computeVertices();
 	computeIndexes();
 }
