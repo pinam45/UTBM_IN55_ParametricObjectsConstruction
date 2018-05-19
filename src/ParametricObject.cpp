@@ -350,12 +350,3 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 	}
 	return min_index;
 }
-
-
-poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_, std::array<float,3> color_) noexcept
-		: nbPoint(nbPoint_)
-		, radiusFromCenter(radiusFromCenter_)
-		, distances_with_layer(distances_with_layer_)
-		, rotation(rotation_)
-        , color(color_) {
-}

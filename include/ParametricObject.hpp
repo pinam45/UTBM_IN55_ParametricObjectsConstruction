@@ -17,7 +17,7 @@ namespace poc {
         float rotation;
         std::array<float,3> color;
 
-        LayerConfig(unsigned int nbPoint, float radiusFromCenter, float distances_with_layer, float rotation, std::array<float,3> color) noexcept;
+        constexpr LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_, std::array<float,3> color_) noexcept;
     };
 
     class ParametricObject {
@@ -62,5 +62,15 @@ namespace poc {
         unsigned int findShortestPointFrom(unsigned int index, unsigned int index_layer_other);
     };
 }
+
+constexpr poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_, std::array<float,3> color_) noexcept
+		: nbPoint(nbPoint_)
+		, radiusFromCenter(radiusFromCenter_)
+		, distances_with_layer(distances_with_layer_)
+		, rotation(rotation_)
+		, color(color_) {
+
+}
+
 
 #endif //PARAMETRICOBJECTSCONSTRUCTION_PARAMETRICOBJECT_HPP
