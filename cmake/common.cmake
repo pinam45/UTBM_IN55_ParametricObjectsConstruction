@@ -394,7 +394,7 @@ function(target_set_output_directory target directory)
 	target_set_archive_output_directory(${target} "${directory}")
 endfunction()
 
-## target_set_output_directory(target directory)
+## target_set_runtime_output_directory(target directory)
 # Set the target runtime output directory to the input directory.
 #   {value} [in] target:      Target to configure
 #   {value} [in] directory:   Output directory
@@ -407,7 +407,7 @@ function(target_set_runtime_output_directory target directory)
 	  )
 endfunction()
 
-## target_set_output_directory(target directory)
+## target_set_library_output_directory(target directory)
 # Set the target library output directory to the input directory.
 #   {value} [in] target:      Target to configure
 #   {value} [in] directory:   Output directory
@@ -420,7 +420,7 @@ function(target_set_library_output_directory target directory)
 	  )
 endfunction()
 
-## target_set_output_directory(target directory)
+## target_set_archive_output_directory(target directory)
 # Set the target archive output directory to the input directory.
 #   {value} [in] target:      Target to configure
 #   {value} [in] directory:   Output directory
