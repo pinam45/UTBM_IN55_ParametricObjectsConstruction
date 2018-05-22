@@ -78,8 +78,8 @@ int main()
 
 	std::vector<poc::LayerConfig> layers;
     std::array<float,3> red {{1,0,0}};
-    std::array<float,3> green {{1,0,0}};
-    std::array<float,3> blue {{1,0,0}};
+    std::array<float,3> green {{0,1,0}};
+    std::array<float,3> blue {{0,0,1}};
 	layers.reserve(3);
     layers.emplace_back(4, 1.0f, 1.0f, 0, red);
 	layers.emplace_back(10, 1.5f, 0.4f, 0.0f, blue);
