@@ -43,9 +43,6 @@ void check_error() {
     }
 }
 
-//#pragma clang diagnostic push
-//#pragma ide diagnostic ignored "OCSimplifyInspection"
-//#pragma ide diagnostic ignored "OCDFAInspection"
 int main()
 {
 
@@ -61,21 +58,6 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	//std::vector<float> radiusBetweenCenter = {1.5f, 1.5f, 0.3f, 0.3f, 2.0f};
-	//std::vector<unsigned int> nb_point_layout = {28,28,28,28,28};
-	//std::vector<float> distances_between_layout = {2.5f, 2, 3, 1};
-	//std::vector<float> rotation = {0.0f, 0.0f, 0.0f, 0.0f};
-
-    /*std::vector<float> radiusBetweenCenter = {1, 1.5f, 0};
-    std::vector<unsigned int> nb_point_layout = {7,7,1};
-    std::vector<float> distances_between_layout = {0.5f, 2};
-    std::vector<float> rotation = {0,0,0};*/
-
-    /*std::vector<float> radiusBetweenCenter = {1.0f,1.0f};
-    std::vector<unsigned int> nb_point_layout = {4,4};
-    std::vector<float> distances_between_layout = {1.0f};
-    std::vector<float> rotation = {0.0f, 0.0f};*/
-
 	std::vector<poc::LayerConfig> layers;
     std::array<float,3> red {{1,0,0}};
     std::array<float,3> green {{0,1,0}};
@@ -84,54 +66,8 @@ int main()
     layers.emplace_back(4, 1.0f, 1.0f, 0, red);
 	layers.emplace_back(10, 1.5f, 0.4f, 0.0f, blue);
 	layers.emplace_back(1, 0.5f, 1.0f, 0, green);
-	//layers.emplace_back(5, 0.5f, 2.0f, 0);
-	//layers.emplace_back(5, 1.5f, 1.0f, 0.0f);
-	//layers.emplace_back(30, 1.5f, 0.5f, -M_PI_4);
 
 	poc::ParametricObject parametricObject = poc::ParametricObject(layers);
-	/*float vertices[] = {
-	  -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-	  0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-	  -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-	  -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-
-	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-	  -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-
-	  -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-	  -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-	  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-	  -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-	  -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-	  -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-
-	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-	  0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-
-	  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-	  0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-	  0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-	  -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-	  -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-
-	  -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
-	  0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-	  -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-	  -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-	};*/
 
 	unsigned int VAO = 0; // Vertex Array Object
 	unsigned int VBO = 0; // Vertex Buffer Object
@@ -291,4 +227,3 @@ int main()
 
 	return EXIT_SUCCESS;
 }
-//#pragma clang diagnostic pop
