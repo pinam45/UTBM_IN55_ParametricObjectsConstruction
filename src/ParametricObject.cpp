@@ -188,90 +188,73 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 
 void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 	if(static_cast<int>(index - 1) >= 0 && m_configs[index - 1].nbPoint != 1) {
-		unsigned int nb_point_first = m_configs[index - 1].nbPoint;
-		unsigned int nb_point_second = m_configs[index].nbPoint;
-		unsigned int index_first_layer = m_cumulative_nb_point[index - 1];
-		unsigned int index_second_layer = m_cumulative_nb_point[index];
+        unsigned int nb_point_first = m_configs[index - 1].nbPoint;
+        unsigned int nb_point_second = m_configs[index].nbPoint;
+        unsigned int index_first_layer = m_cumulative_nb_point[index - 1];
+        unsigned int index_second_layer = m_cumulative_nb_point[index];
 
-		unsigned int nb_links_by_point = nb_point_second / nb_point_first;
-		unsigned int nb_point_with_one_more_links = 0;
 
-		bool is_More = false;
+        unsigned int lastPoint = index_first_layer;
 
-		if(nb_point_first > nb_point_second) {
-			nb_point_first = m_configs[index].nbPoint;
-			nb_point_second = m_configs[index - 1].nbPoint;
+        std::vector<unsigned int> tmp;
 
-			index_first_layer = m_cumulative_nb_point[index];
-			index_second_layer = m_cumulative_nb_point[index - 1];
 
-			nb_links_by_point = nb_point_second / nb_point_first;
-		}
+        if (nb_point_first > nb_point_second) {
+            nb_point_first = m_configs[index].nbPoint;
+            nb_point_second = m_configs[index - 1].nbPoint;
 
-		if(nb_point_second % nb_point_first) {
-			is_More = 1.0 * nb_point_second / nb_point_first - nb_point_second / nb_point_first > 0.5;
-			if(!is_More) {
-				while(((nb_point_first-nb_point_with_one_more_links)*nb_links_by_point + nb_point_with_one_more_links*(nb_links_by_point+1)) != nb_point_second) {
-                    ++nb_point_with_one_more_links;
-				}
+            index_first_layer = m_cumulative_nb_point[index];
+            index_second_layer = m_cumulative_nb_point[index - 1];
+			lastPoint = index_first_layer;
+
+			++index;
+        }
+
+
+        unsigned int nearestPointForFirstPoint = findShortestPointFrom(index_second_layer, index - 1);
+
+        for (unsigned int  i = 0; i < nb_point_second; ++i){
+            unsigned int nearestPointFrom = findShortestPointFrom(i+index_second_layer, index - 1);
+            if(nearestPointFrom != lastPoint){
+                m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+                m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
+                m_index_object.push_back(index_second_layer + i);
+                m_index_object.push_back((nearestPointFrom -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
+                m_index_object.push_back(index_second_layer + i);
+                m_index_object.push_back(nearestPointFrom);
+
+                lastPoint = nearestPointFrom;
+                tmp.clear();
             }
-			else {
-				if(nb_links_by_point == 1) {
-					while(nb_point_second - ((nb_point_first - nb_point_with_one_more_links) * (nb_links_by_point + 1) + nb_point_with_one_more_links * nb_links_by_point)) {
-						++nb_point_with_one_more_links;
-					}
-                }
-				else {
-					while(((nb_point_first-nb_point_with_one_more_links)*(nb_links_by_point+1) + nb_point_with_one_more_links*(nb_links_by_point)) != nb_point_second) {
-                        ++nb_point_with_one_more_links;
-					}
-                }
+            if(tmp.size() == 0){
+                tmp.push_back(nearestPointFrom);
+                tmp.push_back(i + index_second_layer);
+            } else {
+                m_index_object.push_back(tmp[0]);
+                m_index_object.push_back(tmp[1]);
+                m_index_object.push_back(index_second_layer+i);
+
+				tmp.clear();
+
+                tmp.push_back(nearestPointFrom);
+                tmp.push_back(i + index_second_layer);
+            }
+        }
+		if(nearestPointForFirstPoint != lastPoint){
+            m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+            m_index_object.push_back(index_second_layer + (-1 + nb_point_second)%nb_point_second);
+            m_index_object.push_back(index_second_layer);
+            m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
+            m_index_object.push_back(index_second_layer );
+            m_index_object.push_back(nearestPointForFirstPoint);
+		} else {
+			if(tmp.size()){
+				m_index_object.push_back(tmp[0]);
+				m_index_object.push_back(tmp[1]);
+				m_index_object.push_back(index_second_layer);
 			}
 		}
-		unsigned int save_nb_point_with_one_more_link = nb_point_with_one_more_links;
-
-		unsigned int nb_links = 0;
-		const unsigned int shortest_point_index = findShortestPointFrom(index_first_layer, index);
-        const unsigned int index_begin_point = (shortest_point_index - index_second_layer + nb_point_second - (nb_links_by_point) / 2) % nb_point_second;
-		for(unsigned int i = 0; i < nb_point_first; ++i) {
-			unsigned int nb_links_for_point = is_More ? nb_links_by_point + 1 : nb_links_by_point;
-			const unsigned int t = is_More ? i + 1 : i;
-			if(!(t % 2) && nb_point_with_one_more_links) {
-				is_More ? --nb_links_for_point : ++nb_links_for_point;
-				--nb_point_with_one_more_links;
-			}
-			const unsigned int index_begin = index_begin_point + nb_links;
-			if(nb_links_for_point > 1) {
-				for(unsigned int j = 0; j < nb_links_for_point - 1; ++j) {
-					m_index_object.push_back(i + index_first_layer);
-					m_index_object.push_back(index_second_layer + (j + index_begin) % nb_point_second);
-					m_index_object.push_back(index_second_layer + (j + 1 + index_begin) % nb_point_second);
-				}
-			}
-			nb_links += nb_links_for_point;
-		}
-
-		nb_links = 0;
-		for(unsigned int i = 0; i < nb_point_first; ++i) {
-			unsigned int tmp = is_More ? nb_links_by_point + 1 : nb_links_by_point;
-			const unsigned int t = is_More ? i + 1 : i;
-			if(!(t % 2) && save_nb_point_with_one_more_link) {
-				is_More ? --tmp : ++tmp;
-				--save_nb_point_with_one_more_link;
-			}
-			if(!i) {
-				nb_links = index_begin_point;
-			}
-			nb_links += tmp;
-			m_index_object.push_back(i + index_first_layer);
-			m_index_object.push_back(index_second_layer + (nb_links) % nb_point_second);
-			m_index_object.push_back(index_second_layer + (nb_links - 1) % nb_point_second);
-
-			m_index_object.push_back(i + index_first_layer);
-			m_index_object.push_back(index_first_layer + (i + 1) % nb_point_first);
-			m_index_object.push_back(index_second_layer + (nb_links) % nb_point_second);
-		}
-	}
+    }
 }
 
 //Getter
