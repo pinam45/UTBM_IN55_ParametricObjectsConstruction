@@ -7,9 +7,12 @@
 #include <iostream>
 #include <iterator>
 #include <algorithm>
-
-#define _USE_MATH_DEFINES
 #include <cmath>
+
+namespace {
+    template<class T>
+    constexpr T pi = T(3.1415926535897932385L);
+}
 #include <cassert>
 
 poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerConfigs)
@@ -69,7 +72,7 @@ void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 		m_vertices_object[index_tmp + 5] = m_configs[index].color[2];
 	}
 	else {
-		const double angle = 2 * M_PI / nb_point;
+		const double angle = 2 * pi<double> / nb_point;
 		const double rotation = m_configs[index].rotation;
 
 		for(unsigned int i = 0; i < nb_point; ++i) {
