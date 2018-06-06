@@ -98,7 +98,7 @@ bool poc::ParametricObject::computeIndexesForLayer(unsigned int index) {
 	const unsigned int nb_point = m_configs[index].nbPoint;
 	const unsigned int j = m_cumulative_nb_point[index];
 	unsigned int end = 0;
-	if(nb_point == 1) {
+	if(nb_point < 3) {
 		return false;
 	}
 	else {
@@ -242,7 +242,7 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
         }
 		if(nearestPointForFirstPoint != lastPoint){
             m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-            m_index_object.push_back(index_second_layer + (-1 + nb_point_second)%nb_point_second);
+            m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
             m_index_object.push_back(index_second_layer);
             m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
             m_index_object.push_back(index_second_layer );
