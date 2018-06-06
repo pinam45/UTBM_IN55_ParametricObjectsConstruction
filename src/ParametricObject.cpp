@@ -219,6 +219,18 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
         for (unsigned int  i = 0; i < nb_point_second; ++i){
             unsigned int nearestPointFrom = findShortestPointFrom(i+index_second_layer, index - 1);
             if(nearestPointFrom != lastPoint){
+                if(nearestPointFrom - lastPoint == 2){
+                    m_index_object.push_back((lastPoint + nb_point_first)%nb_point_first + index_first_layer);
+                    m_index_object.push_back((lastPoint+1+nb_point_first)%nb_point_first + index_first_layer);
+                    m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second)%nb_point_second);
+
+                } else {
+                    if(nearestPointFrom  == (lastPoint+2+nb_point_first)%nb_point_first + index_first_layer){
+                        m_index_object.push_back((lastPoint + nb_point_first)%nb_point_first + index_first_layer);
+                        m_index_object.push_back((lastPoint+1+nb_point_first)%nb_point_first + index_first_layer);
+                        m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second)%nb_point_second);
+                    }
+                }
                 m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
                 m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
                 m_index_object.push_back(index_second_layer + i);
@@ -314,7 +326,7 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 		const double tmp_distance = pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[index * m_float_vertex])), 2.0)
 		                            + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[index * m_float_vertex + 1])), 2.0)
 		                            + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[index * m_float_vertex + 2])), 2.0);
-		if(tmp_distance < min_distance) {
+		if(tmp_distance <= min_distance) {
 			min_distance = tmp_distance;
 			min_index = i;
 		}
