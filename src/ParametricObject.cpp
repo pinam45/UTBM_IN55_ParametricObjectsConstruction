@@ -231,12 +231,24 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
                         m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second)%nb_point_second);
                     }
                 }
-                m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-                m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
-                m_index_object.push_back(index_second_layer + i);
-                m_index_object.push_back((nearestPointFrom -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
-                m_index_object.push_back(index_second_layer + i);
-                m_index_object.push_back(nearestPointFrom);
+
+                if(computeDistanceBetween((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer, index_second_layer + i) <
+                        computeDistanceBetween(nearestPointFrom, index_second_layer + (i -1 + nb_point_second)%nb_point_second)) {
+
+                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
+                    m_index_object.push_back(index_second_layer + i);
+                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
+                    m_index_object.push_back(index_second_layer + i);
+                    m_index_object.push_back(nearestPointFrom);
+                } else {
+                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
+                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+                    m_index_object.push_back(nearestPointFrom);
+                    m_index_object.push_back(nearestPointFrom);
+                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
+                    m_index_object.push_back(index_second_layer + i);
+                }
 
                 lastPoint = nearestPointFrom;
                 tmp.clear();
@@ -256,12 +268,23 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
             }
         }
 		if(nearestPointForFirstPoint != lastPoint){
-            m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-            m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
-            m_index_object.push_back(index_second_layer);
-            m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
-            m_index_object.push_back(index_second_layer );
-            m_index_object.push_back(nearestPointForFirstPoint);
+			if(computeDistanceBetween((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer, index_second_layer) <
+			   computeDistanceBetween(nearestPointForFirstPoint, index_second_layer + (nb_point_second -1)%nb_point_second)) {
+
+				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
+				m_index_object.push_back(index_second_layer);
+				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
+				m_index_object.push_back(index_second_layer );
+				m_index_object.push_back(nearestPointForFirstPoint);
+			} else {
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
+				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+				m_index_object.push_back(nearestPointForFirstPoint);
+				m_index_object.push_back(nearestPointForFirstPoint);
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
+				m_index_object.push_back(index_second_layer);
+			}
 		} else {
 			if(tmp.size()){
 				m_index_object.push_back(tmp[0]);
@@ -332,4 +355,10 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 		}
 	}
 	return min_index;
+}
+
+double poc::ParametricObject::computeDistanceBetween(unsigned int i, unsigned int j){
+    return sqrt(pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[j * m_float_vertex])), 2.0)
+           + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[j * m_float_vertex + 1])), 2.0)
+           + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[j * m_float_vertex + 2])), 2.0));
 }

@@ -60,6 +60,7 @@ namespace poc {
         void linksLayer(unsigned int index);
         void linksLayerDifferentNumber(unsigned int index);
         unsigned int findShortestPointFrom(unsigned int index, unsigned int index_layer_other);
+        double computeDistanceBetween(unsigned int i, unsigned int j);
     };
 }
 
