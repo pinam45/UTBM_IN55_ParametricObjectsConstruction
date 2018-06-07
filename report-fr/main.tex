@@ -1,4 +1,4 @@
-\PassOptionsToPackage{table}{xcolor}
+\PassOptionsToPackage{table,svgnames}{xcolor}
 \documentclass[article, backcover, french, nodocumentinfo]{upmethodology-document}
 \include{packages}
 \include{settings}
@@ -17,5 +17,66 @@
 	%\listoffigures{}
 	\newpage{}
 	\section{TODO}
+		\TODO{TODO}
+		\par\noindent\begin{minipage}[t]{\textwidth}
+			\centering
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\resizebox{\textwidth}{!}{\import{figures/}{layers_1_empty.tex}}%
+					\caption{Layers no liés}%
+					\label{fig:layers_1_empty}%
+				\end{figure}
+			\end{minipage}
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\resizebox{\textwidth}{!}{\import{figures/}{layers_2_nearest_lines.tex}}%
+					\caption{Liaison avec les points les plus proches}%
+					\label{fig:layers_2_nearest_lines}%
+				\end{figure}
+			\end{minipage}
+		\end{minipage}
+		\TODO{TODO}
+		Comme illustré sur la figure \ref{fig:layers_1_empty}\ldots
+		\par\noindent\begin{minipage}[t]{\textwidth}
+			\centering
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\resizebox{\textwidth}{!}{\import{figures/}{layers_3_triangles_quadrilaterals.tex}}%
+					\caption{Délimitation de triangles et quadrilatères}%
+					\label{fig:layers_3_triangles_quadrilaterals}%
+				\end{figure}
+			\end{minipage}
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\resizebox{\textwidth}{!}{\import{figures/}{layers_4_quadrilaterals_diagonals.tex}}%
+					\caption{Coupure des quadrilatères sur la diagonale la plus courte}%
+					\label{fig:layers_4_quadrilaterals_diagonals}%
+				\end{figure}
+			\end{minipage}
+		\end{minipage}
+		\TODO{TODO}
+		\par\noindent\begin{minipage}[t]{\textwidth}
+			\centering
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\includegraphics[width=1\textwidth]{view_1_1}%
+					\caption{Exemple: vu de coté}%
+					\label{fig:view_1_1}%
+				\end{figure}
+			\end{minipage}
+			\begin{minipage}[t]{0.49\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\includegraphics[width=1\textwidth]{view_1_2}%
+					\caption{Exemple: vu du dessus}%
+					\label{fig:view_1_2}%
+				\end{figure}
+			\end{minipage}
+		\end{minipage}
 		\TODO{TODO}
 \end{document}
