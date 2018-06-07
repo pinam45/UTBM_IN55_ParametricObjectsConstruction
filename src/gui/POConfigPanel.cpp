@@ -23,6 +23,18 @@ namespace {
 	constexpr float MAXIMUM_LAYER_DISTANCE = 5.0f;
 
 	constexpr size_t MAXIMUM_LAYERS_NUMBER = 2;
+
+	constexpr std::array<float,3> RED {{1,0,0}};
+	constexpr std::array<float,3> GREEN {{0,1,0}};
+	constexpr std::array<float,3> BLUE {{0,0,1}};
+	constexpr poc::LayerConfig LAYER_1(4, 1.0f, 1.0f, 0, RED);
+	constexpr poc::LayerConfig LAYER_2(10, 1.5f, 0.4f, 0.0f, BLUE);
+	constexpr poc::LayerConfig LAYER_3(1, 0.5f, 1.0f, 0, GREEN);
+	constexpr std::initializer_list DEFAULT_LAYERS {
+		LAYER_1,
+		LAYER_2,
+		LAYER_3
+	};
 }
 
 poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
@@ -32,7 +44,8 @@ poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
 	  POConfigPanel::ThemeHolder{"Mint-Y-Dark", ImGuiColorTheme::MintYDark, false},
     }
     , m_position(x, y)
-    , m_size(width, height) {
+    , m_size(width, height)
+    , layers(DEFAULT_LAYERS) {
 
 	for(ThemeHolder& themeHolder : themeHolders) {
 		if(themeHolder.enabled) {
@@ -57,7 +70,11 @@ void poc::POConfigPanel::setHeight(float height) {
 	m_size.y = height;
 }
 
-bool poc::POConfigPanel::draw(std::vector<LayerConfig>& layers) {
+const std::vector<poc::LayerConfig>& poc::POConfigPanel::getLayers() const {
+	return layers;
+}
+
+bool poc::POConfigPanel::draw() {
 	bool modification = false;
 
 	ImGui::SetNextWindowPos(m_position);

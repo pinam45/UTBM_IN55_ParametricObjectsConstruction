@@ -45,7 +45,6 @@ void check_error() {
 
 int main()
 {
-
 	poc::GlfwInitializer initializer;
 
 	poc::VideoMode test(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -57,42 +56,6 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	std::vector<poc::LayerConfig> layers;
-    std::array<float,3> red {{1,0,0}};
-    std::array<float,3> green {{0,1,0}};
-    std::array<float,3> blue {{0,0,1}};
-	layers.reserve(3);
-    layers.emplace_back(4, 1.0f, 1.0f, 0, red);
-	layers.emplace_back(10, 1.5f, 0.4f, 0.0f, blue);
-	layers.emplace_back(1, 0.5f, 1.0f, 0, green);
-
-	poc::ParametricObject parametricObject = poc::ParametricObject(layers);
-
-	unsigned int VAO = 0; // Vertex Array Object
-	unsigned int VBO = 0; // Vertex Buffer Object
-    unsigned int EBO;
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbIndexes() * sizeof(unsigned int)), parametricObject.getIndexes().data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 
 	poc::Shader vshader = poc::Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
 	if(!vshader.isValid()){
@@ -123,6 +86,32 @@ int main()
 	style.ScrollbarRounding = 0.0f;
 
 	poc::POConfigPanel panel(0, 0, static_cast<float>(PANEL_WIDTH), static_cast<float>(w.getHeigth()));
+	poc::ParametricObject parametricObject = poc::ParametricObject(panel.getLayers());
+
+	unsigned int VAO = 0; // Vertex Array Object
+	unsigned int VBO = 0; // Vertex Buffer Object
+	unsigned int EBO;
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbIndexes() * sizeof(unsigned int)), parametricObject.getIndexes().data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	bool first_mouse_move = true;
 	float mouse_last_x;
@@ -210,8 +199,8 @@ int main()
 		fpsOverlay.draw();
 
 		panel.setHeight(static_cast<float>(w.getHeigth()));
-		if(panel.draw(layers)){
-			parametricObject.configure(layers);
+		if(panel.draw()){
+			parametricObject.configure(panel.getLayers());
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);
 

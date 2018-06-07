@@ -20,7 +20,9 @@ namespace poc{
 		void setWidth(float width);
 		void setHeight(float height);
 
-		bool draw(std::vector<poc::LayerConfig>& layers);
+		const std::vector<poc::LayerConfig>& getLayers() const;
+
+		bool draw();
 
 	private:
 
@@ -34,6 +36,8 @@ namespace poc{
 
 		ImVec2 m_position;
 		ImVec2 m_size;
+
+		std::vector<poc::LayerConfig> layers;
 	};
 }
 
