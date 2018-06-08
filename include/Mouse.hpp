@@ -5,6 +5,7 @@ namespace poc {
 	class Mouse {
 	public:
 		enum class Button : int {
+			Unknown = -1,
 			Button1 = 0,
 			Button2,
 			Button3,

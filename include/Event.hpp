@@ -39,50 +39,50 @@ namespace poc {
 			KeyEvent(Keyboard::Key code, bool alt, bool control, bool shift, bool system) noexcept;
 
 			Keyboard::Key code = Keyboard::Key::Unknown;
-			bool alt;
-			bool control;
-			bool shift;
-			bool system;
+			bool alt = false;
+			bool control = false;
+			bool shift = false;
+			bool system = false;
 		};
 
 		struct TextEvent {
 			TextEvent() noexcept = default;
 			explicit TextEvent(unsigned int character) noexcept;
 
-			unsigned int character;
+			unsigned int character = 0;
 		};
 
 		struct MouseButtonEvent {
 			MouseButtonEvent() noexcept = default;
 			MouseButtonEvent(Mouse::Button button, int x, int y) noexcept;
 
-			Mouse::Button button;
-			int x;
-			int y;
+			Mouse::Button button = Mouse::Button::Unknown;
+			int x = -1;
+			int y = -1;
 		};
 
 		struct MouseMoveEvent {
 			MouseMoveEvent() noexcept = default;
 			MouseMoveEvent(int x, int y) noexcept;
 
-			int x;
-			int y;
+			int x = -1;
+			int y = -1;
 		};
 
 		struct MouseScrollEvent {
 			MouseScrollEvent() noexcept = default;
 			MouseScrollEvent(double xDelta, double yDelta) noexcept;
 
-			double xDelta;
-			double yDelta;
+			double xDelta = 0.;
+			double yDelta = 0.;
 		};
 
 		struct ResizeEvent {
 			ResizeEvent() noexcept = default;
 			ResizeEvent(int width, int height);
 
-			int width;
-			int height;
+			int width = 0;
+			int height = 0;
 		};
 
 		std::variant<std::monostate, KeyEvent, TextEvent,
