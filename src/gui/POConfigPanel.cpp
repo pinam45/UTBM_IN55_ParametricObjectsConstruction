@@ -2,7 +2,6 @@
 
 #include <string>
 #include <algorithm>
-#include <random>
 
 namespace {
 	constexpr unsigned int DEFAULT_LAYER_NB_POINTS = 3;
@@ -45,29 +44,6 @@ namespace {
 	constexpr T pi = T(3.1415926535897932385L);
 }
 
-namespace {
-	poc::LayerConfig randomLayer(){
-		std::random_device rd;
-		std::mt19937 random(rd());
-		std::uniform_int_distribution<unsigned int> rng_nb_point(MINIMUM_LAYER_POINTS_NUMBER, MAXIMUM_LAYER_POINTS_NUMBER);
-		std::uniform_real_distribution<float> rng_radius_from_center(MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_DISTANCE);
-		std::uniform_real_distribution<float> rng_distances_with_layer(MINIMUM_LAYER_DISTANCE, MAXIMUM_LAYER_DISTANCE);
-		std::uniform_real_distribution<float> rng_rotation(-2 * pi<>, 2 * pi<>);
-		std::uniform_real_distribution<float> rng_color(0, 1);
-
-		return poc::LayerConfig(
-		  rng_nb_point(random),
-		  rng_radius_from_center(random),
-		  rng_distances_with_layer(random),
-		  rng_rotation(random),
-		  std::array<float,3>{
-		    rng_color(random),
-		    rng_color(random),
-		    rng_color(random)
-		  });
-	}
-}
-
 poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
   : themeHolders{
 	  POConfigPanel::ThemeHolder{"Arc Dark", ImGuiColorTheme::ArcDark, true},
@@ -76,6 +52,7 @@ poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
     }
     , m_position(x, y)
     , m_size(width, height)
+    , rd()
     , layers(DEFAULT_LAYERS) {
 
 	for(ThemeHolder& themeHolder : themeHolders) {
@@ -254,4 +231,24 @@ bool poc::POConfigPanel::draw() {
 	}
 
 	return modification;
+}
+
+poc::LayerConfig poc::POConfigPanel::randomLayer(){
+	std::mt19937 random(rd());
+	std::uniform_int_distribution<unsigned int> rng_nb_point(MINIMUM_LAYER_POINTS_NUMBER, MAXIMUM_LAYER_POINTS_NUMBER);
+	std::uniform_real_distribution<float> rng_radius_from_center(MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_DISTANCE);
+	std::uniform_real_distribution<float> rng_distances_with_layer(MINIMUM_LAYER_DISTANCE, MAXIMUM_LAYER_DISTANCE);
+	std::uniform_real_distribution<float> rng_rotation(-2 * pi<>, 2 * pi<>);
+	std::uniform_real_distribution<float> rng_color(0, 1);
+
+	return poc::LayerConfig(
+	  rng_nb_point(random),
+	  rng_radius_from_center(random),
+	  rng_distances_with_layer(random),
+	  rng_rotation(random),
+	  std::array<float,3>{
+		rng_color(random),
+		rng_color(random),
+		rng_color(random)
+	  });
 }

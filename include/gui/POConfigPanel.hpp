@@ -3,6 +3,7 @@
 
 
 #include <imgui.h>
+#include <random>
 
 #include "ParametricObject.hpp"
 #include "imgui_easy_theming.hpp"
@@ -26,6 +27,8 @@ namespace poc{
 
 	private:
 
+		poc::LayerConfig randomLayer();
+
 		struct ThemeHolder
 		{
 			const char* name;
@@ -37,6 +40,7 @@ namespace poc{
 		ImVec2 m_position;
 		ImVec2 m_size;
 
+		std::random_device rd;
 		std::vector<poc::LayerConfig> layers;
 	};
 }
