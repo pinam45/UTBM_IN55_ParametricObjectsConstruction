@@ -16,6 +16,52 @@
 	\tableofcontents{}
 	%\listoffigures{}
 	\newpage{}
+	\section{Sujet choisi}
+		\TODO{Expliquer le sujet}
+	\section{Installation et utilisation}
+		\subsection{Installation}
+		Pour ouvrir le projet sur visual studio:
+
+		\begin{itemize}
+			\item Installer cmake disponible à cette addresse~: \\
+				https://cmake.org/download/
+			\item Lancer cmake
+			\item Sélectionner la racine du dossier de sources
+			\item Sélectionner le dossier de build \\
+				\includegraphics[width=0.5\textwidth]{tuto1}
+			\item Appuyer sur "Configure"
+			\item Sélectionner "Visual Studio 15 2017 Win64" en tant que "générateur" \\
+				\includegraphics[width=0.5\textwidth]{tuto2}
+			\item Appuyer sur "Finish"
+			\item Une fois la configuration générée, appuyer sur "Generate"
+			\item Appuyer sur "Open Project"
+			\item Sélectionner "ParametricObjectsConstruction" comme projet de démarrage (dans l'explorateur de solution) en appuyant sur "Définir comme projet de démarrage" \\
+				\includegraphics[width=0.5\textwidth]{tuto3}
+		\end{itemize}
+
+		\subsection{Utilisation}
+			Afin de modifier l'objet paramétrique, on pourra utiliser le menu disponible sur la gauche du programme~: \\
+			\begin{minipage}[t]{0.4\textwidth}
+				\begin{figure}[H]
+					\centering%
+					\includegraphics[width=0.7\textwidth]{menu}%
+					\caption{Menu de configuration}%
+					\label{fig:menu}%
+				\end{figure}
+			\end{minipage}
+			\begin{minipage}[t]{0.59\textwidth}
+				\begin{figure}[H]
+					Dans ce programme les objets seront construits en utilisant des Layers. \\
+					\hfill \\
+					Chaque Layer correspond à un cercle sur lequelle on placera des points. \\
+					\hfill \\
+					La taille du cercle ainsi que le nombre de points peuvent être choisis dans le menu. \\
+					\hfill \\
+					Le paramètre distance permet d'éloigner un layer par rapport au layer précédent \\
+					\hfill \\
+					Enfin on pourra rajouter, supprimer ou réordonner les layers.
+				\end{figure}
+			\end{minipage}
 	\section{TODO}
 		\TODO{TODO}
 		\par\noindent\begin{minipage}[t]{\textwidth}
