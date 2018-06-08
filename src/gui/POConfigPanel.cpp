@@ -124,7 +124,7 @@ bool poc::POConfigPanel::draw() {
 	bool swap = false;
 	int to_swap = 0;
 
-	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f));
+	ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f)));
 	if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
 		insert_layer = true;
 		insert_layer_pos = -1;
@@ -183,16 +183,16 @@ bool poc::POConfigPanel::draw() {
 			swap = true;
 			to_swap = i_layer + 1;
 		}
-		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(1.0f/7.0f, 0.6f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(1.0f/7.0f, 0.6f, 0.6f)));
 		ImGui::SameLine();
 		if(ImGui::Button("Randomise", ImVec2(ImGui::GetContentRegionAvailWidth(), 20))) {
-			layers[i_layer] =randomLayer();
+			layers[static_cast<std::vector<poc::LayerConfig>::size_type>(i_layer)] =randomLayer();
 			modification = true;
 		}
 		ImGui::PopStyleColor();
 
 		ImGui::Separator();
-		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f)));
 		if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
 			insert_layer = true;
 			insert_layer_pos = i_layer;
@@ -206,8 +206,8 @@ bool poc::POConfigPanel::draw() {
 
 	ImGui::End();
 
-	if(swap && to_swap > 0 && to_swap < layers.size()){
-		std::swap(layers[to_swap], layers[to_swap-1]);
+	if(swap && to_swap > 0 && to_swap < static_cast<int>(layers.size())){
+		std::swap(layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap)], layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap-1)]);
 		modification = true;
 	}
 
@@ -224,7 +224,7 @@ bool poc::POConfigPanel::draw() {
 		else{
 			modification = true;
 		}
-		if(insert_layer && i == insert_layer_pos){
+		if(insert_layer && static_cast<int>(i) == insert_layer_pos){
 			layers.push_back(DEFAULT_LAYER);
 			modification = true;
 		}
