@@ -40,6 +40,9 @@ make_target(
   EXT_INCLUDES "${OPENGL_INCLUDE_DIR}" "${GLEW_INCLUDE_DIR}" "${GLFW_INCLUDE_DIR}" "${IMGUI_INCLUDE_DIR}" "${GLM_INCLUDE_DIR}"
   OPTIONS cxx executable
 )
+
+set_target_properties(ParametricObjectsConstruction PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 set_property(TARGET ParametricObjectsConstruction PROPERTY CXX_STANDARD 17)
 target_link_libraries(ParametricObjectsConstruction ${GLEW_LIBRARY} ${OPENGL_LIBRARY} ${GLFW_LIBRARY} ${IMGUI_LIBRARY}) # GLEW before OpenGL
 
