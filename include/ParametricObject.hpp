@@ -11,8 +11,8 @@
 
 namespace poc {
     struct LayerConfig{
-        unsigned int nbPoint;
-        float radiusFromCenter;
+        unsigned int nb_point;
+        float radius_from_center;
         float distances_with_layer;
         float rotation;
         std::array<float,3> color;
@@ -65,8 +65,8 @@ namespace poc {
 }
 
 constexpr poc::LayerConfig::LayerConfig(unsigned int nbPoint_, float radiusFromCenter_, float distances_with_layer_, float rotation_, std::array<float,3> color_) noexcept
-		: nbPoint(nbPoint_)
-		, radiusFromCenter(radiusFromCenter_)
+		: nb_point(nbPoint_)
+		, radius_from_center(radiusFromCenter_)
 		, distances_with_layer(distances_with_layer_)
 		, rotation(rotation_)
 		, color(color_) {

@@ -26,14 +26,14 @@ poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerCon
 	unsigned int nb_point = 0;
 	for(unsigned int i = 0; i < layerConfigs.size(); ++i) {
 
-		nb_point += layerConfigs[i].nbPoint;
+		nb_point += layerConfigs[i].nb_point;
 		if(i == 0) {
 			m_cumulative_nb_point.push_back(0);
 			m_height_progressive.push_back(0);
 			m_height = 0.0f;
 		}
 		else {
-			m_cumulative_nb_point.push_back(m_cumulative_nb_point[i - 1] + layerConfigs[i - 1].nbPoint);
+			m_cumulative_nb_point.push_back(m_cumulative_nb_point[i - 1] + layerConfigs[i - 1].nb_point);
 			m_height_progressive.push_back(m_height_progressive[i - 1] + layerConfigs[i].distances_with_layer);
 			m_height += layerConfigs[i].distances_with_layer;
 		}
@@ -57,8 +57,8 @@ float* poc::ParametricObject::computeVertices() {
 
 void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 	float z = m_height / 2 - m_height_progressive[index];
-	unsigned int nb_point = m_configs[index].nbPoint;
-	double r = m_configs[index].radiusFromCenter;
+	unsigned int nb_point = m_configs[index].nb_point;
+	double r = m_configs[index].radius_from_center;
 
 	const unsigned int index_tmp = m_cumulative_nb_point[index] * m_float_vertex;
 
@@ -98,7 +98,7 @@ unsigned int* poc::ParametricObject::computeIndexes() {
 }
 
 bool poc::ParametricObject::computeIndexesForLayer(unsigned int index) {
-	const unsigned int nb_point = m_configs[index].nbPoint;
+	const unsigned int nb_point = m_configs[index].nb_point;
 	const unsigned int j = m_cumulative_nb_point[index];
 	unsigned int end = 0;
 	if(nb_point < 3) {
@@ -143,18 +143,18 @@ bool poc::ParametricObject::computeIndexesForLayer(unsigned int index) {
 }
 
 void poc::ParametricObject::linksLayer(unsigned int index) {
-	const unsigned int nb_point = m_configs[index].nbPoint;
+	const unsigned int nb_point = m_configs[index].nb_point;
 	//Si on a 1 seul point
 	if(nb_point == 1) {
 		//Si on est sur le premier layer et qu'on a plus de 1 layer
 		if(index == 0 && m_configs.size() > 1) {
-			for(unsigned int t = 1; t + 1 < m_cumulative_nb_point[index + 1] + m_configs[index + 1].nbPoint; ++t) {
+			for(unsigned int t = 1; t + 1 < m_cumulative_nb_point[index + 1] + m_configs[index + 1].nb_point; ++t) {
 				m_index_object.push_back(0);
 				m_index_object.push_back(t);
 				m_index_object.push_back(t + 1);
 			}
 			m_index_object.push_back(0);
-			m_index_object.push_back(m_cumulative_nb_point[index + 1] + m_configs[index + 1].nbPoint - 1);
+			m_index_object.push_back(m_cumulative_nb_point[index + 1] + m_configs[index + 1].nb_point - 1);
 			m_index_object.push_back(1);
 		}
 		else {
@@ -172,15 +172,15 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 	}
 	else {
 		//Si le layer d'avant a un seul point et il ne s'agit pas du premier layer (déjà raccorder)
-		if(index != 0 && index - 1 != 0 && m_configs[index - 1].nbPoint == 1) {
+		if(index != 0 && index - 1 != 0 && m_configs[index - 1].nb_point == 1) {
 			const unsigned int index_layer = m_cumulative_nb_point[index];
 			const unsigned int index_layer_before = m_cumulative_nb_point[index - 1];
-			for(unsigned int t = index_layer; t + 1 < m_cumulative_nb_point[index] + m_configs[index].nbPoint; ++t) {
+			for(unsigned int t = index_layer; t + 1 < m_cumulative_nb_point[index] + m_configs[index].nb_point; ++t) {
 				m_index_object.push_back(index_layer_before);
 				m_index_object.push_back(t);
 				m_index_object.push_back(t + 1);
 			}
-			m_index_object.push_back(m_cumulative_nb_point[index] + m_configs[index].nbPoint - 1);
+			m_index_object.push_back(m_cumulative_nb_point[index] + m_configs[index].nb_point - 1);
 			m_index_object.push_back(index_layer_before);
 			m_index_object.push_back(m_cumulative_nb_point[index]);
 		}
@@ -190,9 +190,9 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 }
 
 void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
-	if(static_cast<int>(index - 1) >= 0 && m_configs[index - 1].nbPoint != 1) {
-        unsigned int nb_point_first = m_configs[index - 1].nbPoint;
-        unsigned int nb_point_second = m_configs[index].nbPoint;
+	if(static_cast<int>(index - 1) >= 0 && m_configs[index - 1].nb_point != 1) {
+        unsigned int nb_point_first = m_configs[index - 1].nb_point;
+        unsigned int nb_point_second = m_configs[index].nb_point;
         unsigned int index_first_layer = m_cumulative_nb_point[index - 1];
         unsigned int index_second_layer = m_cumulative_nb_point[index];
 
@@ -203,8 +203,8 @@ void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 
 
         if (nb_point_first > nb_point_second) {
-            nb_point_first = m_configs[index].nbPoint;
-            nb_point_second = m_configs[index - 1].nbPoint;
+            nb_point_first = m_configs[index].nb_point;
+            nb_point_second = m_configs[index - 1].nb_point;
 
             index_first_layer = m_cumulative_nb_point[index];
             index_second_layer = m_cumulative_nb_point[index - 1];
@@ -316,14 +316,14 @@ void poc::ParametricObject::configure(const std::vector<LayerConfig>& layerConfi
 	m_height_progressive.resize(m_configs.size());
 
 	m_height = 0;
-	nb_point = m_configs[0].nbPoint;
+	nb_point = m_configs[0].nb_point;
 	m_cumulative_nb_point[0] = 0;
 	m_height_progressive[0] = 0;
 
 	for(unsigned int i = 1; i < m_configs.size(); ++i){
-		nb_point += m_configs[i].nbPoint;
+		nb_point += m_configs[i].nb_point;
 		m_height_progressive[i] = m_height_progressive[i-1] + m_configs[i].distances_with_layer;
-		m_cumulative_nb_point[i] = m_cumulative_nb_point[i-1] + m_configs[i-1].nbPoint;
+		m_cumulative_nb_point[i] = m_cumulative_nb_point[i-1] + m_configs[i-1].nb_point;
 		m_height += m_configs[i].distances_with_layer;
 	}
     m_vertices_object.resize(nb_point*m_float_vertex);
@@ -341,7 +341,7 @@ const std::vector<unsigned int>& poc::ParametricObject::getIndexes() const {
 }
 
 unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, unsigned int index_layer_other) {
-	unsigned int nb_point = m_configs[index_layer_other].nbPoint;
+	unsigned int nb_point = m_configs[index_layer_other].nb_point;
 	unsigned int index_begin_layer = m_cumulative_nb_point[index_layer_other];
 	unsigned int min_index = 0;
 	double min_distance = std::numeric_limits<float>::max();

@@ -1,6 +1,8 @@
 #include <gui/POConfigPanel.hpp>
 
 #include <string>
+#include <algorithm>
+#include <random>
 
 namespace {
 	constexpr unsigned int DEFAULT_LAYER_NB_POINTS = 3;
@@ -16,13 +18,16 @@ namespace {
 	  DEFAULT_LAYER_COLOR
 	);
 
+	constexpr int MINIMUM_LAYER_POINTS_NUMBER = 1;
+	constexpr int MAXIMUM_LAYER_POINTS_NUMBER = 50;
+
 	constexpr float MINIMUM_LAYER_RADIUS = 0.0f;
 	constexpr float MAXIMUM_LAYER_RADIUS = 5.0f;
 
 	constexpr float MINIMUM_LAYER_DISTANCE = 0.0f;
 	constexpr float MAXIMUM_LAYER_DISTANCE = 5.0f;
 
-	constexpr size_t MAXIMUM_LAYERS_NUMBER = 2;
+	constexpr size_t MINIMUM_LAYERS_NUMBER = 2;
 
 	constexpr std::array<float,3> RED {{1,0,0}};
 	constexpr std::array<float,3> GREEN {{0,1,0}};
@@ -35,6 +40,32 @@ namespace {
 		LAYER_2,
 		LAYER_3
 	};
+
+	template<class T = float>
+	constexpr T pi = T(3.1415926535897932385L);
+}
+
+namespace {
+	poc::LayerConfig randomLayer(){
+		std::random_device rd;
+		std::mt19937 random(rd());
+		std::uniform_int_distribution<unsigned int> rng_nb_point(MINIMUM_LAYER_POINTS_NUMBER, MAXIMUM_LAYER_POINTS_NUMBER);
+		std::uniform_real_distribution<float> rng_radius_from_center(MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_DISTANCE);
+		std::uniform_real_distribution<float> rng_distances_with_layer(MINIMUM_LAYER_DISTANCE, MAXIMUM_LAYER_DISTANCE);
+		std::uniform_real_distribution<float> rng_rotation(-2 * pi<>, 2 * pi<>);
+		std::uniform_real_distribution<float> rng_color(0, 1);
+
+		return poc::LayerConfig(
+		  rng_nb_point(random),
+		  rng_radius_from_center(random),
+		  rng_distances_with_layer(random),
+		  rng_rotation(random),
+		  std::array<float,3>{
+		    rng_color(random),
+		    rng_color(random),
+		    rng_color(random)
+		  });
+	}
 }
 
 poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
@@ -108,21 +139,37 @@ bool poc::POConfigPanel::draw() {
 	}
 
 	int layerNumber = 0;
+	std::vector<bool> open_layers;
+	bool insert_layer = false;
+	int insert_layer_pos = 0;
+	open_layers.reserve(layers.size());
+	int i_layer = 0;
+	bool swap = false;
+	int to_swap = 0;
+
+	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f));
+	if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
+		insert_layer = true;
+		insert_layer_pos = -1;
+	}
+	ImGui::PopStyleColor();
+
 	for(LayerConfig& layer : layers) {
+		bool open = true;
 		const std::string layer_name = std::string("Layer ") + std::to_string(++layerNumber);
 		ImGui::PushID(layerNumber);
-		if(ImGui::CollapsingHeader(layer_name.c_str(), ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_DefaultOpen)){
-			int nb_points = static_cast<int>(layer.nbPoint);
+		if(ImGui::CollapsingHeader(layer_name.c_str(), &open, ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_DefaultOpen)){
+			int nb_points = static_cast<int>(layer.nb_point);
 			ImGui::InputInt("points", &nb_points);
-			if(nb_points != static_cast<int>(layer.nbPoint) && nb_points > 0) {
-				layer.nbPoint = static_cast<unsigned int>(nb_points);
+			if(nb_points != static_cast<int>(layer.nb_point) && nb_points >= MINIMUM_LAYER_POINTS_NUMBER && nb_points <= MAXIMUM_LAYER_POINTS_NUMBER) {
+				layer.nb_point = static_cast<unsigned int>(nb_points);
 				modification = true;
 			}
 
-			float radius_from_center = layer.radiusFromCenter;
+			float radius_from_center = layer.radius_from_center;
 			ImGui::SliderFloat("radius", &radius_from_center, MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_RADIUS);
-			if(std::abs(radius_from_center - layer.radiusFromCenter) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
-				layer.radiusFromCenter = radius_from_center;
+			if(std::abs(radius_from_center - layer.radius_from_center) > std::numeric_limits<float>::epsilon() && radius_from_center > 0) {
+				layer.radius_from_center = radius_from_center;
 				modification = true;
 			}
 
@@ -150,25 +197,61 @@ bool poc::POConfigPanel::draw() {
 			}
 		}
 
-		ImGui::PopID();
-	}
-
-	ImGui::Separator();
-	if(ImGui::Button("Add", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 20))) {
-		layers.push_back(DEFAULT_LAYER);
-		modification = true;
-	}
-	if(layers.size() > MAXIMUM_LAYERS_NUMBER) {
-		ImGui::SameLine();
-		if(ImGui::Button("Remove", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 20))) {
-			if(!layers.empty()) {
-				layers.pop_back();
-				modification = true;
-			}
+		if(ImGui::ArrowButton("up", ImGuiDir_Up)) {
+			swap = true;
+			to_swap = i_layer;
 		}
+		ImGui::SameLine();
+		if(ImGui::ArrowButton("down", ImGuiDir_Down)) {
+			swap = true;
+			to_swap = i_layer + 1;
+		}
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(1.0f/7.0f, 0.6f, 0.6f));
+		ImGui::SameLine();
+		if(ImGui::Button("Randomise", ImVec2(ImGui::GetContentRegionAvailWidth(), 20))) {
+			layers[i_layer] =randomLayer();
+			modification = true;
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::Separator();
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f));
+		if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
+			insert_layer = true;
+			insert_layer_pos = i_layer;
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::PopID();
+		open_layers.push_back(open);
+		++i_layer;
 	}
 
 	ImGui::End();
+
+	if(swap && to_swap > 0 && to_swap < layers.size()){
+		std::swap(layers[to_swap], layers[to_swap-1]);
+		modification = true;
+	}
+
+	std::vector<poc::LayerConfig> old = std::move(layers);
+	layers.clear();
+	if(insert_layer && insert_layer_pos < 0){
+		layers.push_back(DEFAULT_LAYER);
+		modification = true;
+	}
+	for(unsigned int i = 0; i < open_layers.size(); ++i){
+		if(open_layers[i] || old.size() <= MINIMUM_LAYERS_NUMBER){
+			layers.push_back(old[i]);
+		}
+		else{
+			modification = true;
+		}
+		if(insert_layer && i == insert_layer_pos){
+			layers.push_back(DEFAULT_LAYER);
+			modification = true;
+		}
+	}
 
 	return modification;
 }
