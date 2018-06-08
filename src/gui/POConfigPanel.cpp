@@ -35,7 +35,7 @@ namespace {
 	constexpr poc::LayerConfig LAYER_1(4, 1.0f, 1.0f, 0, RED);
 	constexpr poc::LayerConfig LAYER_2(10, 1.5f, 0.4f, 0.0f, BLUE);
 	constexpr poc::LayerConfig LAYER_3(1, 0.5f, 1.0f, 0, GREEN);
-	constexpr std::initializer_list DEFAULT_LAYERS {
+	const std::initializer_list<poc::LayerConfig> DEFAULT_LAYERS {
 		LAYER_1,
 		LAYER_2,
 		LAYER_3
