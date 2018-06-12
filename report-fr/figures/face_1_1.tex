@@ -1,0 +1,59 @@
+%!TEX program = xelatex
+\documentclass[11pt,class=book]{standalone}
+%\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[french]{translator}
+\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+\usepackage[table,svgnames]{xcolor}
+
+\usepackage{pgf}
+\usepackage{tikz}
+
+\input{figures_common}
+
+\begin{document}
+	\pgfmathsetmacro\layersize{120}%
+	\pgfmathsetmacro\layerinitialrotation{0}%
+
+	\begin{tikzpicture}[x=1pt,y=1pt,>=Latex]
+		\tikzset{triangleface/.style={
+			fill=yellow!35
+		}}
+		\tikzset{squareface/.style={
+			fill=orange!35
+		}}
+		\tikzset{line/.style={
+			thick
+		}}
+		\tikzset{layersline/.style={
+			line,
+			black
+		}}
+		\tikzset{nearestline/.style={
+			line,
+			Green
+		}}
+		\tikzset{squaresplitline/.style={
+			line,
+			Red
+		}}
+
+		\foreach \i in {0,...,5} {
+			\coordinate (P\i) at (\layerinitialrotation+\i*360/6:\layersize);
+		};
+
+		%---------------------------------
+		% Numbers
+		\node[right] at (P0) {0};
+		\node[above right] at (P1) {1};
+		\node[above left] at (P2) {2};
+		\node[left] at (P3) {3};
+		\node[below left] at (P4) {4};
+		\node[below right] at (P5) {5};
+
+		%---------------------------------
+		% Face lines
+		\draw[layersline] (P0) -- (P1) -- (P2) -- (P3) -- (P4) -- (P5) -- cycle;
+	\end{tikzpicture}
+\end{document}
