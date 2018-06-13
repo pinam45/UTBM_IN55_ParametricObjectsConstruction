@@ -17,7 +17,7 @@
 	%\listoffigures{}
 	\newpage{}
 	\section{Introduction}
-		Dans le cadre de l'UV IN55, nous avons choisi de traîter le sujet de l'objet paramétrique.
+		Dans le cadre de l'UV IN55, nous avons choisi de traiter le sujet de l'objet paramétrique.
 		Dans un premier temps, nous allons expliquer ce que nous avons choisi de réaliser.
 		Nous présenterons ensuite l'installation et l'utilisation du programme.
 		Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons réalisé pour générer cet objet.
@@ -83,13 +83,56 @@
 			\end{minipage}
 	\section{TODO}
 		\TODO{TODO}
+	\section{Construction de l'objet paramétrique}
+	\subsection{Calcul des vertices de l'objet}
+	\subsubsection{Calcul des vertices pour un layer}\label{a}
+		\paragraph{} Pour calculer les vertices d'une face, on fait : 
+		\begin{itemize}
+			\item Calculer la coordonnées z en appliquant la formule suivante : $z = \frac{h_{objet}}{2} - h_{progressiv}$ avec $h_{progressiv}$ la hauteur de l'objet à la face i.
+			\item Calculer l'angle en radian entre deux vertices. Pour ce faire, on applique la formule suivante : $\theta = \frac{2*\pi}{n}$ avec n le nombre de vertices souhaités.
+			\item Calculer la coordonnée x en appliquant la formule $x = cos(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
+			\item Calculer la coordonnée y en appliquant la formule $y = sin(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
+		\end{itemize}
+	\subsubsection{Calcul des vertices de l'objet via la fonction de calcul des vertices d'une face}
+	\paragraph{} Pour calculer les vertices de l'objet, il suffit d'itérer de i allant de 0 au nombre de face - 1 et on appelle la fonction qui calcul les vertices d'une face (cf section \ref{a}).
+	\subsection{Rendu l'objet avec le tableau d'indices}
+	\subsubsection{Rendu d'une face}
+	Pour pouvoir relier les faces, on a décidé de faire comme ceci : 
+	\begin{itemize}
+		\item On prend 3 vertices successives et on ajoute leurs indices dans le tableau d'indices. On repart du dernier vertices et on reprend les 2 vertices suivantes\ldots.
+		\item Arrivé au dernier point. On repart depuis le 3ème vertice (pour un nombre impaire de vertices dans la face, sinon le 4ème) et on va prendre l'indice de ce vertice, celui du 2ème vertices d'après puis celui du premier vertice de la face puis on les ajoutes dans le tableau d'indices.. Puis on se décale de deux vertices et on repète le processus jusqu'à ce qu'on est fini d'itérer sur la face.
+	\end{itemize}
+	On obtient les deux figures \ref{fig:face_1} et \ref{fig:face_2}.
+	\begin{figure}[H]
+			\centering%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_1.tex}}%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_2.tex}}%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_3.tex}}%
+			\caption{Construction d'une face pair}%
+			\label{fig:face_1}%
+	\end{figure}
+	\begin{figure}[H]
+			\centering%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_1.tex}}%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_2.tex}}%
+			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_3.tex}}%
+			\caption{Construction d'une face impaire}%
+			\label{fig:face_2}%
+	\end{figure}
+	\subsubsection{Liaison des faces dans l'objet paramétrique}
+		\paragraph{} Pour pouvoir terminer notre objet paramétrique, nous devions lier les faces entre elles. On voulait pour cette objet pouvoir lier des faces qui ne possédaient pas forcément le même nombre de vertices. Plusieurs algorithmes ont été testés mais seul le dernier algorithme, qui présente le meilleur résultat, sera expliquer.
+		
+		Prenons comme exemple la figure \ref{fig:layers_1_empty}. On a une face qui possède 4 vertices et l'autre face qui possède 5 vertices. On nomme la face ayant le moins de vertices A et l'autre B. On va itérer sur les vertices de la face B. Pour chaque vertice de cette face, on va chercher le vertice le plus proche de ce vertice dans la face A. Ainsi le vertice 4 a comme vertice le plus proche 0 dans la face A.
+		
+		Après avoir itérer sur tous les vertices, on obtient la figure \ref{fig:layers_2_nearest_lines}.
+		
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
 				\begin{figure}[H]
 					\centering%
 					\resizebox{\textwidth}{!}{\import{figures/}{layers_1_empty.tex}}%
-					\caption{Layers no liés}%
+					\caption{Faces non liés}%
 					\label{fig:layers_1_empty}%
 				\end{figure}
 			\end{minipage}
@@ -102,15 +145,16 @@
 				\end{figure}
 			\end{minipage}
 		\end{minipage}
-		\TODO{TODO}
-		Comme illustré sur la figure \ref{fig:layers_1_empty}\ldots
+		\paragraph{} On va ensuite remplir les faces triangulaires. Pour ce faire, on va regarder si on a des vertices de la face B qui sont rattachées au même vertice de la face A. Par exemple dans la figure \ref{fig:layers_2_nearest_lines}, on a le vertice 7 et le vertice 8 qui sont liées au point 3. On a donc ici une face triangulaire qui peut être calculé par OpenGL avec la primitive GL\_TRIANGLES sous la forme (7-3-8). On obtient donc la figure \ref{fig:layers_3_triangles_quadrilaterals}.
+		
+		Pour finir, on va calculer les faces quadrilatères. Comme on utilise la primitive GL\_TRIANGLES, il faut diviser ces faces en deux triangles. Pour pouvoir diviser ces faces, on a décidé de calculer la longueur des diagonales de ces faces. On voit par exemple que la diagonale 0-5 est plus grande que la diagonale 1-4. Ainsi on va diviser la face quadrilatère avec la diagonale la plus courte et on va remplir les faces triangulaires obtenus. On obtient donc la figure \ref{fig:layers_4_quadrilaterals_diagonals}. On a fini de lier les faces.
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
 				\begin{figure}[H]
 					\centering%
 					\resizebox{\textwidth}{!}{\import{figures/}{layers_3_triangles_quadrilaterals.tex}}%
-					\caption{Délimitation de triangles et quadrilatères}%
+					\caption{Délimitation de triangles et quadrilatères}
 					\label{fig:layers_3_triangles_quadrilaterals}%
 				\end{figure}
 			\end{minipage}
@@ -123,7 +167,8 @@
 				\end{figure}
 			\end{minipage}
 		\end{minipage}
-		\TODO{TODO}
+		
+		Après implémentation dans le projet de cette algorithme, on obtient un objet paramétrique complet et sans faces creuses. On obtient des objets paramétriques comme on peux voir dans les exemples \ref{fig:view_1_1} et \ref{fig:view_1_2}.
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
@@ -143,23 +188,4 @@
 				\end{figure}
 			\end{minipage}
 		\end{minipage}
-		\TODO{TODO}
-		\begin{figure}[H]
-			\centering%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_1.tex}}%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_2.tex}}%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_1_3.tex}}%
-			\caption{Construction d'une face pair}%
-			\label{fig:face_1}%
-		\end{figure}
-		\TODO{TODO}
-		\begin{figure}[H]
-			\centering%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_1.tex}}%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_2.tex}}%
-			\resizebox{0.32\textwidth}{!}{\import{figures/}{face_2_3.tex}}%
-			\caption{Construction d'une face impaire}%
-			\label{fig:face_2}%
-		\end{figure}
-		\TODO{TODO}
 \end{document}
