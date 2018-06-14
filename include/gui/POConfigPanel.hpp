@@ -7,10 +7,11 @@
 
 #include "ParametricObject.hpp"
 #include "imgui_easy_theming.hpp"
+#include "Drawable.hpp"
 
 namespace poc{
 
-	class POConfigPanel {
+	class POConfigPanel : public Drawable {
 
 	public:
 
@@ -23,7 +24,9 @@ namespace poc{
 
 		const std::vector<poc::LayerConfig>& getLayers() const;
 
-		bool draw();
+		void draw() override;
+
+		bool need_recompute();
 
 	private:
 
@@ -42,6 +45,8 @@ namespace poc{
 
 		std::random_device rd;
 		std::vector<poc::LayerConfig> layers;
+
+		bool m_modified;
 	};
 }
 

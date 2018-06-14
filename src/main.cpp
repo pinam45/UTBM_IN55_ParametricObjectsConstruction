@@ -199,7 +199,8 @@ int main()
 		fpsOverlay.draw();
 
 		panel.setHeight(static_cast<float>(w.getHeigth()));
-		if(panel.draw()){
+		panel.draw();
+		if(panel.need_recompute()){
 			parametricObject.configure(panel.getLayers());
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);

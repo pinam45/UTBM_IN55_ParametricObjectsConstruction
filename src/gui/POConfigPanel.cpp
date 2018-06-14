@@ -53,7 +53,8 @@ poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
     , m_position(x, y)
     , m_size(width, height)
     , rd()
-    , layers(DEFAULT_LAYERS) {
+    , layers(DEFAULT_LAYERS)
+	, m_modified(false) {
 
 	for(ThemeHolder& themeHolder : themeHolders) {
 		if(themeHolder.enabled) {
@@ -82,8 +83,9 @@ const std::vector<poc::LayerConfig>& poc::POConfigPanel::getLayers() const {
 	return layers;
 }
 
-bool poc::POConfigPanel::draw() {
-	bool modification = false;
+void poc::POConfigPanel::draw() {
+	bool& modification = m_modified;
+	modification = false;
 
 	ImGui::SetNextWindowPos(m_position);
 	ImGui::SetNextWindowSize(m_size);
@@ -229,8 +231,6 @@ bool poc::POConfigPanel::draw() {
 			modification = true;
 		}
 	}
-
-	return modification;
 }
 
 poc::LayerConfig poc::POConfigPanel::randomLayer(){
@@ -251,4 +251,8 @@ poc::LayerConfig poc::POConfigPanel::randomLayer(){
 		rng_color(random),
 		rng_color(random)
 	  });
+}
+
+bool poc::POConfigPanel::need_recompute() {
+	return m_modified;
 }
