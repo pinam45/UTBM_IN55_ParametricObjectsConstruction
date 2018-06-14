@@ -17,87 +17,104 @@
 	%\listoffigures{}
 	\newpage{}
 	\section{Introduction}
-		Dans le cadre de l'UV IN55, nous avons choisi de traiter le sujet de l'objet paramétrique.
-		Dans un premier temps, nous allons expliquer ce que nous avons choisi de réaliser.
-		Nous présenterons ensuite l'installation et l'utilisation du programme.
-		Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons réalisées pour générer cet objet.
+		\paragraph*{}
+			Dans le cadre de l'UV IN55 pour le semestre de pringtemps 2018, la réalisation d'un projet mettant en oeuvre OpenGL était demandé.
+			Plusieurs sujet était proposé, nous avons choisi de traiter le sujet ``Construction d'un objet paramétrique''.
+		\paragraph*{}
+			Dans un premier temps, nous allons expliquer ce que nous avons choisi de réaliser.
+			Nous présenterons ensuite l'installation et l'utilisation du programme.
+			Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons conçut pour générer l'objet paramétrique.
 
 	\section{Sujet choisi}
-		Dans cette section, nous allons détailler la phase d'étude qui a précédé le développement de notre solution.
-		Nous avons choisi de réaliser un programme permettant la génération d'un grand nombre de polygones.
-		
-		Pour ce faire, nous avons choisi une approche basée sur des cercles.
-		En reliant des points placés sur chaque cercle il nous est possible de générer de nombreux polygones.
+		\paragraph*{}
+			Dans cette section, nous allons détailler la phase d'étude qui a précédé le développement de notre solution.
+			Nous avons choisi de réaliser un programme permettant la génération d'un grand nombre de polygones.
+		\paragraph*{}
+			Pour ce faire, nous avons choisi une approche a base de polygones régulier convexes, c'est a dire des polygones dont tous les coté ont la même longueur et tout les angles la même mesure. Cette propriété les rend facilement constructibles a partir de l'équation d'un cercle.
+		\paragraph*{}
+			En plaçant ces polygones de façon espacée sur l'axe Z et en les reliant avec des faces triangulaires il nous est possible de générer de nombreux polyèdres.
+		\paragraph*{}
+			Le générateur que nous avons réalisé dispose des paramètres suivants:
+			\begin{itemize}
+				\item Choix du nombre de polygone, appelé \textit{layers}
+				\item Choix de la taille des polygones
+				\item Choix du nombre de points de chaque polygone
+				\item Possibilité de tourner chaque polygone
+				\item Choix de la couleur de chaque polygone
+			\end{itemize}
 
-		Le générateur que nous avons réaliser dispose des paramètres suivants:
-		\begin{itemize}
-			\item Choix du nombre de cercles
-			\item Choix de la taille des cercles
-			\item Choix du nombre de points sur chaque cercle
-			\item Possibilité de tourner chaque cercle
-			\item Choix de la couleur de chaque cercle
-		\end{itemize}
 	\section{Installation et utilisation}
 		\subsection{Installation}
-		Pour ouvrir le projet sur visual studio:
-
-		\begin{itemize}
-			\item Installer cmake disponible à cette addresse~: \\
-				https://cmake.org/download/
-			\item Lancer cmake
-			\item Sélectionner la racine du dossier de sources
-			\item Sélectionner le dossier de build \\
-				\includegraphics[width=0.5\textwidth]{tuto1}
-			\item Appuyer sur "Configure"
-			\item Sélectionner "Visual Studio 15 2017 Win64" en tant que "générateur" \\
-				\includegraphics[width=0.5\textwidth]{tuto2}
-			\item Appuyer sur "Finish"
-			\item Une fois la configuration générée, appuyer sur "Generate"
-			\item Appuyer sur "Open Project"
-			\item Sélectionner "ParametricObjectsConstruction" comme projet de démarrage (dans l'explorateur de solution) en appuyant sur "Définir comme projet de démarrage" \\
-				\includegraphics[width=0.5\textwidth]{tuto3}
-		\end{itemize}
+			\paragraph*{}
+				Pour ouvrir le projet sur Visual Studio 2017:
+				\begin{itemize}
+					\item Installer CMake disponible à cette addresse:\\
+						\url{https://cmake.org/download/}
+					\item Lancer CMake (cmake-gui)
+					\item Sélectionner la racine du dossier de sources
+					\item Sélectionner le dossier de build \\
+						\includegraphics[width=0.6\textwidth]{tuto1}
+					\item Appuyer sur "Configure"
+					\item Sélectionner "Visual Studio 15 2017 Win64" en tant que "générateur" \\
+						\includegraphics[width=0.75\textwidth]{tuto2}
+					\item Appuyer sur "Finish"
+					\item Une fois la configuration générée, appuyer sur "Generate"
+					\item Appuyer sur "Open Project"
+					\item Sélectionner "ParametricObjectsConstruction" comme projet de démarrage (dans l'explorateur de solution) en appuyant sur "Définir comme projet de démarrage" \\
+						\includegraphics[width=0.5\textwidth]{tuto3}
+				\end{itemize}
 
 		\subsection{Utilisation}
-			Afin de modifier l'objet paramétrique, on pourra utiliser le menu disponible sur la gauche du programme~: \\
-			\begin{minipage}[t]{0.4\textwidth}
-				\begin{figure}[H]
-					\centering%
-					\includegraphics[width=0.7\textwidth]{menu}%
-					\caption{Menu de configuration}%
-					\label{fig:menu}%
-				\end{figure}
-			\end{minipage}
-			\begin{minipage}[t]{0.59\textwidth}
-				\begin{figure}[H]
-					Dans ce programme les objets seront construits en utilisant des Layers. \\
-					\hfill \\
-					Chaque Layer correspond à un cercle sur lequelle on placera des points. \\
-					\hfill \\
-					La taille du cercle ainsi que le nombre de points peuvent être choisis dans le menu. \\
-					\hfill \\
-					Le paramètre distance permet d'éloigner un layer par rapport au layer précédent \\
-					\hfill \\
-					Enfin on pourra rajouter, supprimer ou réordonner les layers.
-				\end{figure}
-			\end{minipage}
+			\paragraph*{}
+				Afin de modifier l'objet paramétrique, on pourra utiliser le menu disponible sur la gauche du programme~: \\
+				\begin{minipage}[c]{0.4\textwidth}
+					\begin{figure}[H]
+						\centering%
+						\includegraphics[width=0.8\textwidth]{menu}%
+						\caption{Menu de configuration}%
+						\label{fig:menu}%
+					\end{figure}
+				\end{minipage}
+				\begin{minipage}[c]{0.59\textwidth}
+					\begin{figure}[H]
+						Dans ce programme les objets seront construits en utilisant des layers. Le bouton \fbox{\texttt{+}} permet d’insérer un nouveau layer et les boutons \fbox{$\blacktriangle$} et \fbox{$\blacktriangledown$} permettent de déplacer le layer.\\
+						\hfill \\
+						Chaque Layer correspond à un polygone configurable, le bouton \fbox{\texttt{Randomize}} permet de générer des valeures de configuration aléatoire pour le layer.\\
+						\hfill \\
+						Les configurations disponibles sont les suivantes:
+						\begin{itemize}
+							\item \texttt{points}: nombre de points du polygone
+							\item \texttt{radius}: rayon du polygone (distance des points au centre)
+							\item \texttt{rotation}: rotation du polygone (sur l'axe Z)
+							\item \texttt{distance}: distance du layer avec le précédent
+							\item \texttt{color}: couleur du polygone
+						\end{itemize}
+						\hfill \\
+						Enfin, la croix sur la barre qui contient le numéro du layer permet de le supprimer.
+					\end{figure}
+				\end{minipage}
 	\section{Conception et technologies utilisées}
-		Dans notre projet, nous avons choisi de réaliser un mini-wrapper autour d'OpenGl afin de bénéficier des fonctionnalités du C++.
-		De plus, afin de réaliser l'interface utilisateur, nous avons utilisé "ImGUI". ImGUI est une librairie générant des "vertex buffers".
-		Pour pouvoir afficher les interfaces réalisées avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
+		\paragraph*{}
+			Dans notre projet, nous avons choisi de réaliser un mini-wrapper autour d'OpenGl afin de bénéficier des fonctionnalités du C++.
+			De plus, afin de réaliser l'interface utilisateur, nous avons utilisé "ImGUI".
+		\paragraph*{}
+			ImGUI est une librairie générant des "vertex buffers".
+			Pour pouvoir afficher les interfaces réalisées avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
 
-		\begin{figure}[H]
-			\centering%
-			\includegraphics[width=0.8\textwidth]{uml}
-			\caption{Diagramme de classes du projet}
-			\label{fig:uml}
-		\end{figure}
+			\begin{figure}[H]
+				\centering%
+				\includegraphics[width=\textwidth]{uml}
+				\caption{Diagramme de classes du projet}
+				\label{fig:uml}
+			\end{figure}
 
-		Notre wrapper est principalement axé autour de la classe Window qui permet de gérer la fenêtre ainsi que les events reçus par celle-ci.
-		Ces events sont récupérés grâce à la fonction "pollEvent" qui remplira la structure Event. Cette fonction retournera vrai tant qu'il reste des events à traiter.
-		Une fois la fenêtre initialisée, nous pourrons utiliser les classes "Shader" et "ShaderProgram" afin de charger et d'utiliser les shaders.
-		La classe ParametricObject permettra de générer un objet paramétrique.
-		
+		\paragraph*{}
+			Notre wrapper est principalement axé autour de la classe Window qui permet de gérer la fenêtre ainsi que les events reçus par celle-ci.
+			Ces events sont récupérés grâce à la fonction "pollEvent" qui remplira la structure Event. Cette fonction retournera vrai tant qu'il reste des events à traiter.
+		\paragraph*{}
+			Une fois la fenêtre initialisée, nous pourrons utiliser les classes "Shader" et "ShaderProgram" afin de charger et d'utiliser les shaders.
+			La classe ParametricObject permettra, elle, de générer l'objet paramétrique.
+
 	\section{Construction de l'objet paramétrique}
 	\subsection{Calcul des vertices de l'objet}
 	\subsubsection{Calcul des vertices pour un layer}\label{a}
