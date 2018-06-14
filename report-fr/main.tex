@@ -20,14 +20,14 @@
 		Dans le cadre de l'UV IN55, nous avons choisi de traiter le sujet de l'objet paramétrique.
 		Dans un premier temps, nous allons expliquer ce que nous avons choisi de réaliser.
 		Nous présenterons ensuite l'installation et l'utilisation du programme.
-		Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons réalisé pour générer cet objet.
+		Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons réalisées pour générer cet objet.
 
 	\section{Sujet choisi}
 		Dans cette section, nous allons détailler la phase d'étude qui a précédé le développement de notre solution.
 		Nous avons choisi de réaliser un programme permettant la génération d'un grand nombre de polygones.
 		
-		Pour ce faire, nous avons choisi une approche basé sur des cercles.
-		En reliant des points placés sur chaque cercle il nous ait possible de générer de nombreux polygones.
+		Pour ce faire, nous avons choisi une approche basée sur des cercles.
+		En reliant des points placés sur chaque cercle il nous est possible de générer de nombreux polygones.
 
 		Le générateur que nous avons réaliser dispose des paramètres suivants:
 		\begin{itemize}
@@ -84,7 +84,7 @@
 	\section{Conception et technologies utilisées}
 		Dans notre projet, nous avons choisi de réaliser un mini-wrapper autour d'OpenGl afin de bénéficier des fonctionnalités du C++.
 		De plus, afin de réaliser l'interface utilisateur, nous avons utilisé "ImGUI". ImGUI est une librairie générant des "vertex buffers".
-		Pour pouvoir afficher les interfaces réaliser avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
+		Pour pouvoir afficher les interfaces réalisées avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
 
 		\begin{figure}[H]
 			\centering%
@@ -103,19 +103,19 @@
 	\subsubsection{Calcul des vertices pour un layer}\label{a}
 		\paragraph{} Pour calculer les vertices d'une face, on fait : 
 		\begin{itemize}
-			\item Calculer la coordonnées z en appliquant la formule suivante : $z = \frac{h_{objet}}{2} - h_{progressiv}$ avec $h_{progressiv}$ la hauteur de l'objet à la face i.
+			\item Calculer la coordonnée z en appliquant la formule suivante : $z = \frac{h_{objet}}{2} - h_{progressif}$ avec $h_{progressif}$ la hauteur de l'objet à la face i.
 			\item Calculer l'angle en radian entre deux vertices. Pour ce faire, on applique la formule suivante : $\theta = \frac{2*\pi}{n}$ avec n le nombre de vertices souhaités.
 			\item Calculer la coordonnée x en appliquant la formule $x = cos(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
 			\item Calculer la coordonnée y en appliquant la formule $y = sin(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
 		\end{itemize}
 	\subsubsection{Calcul des vertices de l'objet via la fonction de calcul des vertices d'une face}
-	\paragraph{} Pour calculer les vertices de l'objet, il suffit d'itérer de i allant de 0 au nombre de face - 1 et on appelle la fonction qui calcul les vertices d'une face (cf section \ref{a}).
-	\subsection{Rendu l'objet avec le tableau d'indices}
-	\subsubsection{Rendu d'une face}
+	\paragraph{} Pour calculer les vertices de l'objet, il suffit d'itérer de i allant de 0 au nombre de face - 1 et on appelle la fonction qui calcule les vertices d'une face (cf section \ref{a}).
+	\subsection{Formation des faces de l'objet avec le tableau d'indices}
+	\subsubsection{Formation d'une face}
 	Pour pouvoir relier les faces, on a décidé de faire comme ceci : 
 	\begin{itemize}
-		\item On prend 3 vertices successives et on ajoute leurs indices dans le tableau d'indices. On repart du dernier vertices et on reprend les 2 vertices suivantes\ldots.
-		\item Arrivé au dernier point. On repart depuis le 3ème vertice (pour un nombre impaire de vertices dans la face, sinon le 4ème) et on va prendre l'indice de ce vertice, celui du 2ème vertices d'après puis celui du premier vertice de la face puis on les ajoutes dans le tableau d'indices.. Puis on se décale de deux vertices et on repète le processus jusqu'à ce qu'on est fini d'itérer sur la face.
+		\item On prend 3 vertices successifs et on ajoute leurs indices dans le tableau d'indices. On repart du dernier vertices pris et on reprend les 2 vertices suivantes\ldots
+		\item Arrivé au dernier point. On repart depuis le 3ème vertice (pour un nombre impair de vertices dans la face, sinon le 4ème) et on va prendre l'indice de ce vertice, celui du 2ème vertices d'après puis celui du premier vertice de la face puis on les ajoute dans le tableau d'indices.. Puis on se décale de deux vertices et on repète le processus jusqu'à ce qu'on ait fini d'itérer sur la face.
 	\end{itemize}
 	On obtient les deux figures \ref{fig:face_1} et \ref{fig:face_2}.
 	\begin{figure}[H]
@@ -135,7 +135,7 @@
 			\label{fig:face_2}%
 	\end{figure}
 	\subsubsection{Liaison des faces dans l'objet paramétrique}
-		\paragraph{} Pour pouvoir terminer notre objet paramétrique, nous devions lier les faces entre elles. On voulait pour cette objet pouvoir lier des faces qui ne possédaient pas forcément le même nombre de vertices. Plusieurs algorithmes ont été testés mais seul le dernier algorithme, qui présente le meilleur résultat, sera expliquer.
+		\paragraph{} Pour pouvoir terminer notre objet paramétrique, nous devions lier les faces entre elles. On voulait pour cet objet pouvoir lier des faces qui ne possédaient pas forcément le même nombre de vertices. Plusieurs algorithmes ont été testés mais seul le dernier algorithme, qui présente le meilleur résultat, sera expliqué.
 		
 		Prenons comme exemple la figure \ref{fig:layers_1_empty}. On a une face qui possède 4 vertices et l'autre face qui possède 5 vertices. On nomme la face ayant le moins de vertices A et l'autre B. On va itérer sur les vertices de la face B. Pour chaque vertice de cette face, on va chercher le vertice le plus proche de ce vertice dans la face A. Ainsi le vertice 4 a comme vertice le plus proche 0 dans la face A.
 		
@@ -160,9 +160,9 @@
 				\end{figure}
 			\end{minipage}
 		\end{minipage}
-		\paragraph{} On va ensuite remplir les faces triangulaires. Pour ce faire, on va regarder si on a des vertices de la face B qui sont rattachées au même vertice de la face A. Par exemple dans la figure \ref{fig:layers_2_nearest_lines}, on a le vertice 7 et le vertice 8 qui sont liées au point 3. On a donc ici une face triangulaire qui peut être calculé par OpenGL avec la primitive GL\_TRIANGLES sous la forme (7-3-8). On obtient donc la figure \ref{fig:layers_3_triangles_quadrilaterals}.
+		\paragraph{} On va ensuite remplir les faces triangulaires. Pour ce faire, on va regarder si on a des vertices de la face B qui sont rattachées au même vertice de la face A. Par exemple dans la figure \ref{fig:layers_2_nearest_lines}, on a le vertice 7 et le vertice 8 qui sont liés au point 3. On a donc ici une face triangulaire qui peut être calculé par OpenGL avec la primitive GL\_TRIANGLES sous la forme (7-3-8). On obtient donc la figure \ref{fig:layers_3_triangles_quadrilaterals}.
 		
-		Pour finir, on va calculer les faces quadrilatères. Comme on utilise la primitive GL\_TRIANGLES, il faut diviser ces faces en deux triangles. Pour pouvoir diviser ces faces, on a décidé de calculer la longueur des diagonales de ces faces. On voit par exemple que la diagonale 0-5 est plus grande que la diagonale 1-4. Ainsi on va diviser la face quadrilatère avec la diagonale la plus courte et on va remplir les faces triangulaires obtenus. On obtient donc la figure \ref{fig:layers_4_quadrilaterals_diagonals}. On a fini de lier les faces.
+		Pour finir, on va calculer les faces quadrilatères. Comme on utilise la primitive GL\_TRIANGLES, il faut diviser ces faces en deux triangles. Pour pouvoir diviser ces faces, on a décidé de comparer la longueur des diagonales de ces faces. On voit par exemple que la diagonale 0-5 est plus grande que la diagonale 1-4. Ainsi on va diviser la face quadrilatère avec la diagonale la plus courte et on va remplir les faces triangulaires obtenues. On obtient donc la figure \ref{fig:layers_4_quadrilaterals_diagonals}. On a fini de lier les faces.
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
