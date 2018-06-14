@@ -81,8 +81,23 @@
 					Enfin on pourra rajouter, supprimer ou réordonner les layers.
 				\end{figure}
 			\end{minipage}
-	\section{TODO}
-		\TODO{TODO}
+	\section{Conception et technologies utilisées}
+		Dans notre projet, nous avons choisi de réaliser un mini-wrapper autour d'OpenGl afin de bénéficier des fonctionnalités du C++.
+		De plus, afin de réaliser l'interface utilisateur, nous avons utilisé "ImGUI". ImGUI est une librairie générant des "vertex buffers".
+		Pour pouvoir afficher les interfaces réaliser avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
+
+		\begin{figure}[H]
+			\centering%
+			\includegraphics[width=0.8\textwidth]{uml}
+			\caption{Diagramme de classes du projet}
+			\label{fig:uml}
+		\end{figure}
+
+		Notre wrapper est principalement axé autour de la classe Window qui permet de gérer la fenêtre ainsi que les events reçus par celle-ci.
+		Ces events sont récupérés grâce à la fonction "pollEvent" qui remplira la structure Event. Cette fonction retournera vrai tant qu'il reste des events à traiter.
+		Une fois la fenêtre initialisée, nous pourrons utiliser les classes "Shader" et "ShaderProgram" afin de charger et d'utiliser les shaders.
+		La classe ParametricObject permettra de générer un objet paramétrique.
+		
 	\section{Construction de l'objet paramétrique}
 	\subsection{Calcul des vertices de l'objet}
 	\subsubsection{Calcul des vertices pour un layer}\label{a}
