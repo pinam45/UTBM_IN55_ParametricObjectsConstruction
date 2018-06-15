@@ -18,19 +18,19 @@
 	\newpage{}
 	\section{Introduction}
 		\paragraph*{}
-			Dans le cadre de l'UV IN55 pour le semestre de pringtemps 2018, la réalisation d'un projet mettant en oeuvre OpenGL était demandé.
-			Plusieurs sujet était proposé, nous avons choisi de traiter le sujet ``Construction d'un objet paramétrique''.
+			Dans le cadre de l'UV IN55 pour le semestre de printemps 2018, la réalisation d'un projet mettant en oeuvre OpenGL était demandée.
+			Plusieurs sujets étaient proposés, nous avons choisi de traiter le sujet ``Construction d'un objet paramétrique''.
 		\paragraph*{}
 			Dans un premier temps, nous allons expliquer ce que nous avons choisi de réaliser.
 			Nous présenterons ensuite l'installation et l'utilisation du programme.
-			Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons conçut pour générer l'objet paramétrique.
+			Puis nous finirons par la conception, qui expliquera les technologies utilisées ainsi que l'algorithme que nous avons conçu pour générer l'objet paramétrique.
 
 	\section{Sujet choisi}
 		\paragraph*{}
 			Dans cette section, nous allons détailler la phase d'étude qui a précédé le développement de notre solution.
 			Nous avons choisi de réaliser un programme permettant la génération d'un grand nombre de polygones.
 		\paragraph*{}
-			Pour ce faire, nous avons choisi une approche a base de polygones régulier convexes, c'est a dire des polygones dont tous les coté ont la même longueur et tout les angles la même mesure. Cette propriété les rend facilement constructibles a partir de l'équation d'un cercle.
+			Pour ce faire, nous avons choisi une approche a base de polygone régulier convexes, c'est-à-dire des polygones dont tous les cotés ont la même longueur et tous les angles la même mesure. Cette propriété les rend facilement constructibles à partir de l'équation d'un cercle.
 		\paragraph*{}
 			En plaçant ces polygones de façon espacée sur l'axe Z et en les reliant avec des faces triangulaires il nous est possible de générer de nombreux polyèdres.
 		\paragraph*{}
@@ -77,9 +77,9 @@
 				\end{minipage}
 				\begin{minipage}[c]{0.59\textwidth}
 					\begin{figure}[H]
-						Dans ce programme les objets seront construits en utilisant des layers. Le bouton \fbox{\texttt{+}} permet d’insérer un nouveau layer et les boutons \fbox{$\blacktriangle$} et \fbox{$\blacktriangledown$} permettent de déplacer le layer.\\
+						Dans ce programme les objets seront construits en utilisant des layers. Le bouton \fbox{\texttt{+}} permet d'insérer un nouveau layer et les boutons \fbox{$\blacktriangle$} et \fbox{$\blacktriangledown$} permettent de déplacer le layer.\\
 						\hfill \\
-						Chaque Layer correspond à un polygone configurable, le bouton \fbox{\texttt{Randomize}} permet de générer des valeures de configuration aléatoire pour le layer.\\
+						Chaque Layer correspond à un polygone configurable, le bouton \fbox{\texttt{Randomize}} permet de générer des valeurs de configuration aléatoire pour le layer.\\
 						\hfill \\
 						Les configurations disponibles sont les suivantes:
 						\begin{itemize}
@@ -99,7 +99,7 @@
 			De plus, afin de réaliser l'interface utilisateur, nous avons utilisé "ImGUI".
 		\paragraph*{}
 			ImGUI est une librairie générant des "vertex buffers".
-			Pour pouvoir afficher les interfaces réalisées avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants d'ImGUI.
+			Pour pouvoir afficher les interfaces réalisées avec ImGUI, nous avons dû réaliser une implémentation permettant d'afficher les composants générés.
 
 			\begin{figure}[H]
 				\centering%
