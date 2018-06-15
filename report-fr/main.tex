@@ -116,24 +116,45 @@
 			La classe ParametricObject permettra, elle, de générer l'objet paramétrique.
 
 	\section{Construction de l'objet paramétrique}
+	\paragraph{} L'objet paramétrique implémenté dans ce projet permet la réalisation d'un ensemble d'objet différent. L'objet se construit autour de layers qui possèdent différents paramètres comme la taille du layer, le nombre de points, la rotation et la couleur.
+	\paragraph{} La construction de l'objet paramétrique se passe en deux parties. La première partie est la génération du tableau de vertices, la deuxième la génération du tableau d'indices. La première partie va permettre de générer les sommets de l'objets et la deuxième partie va permettre la génération des faces des différents layers de l'objet.
 	\subsection{Calcul des vertices de l'objet}
 	\subsubsection{Calcul des vertices pour un layer}\label{a}
-		\paragraph{} Pour calculer les vertices d'une face, on fait : 
+		\paragraph{} Les layers sont construits comme des polygones réguliers convexes.
+		\paragraph{}Les variables nécessaires pour l'application de l'algorithme sont : 
 		\begin{itemize}
-			\item Calculer la coordonnée z en appliquant la formule suivante : $z = \frac{h_{objet}}{2} - h_{progressif}$ avec $h_{progressif}$ la hauteur de l'objet à la face i.
-			\item Calculer l'angle en radian entre deux vertices. Pour ce faire, on applique la formule suivante : $\theta = \frac{2*\pi}{n}$ avec n le nombre de vertices souhaités.
-			\item Calculer la coordonnée x en appliquant la formule $x = cos(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
-			\item Calculer la coordonnée y en appliquant la formule $y = sin(\theta)*r$ avec r la distance entre le vertice et le centre de la face.
+		 	\item $i$ : le numéros du layer courant
+		 	\item $h_{progressif}$ : la hauteur de l'objet au layer $i$
+		 	\item $h_{objet}$ : la taille de l'objet
+		 	\item $\theta$ : l'angle entre les vertices du layer
+		 	\item $r$ : le rayon du layer
+		 	\item $n$ : le nombre de vertices de la face.
+		 	\item $rot$ : la rotation du layer.
+		\end{itemize} L'algorithme permettant la construction du layer se décompose de la manière suivante :
+		\begin{itemize}
+			\item Calculer la coordonnée $z$ en appliquant la formule suivante : $z = \frac{h_{objet}}{2} - h_{progressif}$.
+			\item Calculer l'angle en radian entre deux vertices avec la formule suivante : $\theta = \frac{2\pi}{n}+rot$.
+			\item Pour chaque vertice $j$, on applique : 
+			\begin{itemize}
+				\item Calculer la coordonnée $x$ en appliquant la formule $x = cos(\theta*j)*r$.
+				\item Calculer la coordonnée $y$ en appliquant la formule $y = sin(\theta*j)*r$.
+			\end{itemize}			
 		\end{itemize}
 	\subsubsection{Calcul des vertices de l'objet via la fonction de calcul des vertices d'une face}
-	\paragraph{} Pour calculer les vertices de l'objet, il suffit d'itérer de i allant de 0 au nombre de face - 1 et on appelle la fonction qui calcule les vertices d'une face (cf section \ref{a}).
-	\subsection{Formation des faces de l'objet avec le tableau d'indices}
-	\subsubsection{Formation d'une face}
-	Pour pouvoir relier les faces, on a décidé de faire comme ceci : 
+	\paragraph{} Pour calculer les vertices de l'objet, il suffit d'itérer sur les layers de l'objet en appelant la fonction de création de vertices pour un layer (cf section \ref{a}).
+	\subsection{Calcul des faces de l'objet avec le tableau d'indices}
+	\paragraph{}Pour pouvoir calculer les faces de l'objet, il a été décidé d'utiliser un tableau d'indice. Ce tableau permet d'éviter de répéter le vertice dans le tableau de vertices et ainsi un meilleur déverminage (debug en anglais) lors de l'exécution du programme. Le calcul des faces de l'objet a été découpées en 2 parties :
 	\begin{itemize}
-		\item On prend 3 vertices successifs et on ajoute leurs indices dans le tableau d'indices. On repart du dernier vertices pris et on reprend les 2 vertices suivantes\ldots
-		\item Arrivé au dernier point. On repart depuis le 3ème vertice (pour un nombre impair de vertices dans la face, sinon le 4ème) et on va prendre l'indice de ce vertice, celui du 2ème vertices d'après puis celui du premier vertice de la face puis on les ajoute dans le tableau d'indices.. Puis on se décale de deux vertices et on repète le processus jusqu'à ce qu'on ait fini d'itérer sur la face.
+		\item Le calcul des faces du layer
+		\item Le calcul des faces de liaison entre les layers
 	\end{itemize}
+	\paragraph{} La primitive \texttt{GL\_TRIANGLES} a été choisi pour le rendu de l'objet paramétrique. Cette primitive permet la création des faces de l'objet de manière souple ce qui est nécessaires pour les algorithmes choisis.
+	\subsubsection{Calcul des faces d'un layer}
+	\paragraph{} Pour construire les faces du layer, on procède par étapes : 
+	\begin{enumerate}
+		\item On prend les vertices 3 par 3 et on calcul les triangles obtenus. Dans la figure \ref{fig:face_1} on prend les ensembles (0-1-2), (2-3-4) et (4-5-6).
+		\item On prend ensuite le premier point du layer puis deux vertices "paires" consécutifs. Par exemple dans la figure \ref{fig:face_2}, on obtient : (0-2-4), (0-4-6).
+	\end{enumerate}
 	On obtient les deux figures \ref{fig:face_1} et \ref{fig:face_2}.
 	\begin{figure}[H]
 			\centering%
@@ -154,7 +175,7 @@
 	\subsubsection{Liaison des faces dans l'objet paramétrique}
 		\paragraph{} Pour pouvoir terminer notre objet paramétrique, nous devions lier les faces entre elles. On voulait pour cet objet pouvoir lier des faces qui ne possédaient pas forcément le même nombre de vertices. Plusieurs algorithmes ont été testés mais seul le dernier algorithme, qui présente le meilleur résultat, sera expliqué.
 		
-		Prenons comme exemple la figure \ref{fig:layers_1_empty}. On a une face qui possède 4 vertices et l'autre face qui possède 5 vertices. On nomme la face ayant le moins de vertices A et l'autre B. On va itérer sur les vertices de la face B. Pour chaque vertice de cette face, on va chercher le vertice le plus proche de ce vertice dans la face A. Ainsi le vertice 4 a comme vertice le plus proche 0 dans la face A.
+		Prenons comme exemple la figure \ref{fig:layers_1_empty}. On a une face qui possède 4 vertices et l'autre face qui possède 5 vertices. On nomme la face ayant le moins de vertices A et l'autre B. On relie chaque vertice de la face B avec le vertice le plus proche de la face A. Ainsi le vertice 4 a comme vertice le plus proche 0 dans la face A.
 		
 		Après avoir itérer sur tous les vertices, on obtient la figure \ref{fig:layers_2_nearest_lines}.
 		
@@ -179,7 +200,7 @@
 		\end{minipage}
 		\paragraph{} On va ensuite remplir les faces triangulaires. Pour ce faire, on va regarder si on a des vertices de la face B qui sont rattachées au même vertice de la face A. Par exemple dans la figure \ref{fig:layers_2_nearest_lines}, on a le vertice 7 et le vertice 8 qui sont liés au point 3. On a donc ici une face triangulaire qui peut être calculé par OpenGL avec la primitive GL\_TRIANGLES sous la forme (7-3-8). On obtient donc la figure \ref{fig:layers_3_triangles_quadrilaterals}.
 		
-		Pour finir, on va calculer les faces quadrilatères. Comme on utilise la primitive GL\_TRIANGLES, il faut diviser ces faces en deux triangles. Pour pouvoir diviser ces faces, on a décidé de comparer la longueur des diagonales de ces faces. On voit par exemple que la diagonale 0-5 est plus grande que la diagonale 1-4. Ainsi on va diviser la face quadrilatère avec la diagonale la plus courte et on va remplir les faces triangulaires obtenues. On obtient donc la figure \ref{fig:layers_4_quadrilaterals_diagonals}. On a fini de lier les faces.
+		Pour finir, on va calculer les quadrilatères. Comme on utilise la primitive GL\_TRIANGLES, il faut diviser ces faces en deux triangles. Pour pouvoir diviser ces faces, on a décidé de comparer la longueur des diagonales de ces faces. On voit par exemple que la diagonale 0-5 est plus longue que la diagonale 1-4. Ainsi on va diviser la face quadrilatère avec la diagonale la plus courte et on va remplir les faces triangulaires obtenues. On obtient donc la figure \ref{fig:layers_4_quadrilaterals_diagonals}. On a fini de lier les faces.
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
@@ -200,7 +221,7 @@
 			\end{minipage}
 		\end{minipage}
 		
-		Après implémentation dans le projet de cette algorithme, on obtient un objet paramétrique complet et sans faces creuses. On obtient des objets paramétriques comme on peux voir dans les exemples \ref{fig:view_1_1} et \ref{fig:view_1_2}.
+		Après implémentation dans le projet de cette algorithme, on obtient un objet paramétrique complet et sans faces creuses comme on peux voir dans les exemples \ref{fig:view_1_1} et \ref{fig:view_1_2}.
 		\par\noindent\begin{minipage}[t]{\textwidth}
 			\centering
 			\begin{minipage}[t]{0.49\textwidth}
