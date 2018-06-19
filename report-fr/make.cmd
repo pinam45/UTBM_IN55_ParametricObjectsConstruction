@@ -1,12 +1,13 @@
 @echo off
 rem =============================================================================
 rem Project related variables
-set DOCUMENTS_NAMES=main
+set DOCUMENTS_NAMES=main presentation
 
 set NEEDS_BIBTEX=
 set NEEDS_MAKEGLOSSARIES=
 
 set PACKAGES_REQUIRED[main]=amsmath amssymb array caption fancyvrb float fontenc hyperref import inputenc listings lmodern mathrsfs multirow pdflscape pgf scalerel stackengine standalone tabularx textcomp tikz todonotes translator xcolor
+set PACKAGES_REQUIRED[presentation]=fontenc translator lmodern hyperref xcolor listings amsmath amssymb mathrsfs array tabularx multirow caption float standalone import pgf tikz pgf-umlsd pgfgantt
 
 rem =============================================================================
 rem Commands variables

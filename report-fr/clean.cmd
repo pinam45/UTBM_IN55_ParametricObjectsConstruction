@@ -1,5 +1,5 @@
 @echo off
-set DOCUMENTS_NAMES=main
+set DOCUMENTS_NAMES=main presentation
 set TO_DELETE_EXT=-blx.aux -blx.bib .acn .acr .alg .aux .bbl .bcf .blg .cb .cb2 .dvi .fdb_latexmk .fls .fmt .fot .glg .glo .gls .glsdefs .idx .ilg .ind .ist .lof .log .lol .lot .nav .out .pdf .pdfsync .pre .run.xml .snm .sta .synctex .synctex.gz .toc .vrb .xdv
 echo.
 for %%D in  (%DOCUMENTS_NAMES%) do (
