@@ -1,0 +1,106 @@
+%!TEX program = xelatex
+\documentclass[11pt,class=book]{standalone}
+%\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[french]{translator}
+\usepackage[T1]{fontenc}
+\usepackage{fontspec}
+\usepackage[table,svgnames]{xcolor}
+
+\usepackage{pgf}
+\usepackage{tikz}
+
+\input{figures_common}
+
+\begin{document}
+	\pgfmathsetmacro\layerasize{120}%
+	\pgfmathsetmacro\layerainitialrotation{18}%
+	\pgfmathsetmacro\layerbsize{45}%
+	\pgfmathsetmacro\layerbinitialrotation{0}%
+
+	\begin{tikzpicture}[x=1pt,y=1pt,>=Latex]
+		\tikzset{triangleface/.style={
+			fill=yellow!35
+		}}
+		\tikzset{squareface/.style={
+			fill=yellow!35
+		}}
+		\tikzset{line/.style={
+			thick
+		}}
+		\tikzset{layersline/.style={
+			line,
+			black
+		}}
+		\tikzset{nearestline/.style={
+			line,
+			Green
+		}}
+		\tikzset{squaresplitline/.style={
+			line,
+			Red
+		}}
+
+		%---------------------------------
+		% Inner layer points
+		\coordinate (P0) at (\layerbinitialrotation+0:\layerbsize);
+		\coordinate (P1) at (\layerbinitialrotation+90:\layerbsize);
+		\coordinate (P2) at (\layerbinitialrotation+180:\layerbsize);
+		\coordinate (P3) at (\layerbinitialrotation+270:\layerbsize);
+
+		%---------------------------------
+		% Outter layer points
+		\coordinate (P4) at (\layerainitialrotation+0:\layerasize);
+		\coordinate (P5) at (\layerainitialrotation+72:\layerasize);
+		\coordinate (P6) at (\layerainitialrotation+144:\layerasize);
+		\coordinate (P7) at (\layerainitialrotation+216:\layerasize);
+		\coordinate (P8) at (\layerainitialrotation+288:\layerasize);
+
+		%---------------------------------
+		% Zones
+		\uncover<3->{
+			\fill[triangleface] (P7) -- (P8) -- (P3) -- cycle;
+		}
+		\uncover<5->{
+			\fill[squareface] (P0) -- (P4) -- (P5) -- (P1) -- cycle;
+			\fill[squareface] (P0) -- (P4) -- (P5) -- (P1) -- cycle;
+			\fill[squareface] (P5) -- (P1) -- (P2) -- (P6) -- cycle;
+			\fill[squareface] (P6) -- (P2) -- (P3) -- (P7) -- cycle;
+			\fill[squareface] (P3) -- (P8) -- (P4) -- (P0) -- cycle;
+		}
+
+		%---------------------------------
+		% Numbers
+		\node[left] at (P0) {0};
+		\node[below] at (P1) {1};
+		\node[right] at (P2) {2};
+		\node[above] at (P3) {3};
+		\node[right] at (P4) {4};
+		\node[above] at (P5) {5};
+		\node[left] at (P6) {6};
+		\node[left] at (P7) {7};
+		\node[right] at (P8) {8};
+
+		%---------------------------------
+		% Lines
+		\uncover<2->{
+			\draw[nearestline] (P4) -- (P0);
+			\draw[nearestline] (P5) -- (P1);
+			\draw[nearestline] (P6) -- (P2);
+			\draw[nearestline] (P7) -- (P3);
+			\draw[nearestline] (P8) -- (P3);
+		}
+
+		\uncover<4->{
+			\draw[squaresplitline] (P2) -- (P7);
+			\draw[squaresplitline] (P1) -- (P6);
+			\draw[squaresplitline] (P1) -- (P4);
+			\draw[squaresplitline] (P0) -- (P8);
+		}
+
+		%---------------------------------
+		% Layers lines
+		\draw[layersline] (P0) -- (P1) -- (P2) -- (P3) -- cycle;
+		\draw[layersline] (P4) -- (P5) -- (P6) -- (P7) -- (P8) -- cycle;
+	\end{tikzpicture}
+\end{document}

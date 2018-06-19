@@ -95,23 +95,9 @@
 	\begin{frame}
 		\titlepage
 	\end{frame}
-	% \begin{frame}{Sommaire}
-	% 	\tableofcontents
-	% \end{frame}
-	\section{Section}
-		\subsection{Subsection}
-			\begin{frame}
-				\frametitle{Title}
-				\framesubtitle{Subtitle}
-				\begin{block}{Block title}
-					Block text
-				\end{block}
-				Text
-				\begin{itemize}
-					\item item
-					\item item
-				\end{itemize}
-			\end{frame}
+	\begin{frame}{Sommaire}
+		\tableofcontents
+	\end{frame}
 	\section{Conception et technologies utilisées}
 		\subsection{Technologie utilisées}
 			\begin{frame}
@@ -125,15 +111,22 @@
 			\begin{frame}
 				\includegraphics[width=\textwidth]{uml}
 			\end{frame}
-			\begin{frame}
-				\centering%
-				\begin{minipage}[c]{0.49\textwidth}
+		\section{Génération de l'objet}
+			\subsection{Layers}
+				\begin{frame}
 					\centering%
-					\resizebox{\textwidth}{!}{\import{figures/}{seq_face_1.tex}}%
-				\end{minipage}
-				\begin{minipage}[c]{0.49\textwidth}
+					\begin{minipage}[c]{0.49\textwidth}
+						\centering%
+						\resizebox{\textwidth}{!}{\import{figures/}{seq_face_1.tex}}%
+					\end{minipage}
+					\begin{minipage}[c]{0.49\textwidth}
+						\centering%
+						\resizebox{\textwidth}{!}{\import{figures/}{seq_face_2.tex}}%
+					\end{minipage}
+				\end{frame}
+			\subsection{Liaison des layers}
+				\begin{frame}
 					\centering%
-					\resizebox{\textwidth}{!}{\import{figures/}{seq_face_2.tex}}%
-				\end{minipage}
-			\end{frame}
+					\resizebox{0.5\textwidth}{!}{\import{figures/}{seq_layers.tex}}%
+				\end{frame}
 \end{document}
