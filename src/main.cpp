@@ -32,17 +32,6 @@ constexpr float MOUSE_SCROLL_SENSITIVITY = 0.5f;
 
 constexpr int PANEL_WIDTH = 300;
 
-void check_error();
-
-void check_error() {
-    GLenum  err;
-    err =  glGetError();
-    if (err != GL_NO_ERROR) {
-        std::cout << err << std::endl;
-        std::abort();
-    }
-}
-
 int main()
 {
 	poc::GlfwInitializer initializer;
