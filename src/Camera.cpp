@@ -11,19 +11,19 @@ namespace {
 
 poc::Camera::Camera(float FOV, float width, float height, float near, float far)
   : m_FOV(FOV)
-    , m_width(width)
-    , m_height(height)
-    , m_near(near)
-    , m_far(far)
-    , m_position()
-    , m_direction(DEFAULT_DIRECTION)
-    , m_forward(DEFAULT_FORWARD)
-    , m_right(DEFAULT_RIGHT)
-    , m_up(DEFAULT_UP)
-    , m_update_view(true)
-    , m_update_projection(true)
-    , m_view_matrix()
-    , m_projection_matrix() {
+  , m_width(width)
+  , m_height(height)
+  , m_near(near)
+  , m_far(far)
+  , m_position()
+  , m_direction(DEFAULT_DIRECTION)
+  , m_forward(DEFAULT_FORWARD)
+  , m_right(DEFAULT_RIGHT)
+  , m_up(DEFAULT_UP)
+  , m_update_view(true)
+  , m_update_projection(true)
+  , m_view_matrix()
+  , m_projection_matrix() {
 
 	update();
 }

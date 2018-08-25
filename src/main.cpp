@@ -3,7 +3,9 @@
 #include <codecvt>
 #include <locale>
 #include <vector>
+
 #define _USE_MATH_DEFINES
+
 #include <cmath>
 
 #include <glm/trigonometric.hpp>
@@ -32,8 +34,7 @@ constexpr float MOUSE_SCROLL_SENSITIVITY = 0.5f;
 
 constexpr int PANEL_WIDTH = 300;
 
-int main()
-{
+int main() {
 	poc::GlfwInitializer initializer;
 
 	poc::VideoMode test(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -47,19 +48,19 @@ int main()
 	w.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	poc::Shader vshader = poc::Shader::fromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
-	if(!vshader.isValid()){
+	if(!vshader.isValid()) {
 		std::cout << "Vertex shader error:\n" << vshader.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	poc::Shader fshader = poc::Shader::fromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
-	if(!fshader.isValid()){
+	if(!fshader.isValid()) {
 		std::cout << "Fragment shader error:\n" << fshader.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
 
 	poc::ShaderProgram program(vshader, fshader);
-	if(!program.isValid()){
+	if(!program.isValid()) {
 		std::cout << "Shader program error:\n" << program.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
@@ -105,31 +106,30 @@ int main()
 	bool first_mouse_move = true;
 	float mouse_last_x;
 	float mouse_last_y;
-	bool mouse_drag =false;
+	bool mouse_drag = false;
 
 	bool esc_pressed = false;
-    while(w.isOpen())
-	{
+	while(w.isOpen()) {
 		poc::Event event;
-		while (w.pollEvent(event)) {
+		while(w.pollEvent(event)) {
 
 			std::visit([&](auto&& content) noexcept {
 				using T = std::decay_t<decltype(content)>;
 
 				if constexpr (std::is_same_v<T, poc::Event::KeyEvent>) {
-					if (event.type == poc::EventType::KeyPressed) {
-						if (content.code == poc::Keyboard::Key::Escape){
+					if(event.type == poc::EventType::KeyPressed) {
+						if(content.code == poc::Keyboard::Key::Escape) {
 							esc_pressed = true;
 						}
 					}
 				}
 
 				if constexpr (std::is_same_v<T, poc::Event::MouseButtonEvent>) {
-					if(content.button == poc::Mouse::Button::Button1){
-						if(event.type == poc::EventType::MouseButtonPressed){
+					if(content.button == poc::Mouse::Button::Button1) {
+						if(event.type == poc::EventType::MouseButtonPressed) {
 							mouse_drag = true;
 						}
-						if(event.type == poc::EventType::MouseButtonReleased){
+						if(event.type == poc::EventType::MouseButtonReleased) {
 							mouse_drag = false;
 							first_mouse_move = true;
 						}
@@ -137,9 +137,8 @@ int main()
 				}
 
 				if constexpr (std::is_same_v<T, poc::Event::MouseMoveEvent>) {
-					if(mouse_drag){
-						if(first_mouse_move)
-						{
+					if(mouse_drag) {
+						if(first_mouse_move) {
 							mouse_last_x = static_cast<float>(content.x);
 							mouse_last_y = static_cast<float>(content.y);
 							first_mouse_move = false;
@@ -156,7 +155,7 @@ int main()
 					}
 				}
 
-				if constexpr (std::is_same_v<T, poc::Event::MouseScrollEvent>){
+				if constexpr (std::is_same_v<T, poc::Event::MouseScrollEvent>) {
 					camera.moveForward(static_cast<float>(content.yDelta) * MOUSE_SCROLL_SENSITIVITY);
 				}
 			}, event.content);
@@ -176,20 +175,20 @@ int main()
 
 		program.use();
 		glBindVertexArray(VAO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 		glEnable(GL_PROGRAM_POINT_SIZE);
-        //glDisable(GL_CULL_FACE);
+		//glDisable(GL_CULL_FACE);
 
-		glDrawElements(GL_TRIANGLES , static_cast<int>(parametricObject.getNbIndexes()), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<int>(parametricObject.getNbIndexes()), GL_UNSIGNED_INT, nullptr);
 		glBindVertexArray(0);
 
-		glViewport(0,0,w.getWidth(),w.getHeigth());
+		glViewport(0, 0, w.getWidth(), w.getHeigth());
 		fpsOverlay.draw();
 
 		panel.setHeight(static_cast<float>(w.getHeigth()));
 		panel.draw();
-		if(panel.need_recompute()){
+		if(panel.need_recompute()) {
 			parametricObject.configure(panel.getLayers());
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, static_cast<int>(parametricObject.getNbPoint() * 6 * sizeof(float)), parametricObject.getVertices().data(), GL_STATIC_DRAW);

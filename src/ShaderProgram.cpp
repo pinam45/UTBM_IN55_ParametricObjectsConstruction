@@ -5,22 +5,22 @@
 #include "ShaderProgram.hpp"
 
 poc::ShaderProgram::ShaderProgram() noexcept
-		: m_valid{false}
-		, m_program{}
-		, m_error("Shader program unitialized") {
+  : m_valid{false}
+  , m_program{}
+  , m_error("Shader program uninitialized") {
 
 }
 
 poc::ShaderProgram::~ShaderProgram() {
-	if (isValid()) {
+	if(isValid()) {
 		glDeleteProgram(m_program);
 	}
 }
 
 poc::ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-		: m_valid(std::exchange(other.m_valid, false))
-		, m_program(std::exchange(other.m_program, 0))
-		, m_error(std::exchange(other.m_error, "Shader program moved")) {
+  : m_valid(std::exchange(other.m_valid, false))
+  , m_program(std::exchange(other.m_program, 0))
+  , m_error(std::exchange(other.m_error, "Shader program moved")) {
 
 }
 

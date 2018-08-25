@@ -23,7 +23,7 @@ void poc::SphericalCamera::setPosition(glm::vec3 position) {
 }
 
 void poc::SphericalCamera::moveForward(float offset) {
-	if(glm::dot(m_center - (m_position + offset * m_forward), m_center - m_position) > 0){
+	if(glm::dot(m_center - (m_position + offset * m_forward), m_center - m_position) > 0) {
 		Camera::moveForward(offset);
 	}
 }

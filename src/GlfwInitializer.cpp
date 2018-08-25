@@ -4,7 +4,7 @@
 #include "callbacks.hpp"
 
 poc::GlfwInitializer::GlfwInitializer() {
-	if (!glfwInit()) {
+	if(!glfwInit()) {
 		throw std::runtime_error("GLFW error: Initialization failed");
 	}
 

@@ -14,8 +14,8 @@ namespace {
 
 poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, FullscreenMode fullscreenMode,
                     const poc::ContextSettings& contextSettings)
-	: m_window{nullptr}
-	, m_events{32} {
+  : m_window{nullptr}
+    , m_events{32} {
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, contextSettings.major);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, contextSettings.minor);
@@ -25,7 +25,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwWindowHint(GLFW_BLUE_BITS, videoMode.blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, videoMode.refreshRate);
 
-	switch (fullscreenMode) {
+	switch(fullscreenMode) {
 		case FullscreenMode::NoFullScreen:
 			m_window = glfwCreateWindow(videoMode.width, videoMode.height, title.data(), nullptr, nullptr);
 			break;
@@ -34,7 +34,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 			break;
 	}
 
-	if (m_window == nullptr) {
+	if(m_window == nullptr) {
 		glfwTerminate();
 		throw std::runtime_error("GLFW error: Failed to create window.");
 	}
@@ -45,42 +45,42 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowUserPointer(m_window, this);
 
 	auto keyCallback = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
-		if (!ImGui::GetIO().WantCaptureKeyboard) {
-            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
-        } else {
-            poc::ImguiImpl::onKey(key, scancode, action, mods);
-        }
+		if(!ImGui::GetIO().WantCaptureKeyboard) {
+			static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createKeyEvent(key, scancode, action, mods);
+		} else {
+			poc::ImguiImpl::onKey(key, scancode, action, mods);
+		}
 	};
 
 	auto textCallback = [](GLFWwindow* w, unsigned int character) {
-		if (!ImGui::GetIO().WantTextInput) {
-            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createCharEvent(character);
-        } else {
-            poc::ImguiImpl::onChar(character);
+		if(!ImGui::GetIO().WantTextInput) {
+			static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createCharEvent(character);
+		} else {
+			poc::ImguiImpl::onChar(character);
 		}
 	};
 
 	auto mouseCallback = [](GLFWwindow* w, int button, int action, int mods) {
-		if (!ImGui::GetIO().WantCaptureMouse) {
-			static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
+		if(!ImGui::GetIO().WantCaptureMouse) {
+			static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(button, action, mods);
 		} else {
-		    poc::ImguiImpl::onMouseButton(button, action, mods);
+			poc::ImguiImpl::onMouseButton(button, action, mods);
 		}
 	};
 
 	auto cursorPosCallback = [](GLFWwindow* w, double xPos, double yPos) {
-        if (!ImGui::GetIO().WantCaptureMouse) {
-            static_cast<poc::Window *>(glfwGetWindowUserPointer(w))->createMouseEvent(xPos, yPos);
-        }
+		if(!ImGui::GetIO().WantCaptureMouse) {
+			static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseEvent(xPos, yPos);
+		}
 	};
 
 	auto mouseScrollCallback = [](GLFWwindow* w, double xPos, double yPos) {
-		if (!ImGui::GetIO().WantCaptureMouse) {
-            static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
-        } else {
-            poc::ImguiImpl::onScroll(xPos, yPos);
-        }
-    };
+		if(!ImGui::GetIO().WantCaptureMouse) {
+			static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createMouseScrollEvent(xPos, yPos);
+		} else {
+			poc::ImguiImpl::onScroll(xPos, yPos);
+		}
+	};
 
 	auto windowCloseCallback = [](GLFWwindow* w) {
 		static_cast<poc::Window*>(glfwGetWindowUserPointer(w))->createCloseEvent();
@@ -105,8 +105,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 	glfwSetWindowFocusCallback(m_window, windowFocusCallback);
 
 	GLenum err = glewInit();
-	if(err != GLEW_OK)
-	{
+	if(err != GLEW_OK) {
 		glfwTerminate();
 		std::stringstream sstream;
 		sstream << "GLEW Error: " << glewGetErrorString(err) << '\n';
@@ -121,7 +120,7 @@ poc::Window::Window(const poc::VideoMode& videoMode, std::string_view title, Ful
 }
 
 poc::Window::~Window() {
-	if (m_window) {
+	if(m_window) {
 		glfwDestroyWindow(m_window);
 		ImguiImpl::shutdown();
 	}
@@ -132,7 +131,7 @@ bool poc::Window::isOpen() const {
 }
 
 void poc::Window::close() {
-	if (isOpen()) {
+	if(isOpen()) {
 		m_isOpen = false;
 		glfwSetWindowShouldClose(m_window, GLFW_TRUE);
 		glfwDestroyWindow(m_window);
@@ -143,7 +142,7 @@ void poc::Window::close() {
 }
 
 bool poc::Window::pollEvent(poc::Event& event) {
-	if (m_events.empty()) {
+	if(m_events.empty()) {
 		return false;
 	}
 
@@ -154,7 +153,7 @@ bool poc::Window::pollEvent(poc::Event& event) {
 }
 
 void poc::Window::display() {
-	if (!isOpen()) {
+	if(!isOpen()) {
 		return;
 	}
 
@@ -165,7 +164,7 @@ void poc::Window::display() {
 
 	glfwSwapBuffers(m_window);
 
-	if (m_isOpen) {
+	if(m_isOpen) {
 		ImguiImpl::newFrame();
 	}
 }
@@ -182,21 +181,21 @@ int poc::Window::getHeigth() const {
 	return height;
 }
 
-void poc::Window::setInputMode(int mode, int value){
+void poc::Window::setInputMode(int mode, int value) {
 	glfwSetInputMode(m_window, mode, value);
 }
 
 bool poc::Window::isPressed(Keyboard::Key key) const {
-    return glfwGetKey(m_window, static_cast<int>(key)) == GLFW_PRESS;
+	return glfwGetKey(m_window, static_cast<int>(key)) == GLFW_PRESS;
 }
 
 bool poc::Window::isPressed(Mouse::Button button) const {
-    return glfwGetMouseButton(m_window, static_cast<int>(button)) == GLFW_PRESS;
+	return glfwGetMouseButton(m_window, static_cast<int>(button)) == GLFW_PRESS;
 }
 
 void poc::Window::createKeyEvent(int key, int, int action, int mods) {
 	const EventType type = [&action] {
-		switch (action) {
+		switch(action) {
 			case GLFW_PRESS:
 				return EventType::KeyPressed;
 			case GLFW_RELEASE:
@@ -209,10 +208,10 @@ void poc::Window::createKeyEvent(int key, int, int action, int mods) {
 	}();
 
 	m_events.emplace_back(type, std::in_place_type_t<Event::KeyEvent>{}, static_cast<Keyboard::Key>(key),
-		static_cast<bool>(mods & GLFW_MOD_SHIFT),
-		static_cast<bool>(mods & GLFW_MOD_CONTROL),
-		static_cast<bool>(mods & GLFW_MOD_ALT),
-		static_cast<bool>(mods & GLFW_MOD_SUPER));
+	                      static_cast<bool>(mods & GLFW_MOD_SHIFT),
+	                      static_cast<bool>(mods & GLFW_MOD_CONTROL),
+	                      static_cast<bool>(mods & GLFW_MOD_ALT),
+	                      static_cast<bool>(mods & GLFW_MOD_SUPER));
 }
 
 void poc::Window::createCharEvent(unsigned int character) {
@@ -221,7 +220,7 @@ void poc::Window::createCharEvent(unsigned int character) {
 
 void poc::Window::createMouseEvent(int button, int action, int) {
 	const EventType type = [&action] {
-		switch (action) {
+		switch(action) {
 			case GLFW_PRESS:
 				return EventType::MouseButtonPressed;
 			case GLFW_RELEASE:

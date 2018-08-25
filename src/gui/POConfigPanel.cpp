@@ -8,7 +8,7 @@ namespace {
 	constexpr float DEFAULT_LAYER_RADIUS = 1;
 	constexpr float DEFAULT_LAYER_DISTANCE = 1;
 	constexpr float DEFAULT_LAYER_ROTATION = 0;
-	constexpr std::array<float,3> DEFAULT_LAYER_COLOR = {0, 0, 0};
+	constexpr std::array<float, 3> DEFAULT_LAYER_COLOR = {0, 0, 0};
 	constexpr poc::LayerConfig DEFAULT_LAYER(
 	  DEFAULT_LAYER_NB_POINTS,
 	  DEFAULT_LAYER_RADIUS,
@@ -28,16 +28,16 @@ namespace {
 
 	constexpr size_t MINIMUM_LAYERS_NUMBER = 2;
 
-	constexpr std::array<float,3> RED {{1,0,0}};
-	constexpr std::array<float,3> GREEN {{0,1,0}};
-	constexpr std::array<float,3> BLUE {{0,0,1}};
+	constexpr std::array<float, 3> RED{{1, 0, 0}};
+	constexpr std::array<float, 3> GREEN{{0, 1, 0}};
+	constexpr std::array<float, 3> BLUE{{0, 0, 1}};
 	constexpr poc::LayerConfig LAYER_1(4, 1.0f, 1.0f, 0, RED);
 	constexpr poc::LayerConfig LAYER_2(10, 1.5f, 0.4f, 0.0f, BLUE);
 	constexpr poc::LayerConfig LAYER_3(1, 0.5f, 1.0f, 0, GREEN);
-	const std::initializer_list<poc::LayerConfig> DEFAULT_LAYERS {
-		LAYER_1,
-		LAYER_2,
-		LAYER_3
+	const std::initializer_list<poc::LayerConfig> DEFAULT_LAYERS{
+	  LAYER_1,
+	  LAYER_2,
+	  LAYER_3
 	};
 
 	template<class T = float>
@@ -45,15 +45,15 @@ namespace {
 }
 
 poc::POConfigPanel::POConfigPanel(float x, float y, float width, float height)
-  : themeHolders{
-	  POConfigPanel::ThemeHolder{"Arc Dark", ImGuiColorTheme::ArcDark, true},
-	  POConfigPanel::ThemeHolder{"Flat UI", ImGuiColorTheme::FlatUI, false},
-	  POConfigPanel::ThemeHolder{"Mint-Y-Dark", ImGuiColorTheme::MintYDark, false},
-    }
-    , m_position(x, y)
-    , m_size(width, height)
-    , rd()
-    , layers(DEFAULT_LAYERS)
+	: themeHolders{
+		POConfigPanel::ThemeHolder{"Arc Dark", ImGuiColorTheme::ArcDark, true},
+		POConfigPanel::ThemeHolder{"Flat UI", ImGuiColorTheme::FlatUI, false},
+		POConfigPanel::ThemeHolder{"Mint-Y-Dark", ImGuiColorTheme::MintYDark, false},
+	}
+	, m_position(x, y)
+	, m_size(width, height)
+	, rd()
+	, layers(DEFAULT_LAYERS)
 	, m_modified(false) {
 
 	for(ThemeHolder& themeHolder : themeHolders) {
@@ -126,7 +126,7 @@ void poc::POConfigPanel::draw() {
 	bool swap = false;
 	int to_swap = 0;
 
-	ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f)));
+	ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f / 7.0f, 0.6f, 0.6f)));
 	if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
 		insert_layer = true;
 		insert_layer_pos = -1;
@@ -168,9 +168,9 @@ void poc::POConfigPanel::draw() {
 				}
 			}
 
-			std::array<float,3> color = layer.color;
+			std::array<float, 3> color = layer.color;
 			ImGui::ColorEdit3("color", color.data());
-			if(color != layer.color){
+			if(color != layer.color) {
 				layer.color = color;
 				modification = true;
 			}
@@ -185,16 +185,16 @@ void poc::POConfigPanel::draw() {
 			swap = true;
 			to_swap = i_layer + 1;
 		}
-		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(1.0f/7.0f, 0.6f, 0.6f)));
+		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(1.0f / 7.0f, 0.6f, 0.6f)));
 		ImGui::SameLine();
 		if(ImGui::Button("Randomise", ImVec2(ImGui::GetContentRegionAvailWidth(), 20))) {
-			layers[static_cast<std::vector<poc::LayerConfig>::size_type>(i_layer)] =randomLayer();
+			layers[static_cast<std::vector<poc::LayerConfig>::size_type>(i_layer)] = randomLayer();
 			modification = true;
 		}
 		ImGui::PopStyleColor();
 
 		ImGui::Separator();
-		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f/7.0f, 0.6f, 0.6f)));
+		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(ImColor::HSV(2.0f / 7.0f, 0.6f, 0.6f)));
 		if(ImGui::Button("+", ImVec2(ImGui::GetWindowContentRegionWidth(), 20))) {
 			insert_layer = true;
 			insert_layer_pos = i_layer;
@@ -208,32 +208,32 @@ void poc::POConfigPanel::draw() {
 
 	ImGui::End();
 
-	if(swap && to_swap > 0 && to_swap < static_cast<int>(layers.size())){
-		std::swap(layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap)], layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap-1)]);
+	if(swap && to_swap > 0 && to_swap < static_cast<int>(layers.size())) {
+		std::swap(layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap)],
+		          layers[static_cast<std::vector<poc::LayerConfig>::size_type>(to_swap - 1)]);
 		modification = true;
 	}
 
 	std::vector<poc::LayerConfig> old = std::move(layers);
 	layers.clear();
-	if(insert_layer && insert_layer_pos < 0){
+	if(insert_layer && insert_layer_pos < 0) {
 		layers.push_back(DEFAULT_LAYER);
 		modification = true;
 	}
-	for(unsigned int i = 0; i < open_layers.size(); ++i){
-		if(open_layers[i] || old.size() <= MINIMUM_LAYERS_NUMBER){
+	for(unsigned int i = 0; i < open_layers.size(); ++i) {
+		if(open_layers[i] || old.size() <= MINIMUM_LAYERS_NUMBER) {
 			layers.push_back(old[i]);
-		}
-		else{
+		} else {
 			modification = true;
 		}
-		if(insert_layer && static_cast<int>(i) == insert_layer_pos){
+		if(insert_layer && static_cast<int>(i) == insert_layer_pos) {
 			layers.push_back(DEFAULT_LAYER);
 			modification = true;
 		}
 	}
 }
 
-poc::LayerConfig poc::POConfigPanel::randomLayer(){
+poc::LayerConfig poc::POConfigPanel::randomLayer() {
 	std::mt19937 random(rd());
 	std::uniform_int_distribution<unsigned int> rng_nb_point(MINIMUM_LAYER_POINTS_NUMBER, MAXIMUM_LAYER_POINTS_NUMBER);
 	std::uniform_real_distribution<float> rng_radius_from_center(MINIMUM_LAYER_RADIUS, MAXIMUM_LAYER_DISTANCE);
@@ -246,7 +246,7 @@ poc::LayerConfig poc::POConfigPanel::randomLayer(){
 	  rng_radius_from_center(random),
 	  rng_distances_with_layer(random),
 	  rng_rotation(random),
-	  std::array<float,3>{
+	  std::array<float, 3>{
 		rng_color(random),
 		rng_color(random),
 		rng_color(random)

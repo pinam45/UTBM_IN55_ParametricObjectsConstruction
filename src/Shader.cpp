@@ -15,10 +15,10 @@ static constexpr unsigned int POSSIBLE_SHADER_TYPES[] = {
 };
 
 poc::Shader::Shader(unsigned int type)
-		: m_valid(true)
-		, m_type(type)
-		, m_shader()
-		, m_error() {
+  : m_valid(true)
+  , m_type(type)
+  , m_shader()
+  , m_error() {
 
 	for(unsigned int shader_type : POSSIBLE_SHADER_TYPES) {
 		if(m_type == shader_type) {
@@ -30,10 +30,10 @@ poc::Shader::Shader(unsigned int type)
 }
 
 poc::Shader::Shader(Shader&& other) noexcept
-        : m_valid(std::exchange(other.m_valid, false))
-        , m_type(std::exchange(other.m_type, 0))
-        , m_shader(std::exchange(other.m_shader, 0))
-        , m_error(std::exchange(other.m_error, "Shader was moved")) {
+  : m_valid(std::exchange(other.m_valid, false))
+  , m_type(std::exchange(other.m_type, 0))
+  , m_shader(std::exchange(other.m_shader, 0))
+  , m_error(std::exchange(other.m_error, "Shader was moved")) {
 
 }
 
@@ -107,7 +107,7 @@ poc::Shader poc::Shader::fromFile(unsigned int type, const char* path) {
 }
 
 poc::Shader::~Shader() {
-	if (isValid()) {
+	if(isValid()) {
 		glDeleteShader(m_shader);
 	}
 }

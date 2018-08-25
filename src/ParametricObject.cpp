@@ -9,20 +9,22 @@
 #include <algorithm>
 #include <cmath>
 
-namespace {
-    template<class T>
-    constexpr T pi = T(3.1415926535897932385L);
-}
 #include <cassert>
 
+namespace {
+	template<class T>
+	constexpr T pi = T(3.1415926535897932385L);
+}
+
 poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerConfigs)
-		: m_is_changed(true)
-		, m_configs(layerConfigs)
-		, m_height()
-		, m_vertices_object()
-		, m_index_object()
-		, m_height_progressive()
-		, m_cumulative_nb_point() {
+  : m_is_changed(true)
+  , m_configs(layerConfigs)
+  , m_height()
+  , m_vertices_object()
+  , m_index_object()
+  , m_height_progressive()
+  , m_cumulative_nb_point() {
+
 	unsigned int nb_point = 0;
 	for(unsigned int i = 0; i < layerConfigs.size(); ++i) {
 
@@ -31,27 +33,23 @@ poc::ParametricObject::ParametricObject(const std::vector<LayerConfig>& layerCon
 			m_cumulative_nb_point.push_back(0);
 			m_height_progressive.push_back(0);
 			m_height = 0.0f;
-		}
-		else {
+		} else {
 			m_cumulative_nb_point.push_back(m_cumulative_nb_point[i - 1] + layerConfigs[i - 1].nb_point);
 			m_height_progressive.push_back(m_height_progressive[i - 1] + layerConfigs[i].distances_with_layer);
 			m_height += layerConfigs[i].distances_with_layer;
 		}
 	}
 	m_vertices_object.resize(nb_point * m_float_vertex);
-    computeVertices();
-    computeIndexes();
+	computeVertices();
+	computeIndexes();
 }
 
-//Compute vertices
 float* poc::ParametricObject::computeVertices() {
 	if(m_is_changed) {
 		for(unsigned int i = 0; i < m_configs.size(); ++i) {
 			computeVerticesForOneLayer(i);
 		}
 	}
-	//std::copy(m_vertices_object.begin(), m_vertices_object.end(), std::ostream_iterator<float>(std::cout, "\n"));
-	//std::cout << std::endl;
 	return m_vertices_object.data();
 }
 
@@ -70,8 +68,7 @@ void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 		m_vertices_object[index_tmp + 3] = m_configs[index].color[0];
 		m_vertices_object[index_tmp + 4] = m_configs[index].color[1];
 		m_vertices_object[index_tmp + 5] = m_configs[index].color[2];
-	}
-	else {
+	} else {
 		const double angle = 2 * pi<double> / nb_point;
 		const double rotation = m_configs[index].rotation;
 
@@ -88,7 +85,6 @@ void poc::ParametricObject::computeVerticesForOneLayer(unsigned int index) {
 	}
 }
 
-//Compute indices
 unsigned int* poc::ParametricObject::computeIndexes() {
 	for(unsigned int i = 0; i < m_configs.size(); ++i) {
 		computeIndexesForLayer(i);
@@ -103,12 +99,10 @@ bool poc::ParametricObject::computeIndexesForLayer(unsigned int index) {
 	unsigned int end = 0;
 	if(nb_point < 3) {
 		return false;
-	}
-	else {
+	} else {
 		if(index == m_cumulative_nb_point.size() - 1) {
 			end = static_cast<unsigned int>(m_vertices_object.size() / m_float_vertex);
-		}
-		else {
+		} else {
 			end = m_cumulative_nb_point[index + 1];
 		}
 
@@ -116,37 +110,29 @@ bool poc::ParametricObject::computeIndexesForLayer(unsigned int index) {
 			m_index_object.push_back(i + j);
 			m_index_object.push_back(i + j + 1);
 			m_index_object.push_back((i + 2) % nb_point + j);
-
-			//std::cout << i+j << " " <<i+j+1 << " " << (i+2)%nb_point+j << std::endl;
 		}
 		if(nb_point % 2) {
 			for(unsigned int i = end - 3; i > j; i -= 2) {
 				m_index_object.push_back(i);
 				m_index_object.push_back(i + 2);
 				m_index_object.push_back(j);
-
-				//std::cout << i << " " <<i+2 << " " << j << std::endl;
 			}
-		}
-		else {
+		} else {
 			for(unsigned int i = end - 4; i > j; i -= 2) {
 				m_index_object.push_back(i);
 				m_index_object.push_back(i + 2);
 				m_index_object.push_back(j);
-
-				//std::cout << i << " " <<i+2 << " " << j << std::endl;
 			}
 		}
-		//std::cout << std::endl;
 		return true;
 	}
 }
 
 void poc::ParametricObject::linksLayer(unsigned int index) {
 	const unsigned int nb_point = m_configs[index].nb_point;
-	//Si on a 1 seul point
+	// If there is only one point
 	if(nb_point == 1) {
-		//Si on est sur le premier layer et qu'on a plus de 1 layer
+		// If it is the first layer and there is more than one layer
 		if(index == 0 && m_configs.size() > 1) {
 			for(unsigned int t = 1; t + 1 < m_cumulative_nb_point[index + 1] + m_configs[index + 1].nb_point; ++t) {
 				m_index_object.push_back(0);
@@ -156,9 +142,8 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 			m_index_object.push_back(0);
 			m_index_object.push_back(m_cumulative_nb_point[index + 1] + m_configs[index + 1].nb_point - 1);
 			m_index_object.push_back(1);
-		}
-		else {
-			//Sinon on prend le layer d'avant et on raccorde
+		} else {
+			// Else the layer is linked with the previous layer
 			const unsigned int index_before_layer = m_cumulative_nb_point[index - 1];
 			for(unsigned int t = index_before_layer; t + 1 <= m_cumulative_nb_point[index]; ++t) {
 				m_index_object.push_back(t);
@@ -169,9 +154,8 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 			m_index_object.push_back(index_before_layer);
 			m_index_object.push_back(m_cumulative_nb_point[index]);
 		}
-	}
-	else {
-		//Si le layer d'avant a un seul point et il ne s'agit pas du premier layer (déjà raccorder)
+	} else {
+		// If the previous layer have only one point and is not the first layer
 		if(index != 0 && index - 1 != 0 && m_configs[index - 1].nb_point == 1) {
 			const unsigned int index_layer = m_cumulative_nb_point[index];
 			const unsigned int index_layer_before = m_cumulative_nb_point[index - 1];
@@ -184,115 +168,115 @@ void poc::ParametricObject::linksLayer(unsigned int index) {
 			m_index_object.push_back(index_layer_before);
 			m_index_object.push_back(m_cumulative_nb_point[index]);
 		}
-		//On rattache avec le layer d'après
+		// Link with the next layer
 		linksLayerDifferentNumber(index);
 	}
 }
 
 void poc::ParametricObject::linksLayerDifferentNumber(unsigned int index) {
 	if(static_cast<int>(index - 1) >= 0 && m_configs[index - 1].nb_point != 1) {
-        unsigned int nb_point_first = m_configs[index - 1].nb_point;
-        unsigned int nb_point_second = m_configs[index].nb_point;
-        unsigned int index_first_layer = m_cumulative_nb_point[index - 1];
-        unsigned int index_second_layer = m_cumulative_nb_point[index];
+		unsigned int nb_point_first = m_configs[index - 1].nb_point;
+		unsigned int nb_point_second = m_configs[index].nb_point;
+		unsigned int index_first_layer = m_cumulative_nb_point[index - 1];
+		unsigned int index_second_layer = m_cumulative_nb_point[index];
 
 
-        unsigned int lastPoint = index_first_layer;
+		unsigned int lastPoint = index_first_layer;
 
-        std::vector<unsigned int> tmp;
+		std::vector<unsigned int> tmp;
 
 
-        if (nb_point_first > nb_point_second) {
-            nb_point_first = m_configs[index].nb_point;
-            nb_point_second = m_configs[index - 1].nb_point;
+		if(nb_point_first > nb_point_second) {
+			nb_point_first = m_configs[index].nb_point;
+			nb_point_second = m_configs[index - 1].nb_point;
 
-            index_first_layer = m_cumulative_nb_point[index];
-            index_second_layer = m_cumulative_nb_point[index - 1];
+			index_first_layer = m_cumulative_nb_point[index];
+			index_second_layer = m_cumulative_nb_point[index - 1];
 			lastPoint = index_first_layer;
 
 			++index;
-        }
+		}
 
 
-        unsigned int nearestPointForFirstPoint = findShortestPointFrom(index_second_layer, index - 1);
+		unsigned int nearestPointForFirstPoint = findShortestPointFrom(index_second_layer, index - 1);
 
-        for (unsigned int  i = 0; i < nb_point_second; ++i){
-            unsigned int nearestPointFrom = findShortestPointFrom(i+index_second_layer, index - 1);
-            if(nearestPointFrom != lastPoint){
-                if(nearestPointFrom - lastPoint == 2){
-                    m_index_object.push_back((lastPoint + nb_point_first)%nb_point_first + index_first_layer);
-                    m_index_object.push_back((lastPoint+1+nb_point_first)%nb_point_first + index_first_layer);
-                    m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second)%nb_point_second);
+		for(unsigned int i = 0; i < nb_point_second; ++i) {
+			unsigned int nearestPointFrom = findShortestPointFrom(i + index_second_layer, index - 1);
+			if(nearestPointFrom != lastPoint) {
+				if(nearestPointFrom - lastPoint == 2) {
+					m_index_object.push_back((lastPoint + nb_point_first) % nb_point_first + index_first_layer);
+					m_index_object.push_back((lastPoint + 1 + nb_point_first) % nb_point_first + index_first_layer);
+					m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second) % nb_point_second);
 
-                } else {
-                    if(nearestPointFrom  == (lastPoint+2+nb_point_first)%nb_point_first + index_first_layer){
-                        m_index_object.push_back((lastPoint + nb_point_first)%nb_point_first + index_first_layer);
-                        m_index_object.push_back((lastPoint+1+nb_point_first)%nb_point_first + index_first_layer);
-                        m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second)%nb_point_second);
-                    }
-                }
+				} else {
+					if(nearestPointFrom == (lastPoint + 2 + nb_point_first) % nb_point_first + index_first_layer) {
+						m_index_object.push_back((lastPoint + nb_point_first) % nb_point_first + index_first_layer);
+						m_index_object.push_back((lastPoint + 1 + nb_point_first) % nb_point_first + index_first_layer);
+						m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second) % nb_point_second);
+					}
+				}
 
-                if(computeDistanceBetween((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer, index_second_layer + i) <
-                        computeDistanceBetween(nearestPointFrom, index_second_layer + (i -1 + nb_point_second)%nb_point_second)) {
+				if(computeDistanceBetween((nearestPointFrom - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer, index_second_layer + i)
+				   < computeDistanceBetween(nearestPointFrom, index_second_layer + (i - 1 + nb_point_second) % nb_point_second)) {
 
-                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
-                    m_index_object.push_back(index_second_layer + i);
-                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
-                    m_index_object.push_back(index_second_layer + i);
-                    m_index_object.push_back(nearestPointFrom);
-                } else {
-                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
-                    m_index_object.push_back((nearestPointFrom -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-                    m_index_object.push_back(nearestPointFrom);
-                    m_index_object.push_back(nearestPointFrom);
-                    m_index_object.push_back(index_second_layer + (i -1 + nb_point_second)%nb_point_second);
-                    m_index_object.push_back(index_second_layer + i);
-                }
+					m_index_object.push_back((nearestPointFrom - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
+					m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second) % nb_point_second);
+					m_index_object.push_back(index_second_layer + i);
+					m_index_object.push_back((nearestPointFrom - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
+					m_index_object.push_back(index_second_layer + i);
+					m_index_object.push_back(nearestPointFrom);
+				} else {
+					m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second) % nb_point_second);
+					m_index_object.push_back((nearestPointFrom - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
+					m_index_object.push_back(nearestPointFrom);
+					m_index_object.push_back(nearestPointFrom);
+					m_index_object.push_back(index_second_layer + (i - 1 + nb_point_second) % nb_point_second);
+					m_index_object.push_back(index_second_layer + i);
+				}
 
-                lastPoint = nearestPointFrom;
-                tmp.clear();
-            }
-            if(tmp.size() == 0){
-                tmp.push_back(nearestPointFrom);
-                tmp.push_back(i + index_second_layer);
-            } else {
-                m_index_object.push_back(tmp[0]);
-                m_index_object.push_back(tmp[1]);
-                m_index_object.push_back(index_second_layer+i);
+				lastPoint = nearestPointFrom;
+				tmp.clear();
+			}
+			if(tmp.empty()) {
+				tmp.push_back(nearestPointFrom);
+				tmp.push_back(i + index_second_layer);
+			} else {
+				m_index_object.push_back(tmp[0]);
+				m_index_object.push_back(tmp[1]);
+				m_index_object.push_back(index_second_layer + i);
 
 				tmp.clear();
 
-                tmp.push_back(nearestPointFrom);
-                tmp.push_back(i + index_second_layer);
-            }
-        }
-		if(nearestPointForFirstPoint != lastPoint){
-			if(computeDistanceBetween((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer, index_second_layer) <
-			   computeDistanceBetween(nearestPointForFirstPoint, index_second_layer + (nb_point_second -1)%nb_point_second)) {
+				tmp.push_back(nearestPointFrom);
+				tmp.push_back(i + index_second_layer);
+			}
+		}
+		if(nearestPointForFirstPoint != lastPoint) {
+			if(computeDistanceBetween((nearestPointForFirstPoint - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer, index_second_layer)
+			   < computeDistanceBetween(nearestPointForFirstPoint, index_second_layer + (nb_point_second - 1) % nb_point_second)) {
 
-				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
-				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
+				m_index_object.push_back((nearestPointForFirstPoint - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1) % nb_point_second);
 				m_index_object.push_back(index_second_layer);
-				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer  + nb_point_first)%nb_point_first + index_first_layer);
-				m_index_object.push_back(index_second_layer );
+				m_index_object.push_back((nearestPointForFirstPoint - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
+				m_index_object.push_back(index_second_layer);
 				m_index_object.push_back(nearestPointForFirstPoint);
 			} else {
-				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
-				m_index_object.push_back((nearestPointForFirstPoint -1 - index_first_layer + nb_point_first)%nb_point_first + index_first_layer);
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1) % nb_point_second);
+				m_index_object.push_back((nearestPointForFirstPoint - 1 - index_first_layer + nb_point_first) % nb_point_first + index_first_layer);
 				m_index_object.push_back(nearestPointForFirstPoint);
 				m_index_object.push_back(nearestPointForFirstPoint);
-				m_index_object.push_back(index_second_layer + (nb_point_second - 1)%nb_point_second);
+				m_index_object.push_back(index_second_layer + (nb_point_second - 1) % nb_point_second);
 				m_index_object.push_back(index_second_layer);
 			}
 		} else {
-			if(tmp.size()){
+			if(!tmp.empty()) {
 				m_index_object.push_back(tmp[0]);
 				m_index_object.push_back(tmp[1]);
 				m_index_object.push_back(index_second_layer);
 			}
 		}
-    }
+	}
 }
 
 //Getter
@@ -307,7 +291,7 @@ unsigned int poc::ParametricObject::getNbPoint() const noexcept {
 void poc::ParametricObject::configure(const std::vector<LayerConfig>& layerConfigs) {
 	unsigned int nb_point = 0;
 
-	if(!layerConfigs.size()){
+	if(layerConfigs.empty()) {
 		assert(false);
 	}
 
@@ -320,13 +304,13 @@ void poc::ParametricObject::configure(const std::vector<LayerConfig>& layerConfi
 	m_cumulative_nb_point[0] = 0;
 	m_height_progressive[0] = 0;
 
-	for(unsigned int i = 1; i < m_configs.size(); ++i){
+	for(unsigned int i = 1; i < m_configs.size(); ++i) {
 		nb_point += m_configs[i].nb_point;
-		m_height_progressive[i] = m_height_progressive[i-1] + m_configs[i].distances_with_layer;
-		m_cumulative_nb_point[i] = m_cumulative_nb_point[i-1] + m_configs[i-1].nb_point;
+		m_height_progressive[i] = m_height_progressive[i - 1] + m_configs[i].distances_with_layer;
+		m_cumulative_nb_point[i] = m_cumulative_nb_point[i - 1] + m_configs[i - 1].nb_point;
 		m_height += m_configs[i].distances_with_layer;
 	}
-    m_vertices_object.resize(nb_point*m_float_vertex);
+	m_vertices_object.resize(nb_point * m_float_vertex);
 	m_index_object.clear();
 	computeVertices();
 	computeIndexes();
@@ -344,11 +328,12 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 	unsigned int nb_point = m_configs[index_layer_other].nb_point;
 	unsigned int index_begin_layer = m_cumulative_nb_point[index_layer_other];
 	unsigned int min_index = 0;
-	double min_distance = std::numeric_limits<float>::max();
+	double min_distance = std::numeric_limits<double>::max();
 	for(unsigned int i = index_begin_layer; i < index_begin_layer + nb_point; ++i) {
-		const double tmp_distance = pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[index * m_float_vertex])), 2.0)
-		                            + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[index * m_float_vertex + 1])), 2.0)
-		                            + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[index * m_float_vertex + 2])), 2.0);
+		const double tmp_distance =
+		  pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[index * m_float_vertex])), 2.0) +
+		  pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[index * m_float_vertex + 1])), 2.0) +
+		  pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[index * m_float_vertex + 2])), 2.0);
 		if(tmp_distance <= min_distance) {
 			min_distance = tmp_distance;
 			min_index = i;
@@ -357,8 +342,9 @@ unsigned int poc::ParametricObject::findShortestPointFrom(unsigned int index, un
 	return min_index;
 }
 
-double poc::ParametricObject::computeDistanceBetween(unsigned int i, unsigned int j){
-    return sqrt(pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[j * m_float_vertex])), 2.0)
-           + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[j * m_float_vertex + 1])), 2.0)
-           + pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[j * m_float_vertex + 2])), 2.0));
+double poc::ParametricObject::computeDistanceBetween(unsigned int i, unsigned int j) {
+	return sqrt(
+	  pow(static_cast<double>((m_vertices_object[i * m_float_vertex] - m_vertices_object[j * m_float_vertex])), 2.0) +
+	  pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 1] - m_vertices_object[j * m_float_vertex + 1])), 2.0) +
+	  pow(static_cast<double>((m_vertices_object[i * m_float_vertex + 2] - m_vertices_object[j * m_float_vertex + 2])), 2.0));
 }
